@@ -1,4 +1,5 @@
-﻿using Indicadores.Classes;
+﻿using ApiIndicadores.Classes;
+using Indicadores.Classes;
 using Indicadores.Context;
 using Indicadores.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -90,57 +91,116 @@ namespace Indicadores.Controllers
         }
 
         [HttpGet("{id}", Name = "GetEncuesta")]
-        public async Task<ActionResult<IEnumerable<EncuestasCat>>> Get(int id)
+        public ActionResult Get(int id)
         {
             try
             {
-                //lista de respuestas 
-                var item = (from log in _context.EncuestasLog
-                            join u in _context.EncuestasUsuarios on log.IdAsingUsuario equals u.Id
-                            join su in _context.SIPGUsuarios on u.IdUsuario equals su.Id
-                            //join z in _context.SIPGUsuarios on u.IdUsuario equals su.Id
-                            join e in _context.EncuestasCat on u.IdEncuesta equals e.Id
-                            join r in _context.EncuestasRelacion on log.IdRelacion equals r.Id
-                            join p in _context.EncuestasDet on r.IdPregunta equals p.Id
-                            join rs in _context.EncuestasRes on r.IdRespuesta equals rs.Id
+                var respuestas = _context.RespuestasTotal.FromSqlRaw("Select E.Id as IdEncuesta, E.Nombre, E.Descripcion, zo.nombre_zona as Zona, de.nombre_departamentos as Departamento, U.IdUsuario,S.Completo as Usuario, P.Id as IdPregunta, P.Pregunta, Rs.Id as IdRespuesta, Rs.Respuesta, L.IdRelacion " +
+                    "from EncuestasCat E left join EncuestasUsuarios U on E.Id = U.IdEncuesta " +
+                    "left join SipgUsuarios S on U.IdUsuario = S.Id " +
+                    "left join EncuestasDet P on E.Id = P.IdEncuesta " +
+                    "left join EncuestasRelacion R on P.Id = R.IdPregunta " +
+                    "left join EncuestasRes Rs on R.IdRespuesta = Rs.Id " +
+                    "left join EncuestasLog L on U.Id = L.IdAsingUsuario and R.Id = L.IdRelacion " +
+                    "left join RH_EntityModel..Empleado em on s.id_empleado = em.id_empleado " +
+                    "inner join RH_EntityModel..Puesto pu on pu.id_puesto = em.id_puesto " +
+                    "inner join RH_EntityModel..Departamentos de on de.id_departamentos = pu.id_departamento " +
+                    "Inner Join RH_EntityModel..Subacopio su on su.id_subacopio = em.id_subacopio " +
+                    "Inner Join RH_EntityModel..Centro_Acopio ca on ca.id_centro_acopio = su.id_centro_acopio " +
+                    "Inner Join RH_EntityModel..Zonas zo on zo.id_zona = ca.id_zona " +
+                    "Where em.[status] = 1 and E.Id = "+id+" and L.IdRelacion is not null").ToList();
+                //var respuestas = (from e in _context.EncuestasCat
+                //                  join u in _context.EncuestasUsuarios on e.Id equals u.IdEncuesta
+                //                  join s in _context.SIPGUsuarios on u.IdUsuario equals s.Id
+                //                  join p in _context.EncuestasDet on e.Id equals p.IdEncuesta
+                //                  join r in _context.EncuestasRelacion on p.Id equals r.IdPregunta
+                //                  join rs in _context.EncuestasRes on r.IdRespuesta equals rs.Id
+                //                  join l in _context.EncuestasLog on u.Id equals l.IdAsingUsuario
 
-                            group e by new
-                            {
-                                IdEncuesta = e.Id,
-                                Encuesta = e.Nombre,
-                                IdRegion=su.IdRegion,
-                                Tipo=su.Tipo,
-                                IdUsuario = u.IdUsuario,
-                                Usuario = su.Completo,
-                                IdPregunta = r.IdPregunta,
-                                Pregunta = p.Pregunta,
-                                IdRespuesta = r.IdRespuesta,
-                                Respuesta = rs.Respuesta,
-                                IdRelacion = log.IdRelacion
-                            } into x
-                            select new
-                            {
-                                IdEncuesta = x.Key.IdEncuesta,
-                                Encuesta = x.Key.Encuesta,
-                                IdRegion = x.Key.IdRegion,
-                                Tipo = x.Key.Tipo,
-                                IdUsuario = x.Key.IdUsuario,
-                                Usuario = x.Key.Usuario,
-                                IdPregunta = x.Key.IdPregunta,
-                                Pregunta = x.Key.Pregunta,
-                                IdRespuesta = x.Key.IdRespuesta,
-                                Respuesta = x.Key.Respuesta,
-                                IdRelacion = x.Key.IdRelacion
-                            }).Where(e => e.IdEncuesta == id && e.IdRelacion != 0).OrderBy(x => x.IdPregunta).Distinct();
+                //                  join em in _context.Empleado on s.id_empleado equals em.id_empleado
+                //                  join pu in _context.Puesto on em.id_puesto equals pu.id_puesto
+                //                  join de in _context.Departamentos on pu.id_departamento equals de.id_departamentos
+                //                  join su in _context.Subacopio on em.id_subacopio equals su.id_subacopio
+                //                  join ca in _context.Centro_Acopio on su.id_centro_acopio equals ca.id_centro_acopio
+                //                  join zo in _context.Zonas on ca.id_zona equals zo.id_zona
+
+                //                  group e by new
+                //                  {
+                //                      IdEncuesta = e.Id,
+                //                      Encuesta = e.Nombre,
+                //                      Zona = zo.nombre_zona,
+                //                      Departamento = de.nombre_departamentos,
+                //                      IdUsuario = u.IdUsuario,
+                //                      Usuario = s.Completo,
+                //                      IdPregunta = r.IdPregunta,
+                //                      Pregunta = p.Pregunta,
+                //                      IdRespuesta = r.IdRespuesta,
+                //                      Respuesta = rs.Respuesta,
+                //                      IdRelacion = l.IdRelacion
+                //                  } into x
+                //                  select new
+                //                  {
+                //                      IdEncuesta = x.Key.IdEncuesta,
+                //                      Encuesta = x.Key.Encuesta,
+                //                      Zona = x.Key.Zona,
+                //                      Departamento = x.Key.Departamento,
+                //                      IdUsuario = x.Key.IdUsuario,
+                //                      Usuario = x.Key.Usuario,
+                //                      IdPregunta = x.Key.IdPregunta,
+                //                      Pregunta = x.Key.Pregunta,
+                //                      IdRespuesta = x.Key.IdRespuesta,
+                //                      Respuesta = x.Key.Respuesta,
+                //                      IdRelacion = x.Key.IdRelacion
+                //                  }).Where(e => e.IdEncuesta == id && e.IdRelacion != 0).OrderBy(x => x.IdPregunta).Distinct();
 
 
-                if (item == null)
+                ////lista de respuestas 
+                //var item = (from log in _context.EncuestasLog
+                //            join u in _context.EncuestasUsuarios on log.IdAsingUsuario equals u.Id
+                //            join su in _context.SIPGUsuarios on u.IdUsuario equals su.Id
+                //            //join z in _context.SIPGUsuarios on u.IdUsuario equals su.Id
+                //            join e in _context.EncuestasCat on u.IdEncuesta equals e.Id
+                //            join r in _context.EncuestasRelacion on log.IdRelacion equals r.Id
+                //            join p in _context.EncuestasDet on r.IdPregunta equals p.Id
+                //            join rs in _context.EncuestasRes on r.IdRespuesta equals rs.Id
+
+                //            group e by new
+                //            {
+                //                IdEncuesta = e.Id,
+                //                Encuesta = e.Nombre,
+                //                IdRegion = su.IdRegion,
+                //                Tipo = su.Tipo,
+                //                IdUsuario = u.IdUsuario,
+                //                Usuario = su.Completo,
+                //                IdPregunta = r.IdPregunta,
+                //                Pregunta = p.Pregunta,
+                //                IdRespuesta = r.IdRespuesta,
+                //                Respuesta = rs.Respuesta,
+                //                IdRelacion = log.IdRelacion
+                //            } into x
+                //            select new
+                //            {
+                //                IdEncuesta = x.Key.IdEncuesta,
+                //                Encuesta = x.Key.Encuesta,
+                //                IdRegion = x.Key.IdRegion,
+                //                Tipo = x.Key.Tipo,
+                //                IdUsuario = x.Key.IdUsuario,
+                //                Usuario = x.Key.Usuario,
+                //                IdPregunta = x.Key.IdPregunta,
+                //                Pregunta = x.Key.Pregunta,
+                //                IdRespuesta = x.Key.IdRespuesta,
+                //                Respuesta = x.Key.Respuesta,
+                //                IdRelacion = x.Key.IdRelacion
+                //            }).Where(e => e.IdEncuesta == id && e.IdRelacion != 0).OrderBy(x => x.IdPregunta).Distinct();
+
+
+                if (respuestas == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    return Ok(await item.ToListAsync());
+                    return Ok(respuestas.ToList());
                 }
             }
             catch (Exception e)

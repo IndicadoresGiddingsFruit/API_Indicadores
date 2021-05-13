@@ -1,3 +1,4 @@
+C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll
 C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\appsettings.Development.json
 C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\appsettings.json
 C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\ApiIndicadores.exe
@@ -48,7 +49,6 @@ C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtim
 C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\sni.dll
 C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\sni.dll
 C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.0\System.Runtime.Caching.dll
-C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll
 C:\Users\marholym\Desktop\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\marholym\Desktop\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.AssemblyInfoInputs.cache
 C:\Users\marholym\Desktop\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.AssemblyInfo.cs
@@ -62,3 +62,4 @@ C:\Users\marholym\Desktop\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiInd
 C:\Users\marholym\Desktop\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.dll
 C:\Users\marholym\Desktop\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.pdb
 C:\Users\marholym\Desktop\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.genruntimeconfig.cache
+C:\Users\marholym\Desktop\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.csprojAssemblyReference.cache

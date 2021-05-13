@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApiIndicadores.Models;
+using ApiIndicadores.Classes;
 
 namespace Indicadores.Context
 {
@@ -41,7 +43,7 @@ namespace Indicadores.Context
         public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; }
         public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }
         
-
+        //Encuestas
         public DbSet<EncuestasCat> EncuestasCat { get; set; }
         public DbSet<EncuestasTipo> EncuestasTipo { get; set; }
         public DbSet<EncuestasDet> EncuestasDet { get; set; }
@@ -49,5 +51,18 @@ namespace Indicadores.Context
         public DbSet<EncuestasRelacion> EncuestasRelacion { get; set; }
         public DbSet<EncuestasUsuarios> EncuestasUsuarios { get; set; }
         public DbSet<EncuestasLog> EncuestasLog { get; set; }
+
+        //Empleados
+        public DbSet<Empleado> Empleado { get; set; }
+        public DbSet<Puesto> Puesto { get; set; }
+        public DbSet<Departamentos> Departamentos { get; set; }
+        public DbSet<Subacopio> Subacopio { get; set; }
+        public DbSet<Centro_Acopio> Centro_Acopio { get; set; }
+        public DbSet<Zonas> Zonas { get; set; }
+        public DbSet<RespuestasTotal> RespuestasTotal { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RespuestasTotal>().HasNoKey();
+        }
     }
 }
