@@ -19,6 +19,6 @@ namespace Indicadores.Models
         public Nullable<short> IdAgen { get; set; }
         public Nullable<short> IdRegion { get; set; }
         public string Tipo { get; set; }      
-        public int id_empleado { get; set; }
+        public int? id_empleado { get; set; }
     }
 }

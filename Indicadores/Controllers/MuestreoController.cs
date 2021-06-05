@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 
-
 namespace Indicadores.Controllers
 {
     [Route("api/[controller]")]
@@ -41,48 +40,145 @@ namespace Indicadores.Controllers
         {
             try
             {
-                IQueryable<MuestreosClass> item = null;
-                if (id == 0)
+                var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
+
+                IQueryable<MuestreosClass> analisis = null;
+                IQueryable<MuestreosClass> item = (from m in (from m in _context.ProdMuestreo
+                                                              group m by new
+                                                              {
+                                                                  Cod_Empresa = m.Cod_Empresa,
+                                                                  Cod_Prod = m.Cod_Prod,
+                                                                  Cod_Campo = m.Cod_Campo,
+                                                                  IdSector = m.IdSector
+                                                              } into x
+                                                              select new
+                                                              {
+                                                                  Cod_Empresa = x.Key.Cod_Empresa,
+                                                                  Cod_Prod = x.Key.Cod_Prod,
+                                                                  Cod_Campo = x.Key.Cod_Campo,
+                                                                  IdSector = x.Key.IdSector,
+                                                                  Fecha_solicitud = x.Max(m => m.Fecha_solicitud)
+                                                              })
+
+                                                   join an in _context.ProdMuestreo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha_solicitud } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha_solicitud } into MuestreoR
+                                                   from an in MuestreoR.DefaultIfEmpty()
+
+                                                   join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
+                                                   from mcam in MuestreoCam.DefaultIfEmpty()
+
+                                                   join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
+                                                   from prod in MuestreoProd.DefaultIfEmpty()
+
+                                                   join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
+                                                   from ms in MuestreoSc.DefaultIfEmpty()
+
+                                                   join al in (from m in _context.ProdAnalisis_Residuo
+                                                               group m by new
+                                                               {
+                                                                   Cod_Empresa = m.Cod_Empresa,
+                                                                   Cod_Prod = m.Cod_Prod,
+                                                                   Cod_Campo = m.Cod_Campo
+                                                               } into x
+                                                               select new
+                                                               {
+                                                                   Cod_Empresa = x.Key.Cod_Empresa,
+                                                                   Cod_Prod = x.Key.Cod_Prod,
+                                                                   Cod_Campo = x.Key.Cod_Campo,
+                                                                   Num_analisis = x.Max(m => m.Num_analisis),
+                                                                   Fecha = x.Max(m => m.Fecha)
+                                                               }) on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { al.Cod_Empresa, al.Cod_Prod, al.Cod_Campo } into Analisis
+                                                   from al in Analisis.DefaultIfEmpty()
+
+                                                   join man in _context.ProdAnalisis_Residuo on new { al.Cod_Empresa, al.Cod_Prod, al.Cod_Campo, al.Num_analisis, al.Fecha } equals new { man.Cod_Empresa, man.Cod_Prod, man.Cod_Campo, man.Num_analisis, man.Fecha } into Analisis2
+                                                   from man in Analisis2.DefaultIfEmpty()
+
+                                                   join a in _context.ProdAgenteCat on an.IdAgen equals a.IdAgen into MuestreoAgentes
+                                                   from ageP in MuestreoAgentes.DefaultIfEmpty()
+
+                                                   join cf in _context.ProdCalidadMuestreo on an.Id equals cf.Id_Muestreo into MuestreoCa
+                                                   from mc in MuestreoCa.DefaultIfEmpty()
+
+                                                   join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
+                                                   from ageC in MuestreoAgenC.DefaultIfEmpty()
+
+                                                   join a in _context.ProdAgenteCat on mcam.IdAgenC equals a.IdAgen into MuestreoAgenSC
+                                                   from ageCS in MuestreoAgenSC.DefaultIfEmpty()
+
+                                                   join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
+                                                   from loc in MuestreoLoc.DefaultIfEmpty()
+
+                                                   join t in _context.CatTiposProd on new { mcam.Tipo } equals new { t.Tipo } into Tipos
+                                                   from t in Tipos.DefaultIfEmpty()
+
+                                                   join p in _context.CatProductos on new { mcam.Tipo, mcam.Producto } equals new { p.Tipo, p.Producto } into Productos
+                                                   from p in Productos.DefaultIfEmpty()
+
+                                                   join z in _context.ProdZonasRastreoCat on man.CodZona equals z.Codigo into Zonas
+                                                   from z in Zonas.DefaultIfEmpty()
+
+                                                   where man.Estatus != "L" && an.Temporada == catSemanas.Temporada
+                                                   select new MuestreosClass
+                                                   {
+                                                       IdAnalisis_Residuo = man.Id,
+                                                       IdMuestreo = an.Id,
+                                                       IdAgen = mcam.IdAgen,
+                                                       Asesor = ageP.Abrev,
+                                                       Cod_Prod = m.Cod_Prod,
+                                                       Productor = prod.Nombre,
+                                                       Cod_Campo = m.Cod_Campo,
+                                                       Campo = mcam.Descripcion,
+                                                       Sector = (short)ms.Sector,
+                                                       Ha = mcam.Hectareas,
+                                                       Compras_oportunidad = mcam.Compras_Oportunidad,
+                                                       Tipo = t.Descripcion,
+                                                       Producto = p.Descripcion,
+                                                       Fecha_solicitud = (DateTime)m.Fecha_solicitud,
+                                                       Inicio_cosecha = (DateTime)an.Inicio_cosecha,
+                                                       Ubicacion = loc.Descripcion,
+                                                       Telefono = an.Telefono,
+                                                       Liberacion = an.Liberacion,
+                                                       Fecha_ejecucion = (DateTime)an.Fecha_ejecucion,
+                                                       Analisis = man.Estatus,
+                                                       IdAgenI = mcam.IdAgenI,
+                                                       Estatus = mc.Estatus,
+                                                       IdAgenC = (short)mcam.IdAgenC,
+                                                       AsesorC = ageC.Abrev,
+                                                       AsesorCS = ageCS.Abrev,
+                                                       Tarjeta = an.Tarjeta,
+                                                       IdRegion = ageP.IdRegion,
+                                                       Fecha_analisis = man.Fecha,
+                                                       //Folio = man.Folio,
+                                                       //Zona = z.DescZona,
+                                                       //Fecha_envio = man.Fecha_envio,
+                                                       //Fecha_entrega = man.Fecha_entrega,
+                                                       //LiberacionUSA = man.LiberacionUSA,
+                                                       //LiberacionEU = man.LiberacionEU,
+                                                       //Num_analisis = man.Num_analisis,
+                                                       //Laboratorio = man.Laboratorio,
+                                                       //Traza = man.Traza
+                                                   }).Distinct();
+
+                if (idAgen == 205)
                 {
-                    if (idAgen == 205)
-                    {
-                        item = (from m in (from m in _context.ProdAnalisis_Residuo
-                                           group m by new
-                                           {
-                                               Cod_Empresa = m.Cod_Empresa,
-                                               Cod_Prod = m.Cod_Prod,
-                                               Cod_Campo = m.Cod_Campo,
-                                               IdSector = m.IdSector
-                                           } into x
-                                           select new
-                                           {
-                                               Cod_Empresa = x.Key.Cod_Empresa,
-                                               Cod_Prod = x.Key.Cod_Prod,
-                                               Cod_Campo = x.Key.Cod_Campo,
-                                               IdSector = x.Key.IdSector,
-                                               Fecha = x.Max(m => m.Fecha)
-                                           })
+                    analisis = (from m in _context.ProdMuestreo
 
-                                join an in _context.ProdAnalisis_Residuo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha } into AnalisisR
-                                from an in AnalisisR.DefaultIfEmpty()
+                                join a in _context.ProdAgenteCat on m.IdAgen equals a.IdAgen into MuestreoAgentes
+                                from ageP in MuestreoAgentes.DefaultIfEmpty()
 
-                                join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                                from mcam in MuestreoCam.DefaultIfEmpty()
-
-                                join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
+                                join p in _context.ProdProductoresCat on m.Cod_Prod equals p.Cod_Prod into MuestreoProd
                                 from prod in MuestreoProd.DefaultIfEmpty()
+
+                                join r in _context.ProdAnalisis_Residuo on m.Id equals r.Id_Muestreo into MuestreoAn
+                                from man in MuestreoAn.DefaultIfEmpty()
 
                                 join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
                                 from ms in MuestreoSc.DefaultIfEmpty()
 
-                                join r in _context.ProdMuestreo on an.Id_Muestreo equals r.Id into MuestreoAn
-                                from man in MuestreoAn.DefaultIfEmpty()
-
-                                join a in _context.ProdAgenteCat on mcam.IdAgen equals a.IdAgen into MuestreoAgentes
-                                from ageP in MuestreoAgentes.DefaultIfEmpty()
-
-                                join cf in _context.ProdCalidadMuestreo on man.Id equals cf.Id_Muestreo into MuestreoCa
+                                join cf in _context.ProdCalidadMuestreo on m.Id equals cf.Id_Muestreo into MuestreoCa
                                 from mc in MuestreoCa.DefaultIfEmpty()
+
+                                join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
+                                from mcam in MuestreoCam.DefaultIfEmpty()
 
                                 join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
                                 from ageC in MuestreoAgenC.DefaultIfEmpty()
@@ -93,12 +189,20 @@ namespace Indicadores.Controllers
                                 join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
                                 from loc in MuestreoLoc.DefaultIfEmpty()
 
-                                where an.Estatus != "L"
+                                join t in _context.CatTiposProd on new { mcam.Tipo } equals new { t.Tipo } into Tipos
+                                from t in Tipos.DefaultIfEmpty()
 
-                                group m by new
+                                join p in _context.CatProductos on new { t.Tipo, mcam.Producto } equals new { p.Tipo,p.Producto } into Productos
+                                from p in Productos.DefaultIfEmpty()
+
+                                join z in _context.ProdZonasRastreoCat on man.CodZona equals z.Codigo into Zonas
+                                from z in Zonas.DefaultIfEmpty()
+
+                                where m.Temporada == catSemanas.Temporada && man.Fecha == (from c in _context.ProdAnalisis_Residuo where c.Cod_Prod == man.Cod_Prod select c).Max(c => c.Fecha) && man.Estatus == null
+                                select new MuestreosClass
                                 {
-                                    IdAnalisis_Residuo = an.Id,
-                                    IdMuestreo = man.Id,
+                                    IdMuestreo = m.Id,
+                                    IdAgen = mcam.IdAgen,
                                     Asesor = ageP.Abrev,
                                     Cod_Prod = m.Cod_Prod,
                                     Productor = prod.Nombre,
@@ -107,409 +211,57 @@ namespace Indicadores.Controllers
                                     Sector = (short)ms.Sector,
                                     Ha = mcam.Hectareas,
                                     Compras_oportunidad = mcam.Compras_Oportunidad,
-                                    Fecha_solicitud = (DateTime)man.Fecha_solicitud,
-                                    Inicio_cosecha = (DateTime)man.Inicio_cosecha,
+                                    Tipo=t.Descripcion,
+                                    Producto=p.Descripcion,
+                                    Fecha_solicitud = (DateTime)m.Fecha_solicitud,
+                                    Inicio_cosecha = (DateTime)m.Inicio_cosecha,
                                     Ubicacion = loc.Descripcion,
-                                    Telefono = man.Telefono,
-                                    Liberacion = man.Liberacion,
-                                    Fecha_ejecucion = (DateTime)man.Fecha_ejecucion,
-                                    Analisis = an.Estatus,
-                                    Calidad_fruta = mc.Estatus,
+                                    Telefono = m.Telefono,
+                                    Liberacion = m.Liberacion,
+                                    Fecha_ejecucion = (DateTime)m.Fecha_ejecucion,
+                                    IdAnalisis_Residuo = man.Id,
+                                    Analisis = man.Estatus,
+                                    IdAgenI = mcam.IdAgenI,
+                                    Estatus = mc.Estatus,
                                     IdAgenC = (short)mcam.IdAgenC,
                                     AsesorC = ageC.Abrev,
                                     AsesorCS = ageCS.Abrev,
-                                    Tarjeta = man.Tarjeta,
+                                    Tarjeta = m.Tarjeta,
                                     IdRegion = ageP.IdRegion,
-                                    Fecha_analisis = m.Fecha
-                                } into x
-                                select new MuestreosClass()
-                                {
-                                    IdAnalisis_Residuo = x.Key.IdAnalisis_Residuo,
-                                    IdMuestreo = x.Key.IdMuestreo,
-                                    Asesor = x.Key.Asesor,
-                                    Cod_Prod = x.Key.Cod_Prod,
-                                    Productor = x.Key.Productor,
-                                    Cod_Campo = x.Key.Cod_Campo,
-                                    Campo = x.Key.Campo,
-                                    Sector = (short)x.Key.Sector,
-                                    Ha = x.Key.Ha,
-                                    Compras_oportunidad = x.Key.Compras_oportunidad,
-                                    Fecha_solicitud = (DateTime)x.Key.Fecha_solicitud,
-                                    Inicio_cosecha = (DateTime)x.Key.Inicio_cosecha,
-                                    Ubicacion = x.Key.Ubicacion,
-                                    Telefono = x.Key.Telefono,
-                                    Liberacion = x.Key.Liberacion,
-                                    Fecha_ejecucion = (DateTime)x.Key.Fecha_ejecucion,
-                                    Analisis = x.Key.Analisis,
-                                    Estatus = x.Key.Calidad_fruta,
-                                    IdAgenC = (short)x.Key.IdAgenC,
-                                    AsesorC = x.Key.AsesorC,
-                                    AsesorCS = x.Key.AsesorCS,
-                                    Tarjeta = x.Key.Tarjeta,
-                                    IdRegion = x.Key.IdRegion,
-                                    Fecha_analisis = x.Key.Fecha_analisis
+                                    Fecha_analisis = man.Fecha,
+                                    //Folio= man.Folio,
+                                    //Zona=z.DescZona,
+                                    //Fecha_envio=man.Fecha_envio,
+                                    //Fecha_entrega=man.Fecha_entrega,
+                                    //LiberacionUSA=man.LiberacionUSA,
+                                    //LiberacionEU=man.LiberacionEU,
+                                    //Num_analisis=man.Num_analisis,
+                                    //Laboratorio=man.Laboratorio,
+                                    //Traza=man.Traza
                                 }).Distinct();
-                    }
-                    //else if (idAgen == 153 || idAgen == 281 || idAgen == 167 || idAgen == 182)
-                    //{
-                    //    item = (from m in (from m in _context.ProdMuestreo
-                    //                       group m by new
-                    //                       {
-                    //                           Cod_Empresa = m.Cod_Empresa,
-                    //                           Cod_Prod = m.Cod_Prod,
-                    //                           Cod_Campo = m.Cod_Campo,
-                    //                           IdSector = m.IdSector
-                    //                       } into x
-                    //                       select new
-                    //                       {
-                    //                           Cod_Empresa = x.Key.Cod_Empresa,
-                    //                           Cod_Prod = x.Key.Cod_Prod,
-                    //                           Cod_Campo = x.Key.Cod_Campo,
-                    //                           IdSector = x.Key.IdSector,
-                    //                           Fecha_solicitud = x.Max(m => m.Fecha_solicitud)
-                    //                       })
-
-                    //            join an in _context.ProdMuestreo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha_solicitud } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha_solicitud } into MuestreoR
-                    //            from an in MuestreoR.DefaultIfEmpty()
-
-                    //            join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                    //            from mcam in MuestreoCam.DefaultIfEmpty()
-
-                    //            join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                    //            from prod in MuestreoProd.DefaultIfEmpty()
-
-                    //            join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
-                    //            from ms in MuestreoSc.DefaultIfEmpty()
-
-                    //            join r in _context.ProdAnalisis_Residuo on an.Id equals r.Id_Muestreo into MuestreoAn
-                    //            from man in MuestreoAn.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on an.IdAgen equals a.IdAgen into MuestreoAgentes
-                    //            from ageP in MuestreoAgentes.DefaultIfEmpty()
-
-                    //            join cf in _context.ProdCalidadMuestreo on an.Id equals cf.Id_Muestreo into MuestreoCa
-                    //            from mc in MuestreoCa.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
-                    //            from ageC in MuestreoAgenC.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on mcam.IdAgenC equals a.IdAgen into MuestreoAgenSC
-                    //            from ageCS in MuestreoAgenSC.DefaultIfEmpty()
-
-                    //            join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
-                    //            from loc in MuestreoLoc.DefaultIfEmpty()
-
-                    //            where man.Estatus != "L"
-                    //            select new MuestreosClass
-                    //            {
-                    //                IdAnalisis_Residuo = man.Id,
-                    //                IdMuestreo = an.Id,
-                    //                Asesor = ageP.Abrev,
-                    //                Cod_Prod = m.Cod_Prod,
-                    //                Productor = prod.Nombre,
-                    //                Cod_Campo = m.Cod_Campo,
-                    //                Campo = mcam.Descripcion,
-                    //                Sector = (short)ms.Sector,
-                    //                Ha = mcam.Hectareas,
-                    //                Compras_oportunidad = mcam.Compras_Oportunidad,
-                    //                Fecha_solicitud = (DateTime)m.Fecha_solicitud,
-                    //                Inicio_cosecha = (DateTime)an.Inicio_cosecha,
-                    //                Ubicacion = loc.Descripcion,
-                    //                Telefono = an.Telefono,
-                    //                Liberacion = an.Liberacion,
-                    //                Fecha_ejecucion = (DateTime)an.Fecha_ejecucion,
-                    //                Analisis = man.Estatus,
-                    //                Calidad_fruta = mc.Estatus,
-                    //                IdAgenC = (short)mcam.IdAgenC,
-                    //                AsesorC = ageC.Abrev,
-                    //                AsesorCS = ageCS.Abrev,
-                    //                Tarjeta = an.Tarjeta,
-                    //                IdRegion = ageP.IdRegion,
-                    //                Fecha_analisis = man.Fecha
-                    //            }).Distinct();
-                    //}
-                    //else if (idAgen == 1)
-                    //{
-                    //    item = (from m in (from m in _context.ProdMuestreo
-                    //                       group m by new
-                    //                       {
-                    //                           Cod_Empresa = m.Cod_Empresa,
-                    //                           Cod_Prod = m.Cod_Prod,
-                    //                           Cod_Campo = m.Cod_Campo,
-                    //                           IdSector = m.IdSector
-                    //                       } into x
-                    //                       select new
-                    //                       {
-                    //                           Cod_Empresa = x.Key.Cod_Empresa,
-                    //                           Cod_Prod = x.Key.Cod_Prod,
-                    //                           Cod_Campo = x.Key.Cod_Campo,
-                    //                           IdSector = x.Key.IdSector,
-                    //                           Fecha_solicitud = x.Max(m => m.Fecha_solicitud)
-                    //                       })
-
-                    //            join an in _context.ProdMuestreo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha_solicitud } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha_solicitud } into MuestreoR
-                    //            from an in MuestreoR.DefaultIfEmpty()
-
-                    //            join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                    //            from mcam in MuestreoCam.DefaultIfEmpty()
-
-                    //            join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                    //            from prod in MuestreoProd.DefaultIfEmpty()
-
-                    //            join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
-                    //            from ms in MuestreoSc.DefaultIfEmpty()
-
-                    //            join r in _context.ProdAnalisis_Residuo on an.Id equals r.Id_Muestreo into MuestreoAn
-                    //            from man in MuestreoAn.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on an.IdAgen equals a.IdAgen into MuestreoAgentes
-                    //            from ageP in MuestreoAgentes.DefaultIfEmpty()
-
-                    //            join cf in _context.ProdCalidadMuestreo on an.Id equals cf.Id_Muestreo into MuestreoCa
-                    //            from mc in MuestreoCa.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
-                    //            from ageC in MuestreoAgenC.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on mcam.IdAgenC equals a.IdAgen into MuestreoAgenSC
-                    //            from ageCS in MuestreoAgenSC.DefaultIfEmpty()
-
-                    //            join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
-                    //            from loc in MuestreoLoc.DefaultIfEmpty()
-
-                    //            where man.Estatus != "L" && (ageP.IdRegion == 1 || ageP.IdRegion == 3 || ageP.IdRegion == 4 || ageP.IdRegion == 5)
-                    //            select new MuestreosClass
-                    //            {
-                    //                IdAnalisis_Residuo = man.Id,
-                    //                IdMuestreo = an.Id,
-                    //                Asesor = ageP.Abrev,
-                    //                Cod_Prod = m.Cod_Prod,
-                    //                Productor = prod.Nombre,
-                    //                Cod_Campo = m.Cod_Campo,
-                    //                Campo = mcam.Descripcion,
-                    //                Sector = (short)ms.Sector,
-                    //                Ha = mcam.Hectareas,
-                    //                Compras_oportunidad = mcam.Compras_Oportunidad,
-                    //                Fecha_solicitud = (DateTime)m.Fecha_solicitud,
-                    //                Inicio_cosecha = (DateTime)an.Inicio_cosecha,
-                    //                Ubicacion = loc.Descripcion,
-                    //                Telefono = an.Telefono,
-                    //                Liberacion = an.Liberacion,
-                    //                Fecha_ejecucion = (DateTime)an.Fecha_ejecucion,
-                    //                Analisis = man.Estatus,
-                    //                Calidad_fruta = mc.Estatus,
-                    //                IdAgenC = (short)mcam.IdAgenC,
-                    //                AsesorC = ageC.Abrev,
-                    //                AsesorCS = ageCS.Abrev,
-                    //                Tarjeta = an.Tarjeta,
-                    //                IdRegion = ageP.IdRegion,
-                    //                Fecha_analisis = man.Fecha
-                    //            }).Distinct();
-                    //}
-                    //else if (idAgen == 5)
-                    //{
-                    //    item = (from m in (from m in _context.ProdMuestreo
-                    //                       group m by new
-                    //                       {
-                    //                           Cod_Empresa = m.Cod_Empresa,
-                    //                           Cod_Prod = m.Cod_Prod,
-                    //                           Cod_Campo = m.Cod_Campo,
-                    //                           IdSector = m.IdSector
-                    //                       } into x
-                    //                       select new
-                    //                       {
-                    //                           Cod_Empresa = x.Key.Cod_Empresa,
-                    //                           Cod_Prod = x.Key.Cod_Prod,
-                    //                           Cod_Campo = x.Key.Cod_Campo,
-                    //                           IdSector = x.Key.IdSector,
-                    //                           Fecha_solicitud = x.Max(m => m.Fecha_solicitud)
-                    //                       })
-
-                    //            join an in _context.ProdMuestreo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha_solicitud } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha_solicitud } into MuestreoR
-                    //            from an in MuestreoR.DefaultIfEmpty()
-
-                    //            join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                    //            from mcam in MuestreoCam.DefaultIfEmpty()
-
-                    //            join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                    //            from prod in MuestreoProd.DefaultIfEmpty()
-
-                    //            join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
-                    //            from ms in MuestreoSc.DefaultIfEmpty()
-
-                    //            join r in _context.ProdAnalisis_Residuo on an.Id equals r.Id_Muestreo into MuestreoAn
-                    //            from man in MuestreoAn.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on an.IdAgen equals a.IdAgen into MuestreoAgentes
-                    //            from ageP in MuestreoAgentes.DefaultIfEmpty()
-
-                    //            join cf in _context.ProdCalidadMuestreo on an.Id equals cf.Id_Muestreo into MuestreoCa
-                    //            from mc in MuestreoCa.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
-                    //            from ageC in MuestreoAgenC.DefaultIfEmpty()
-
-                    //            join a in _context.ProdAgenteCat on mcam.IdAgenC equals a.IdAgen into MuestreoAgenSC
-                    //            from ageCS in MuestreoAgenSC.DefaultIfEmpty()
-
-                    //            join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
-                    //            from loc in MuestreoLoc.DefaultIfEmpty()
-
-                    //            where man.Estatus != "L" && ageP.IdRegion == 2
-                    //            select new MuestreosClass
-                    //            {
-                    //                IdAnalisis_Residuo = man.Id,
-                    //                IdMuestreo = an.Id,
-                    //                Asesor = ageP.Abrev,
-                    //                Cod_Prod = m.Cod_Prod,
-                    //                Productor = prod.Nombre,
-                    //                Cod_Campo = m.Cod_Campo,
-                    //                Campo = mcam.Descripcion,
-                    //                Sector = (short)ms.Sector,
-                    //                Ha = mcam.Hectareas,
-                    //                Compras_oportunidad = mcam.Compras_Oportunidad,
-                    //                Fecha_solicitud = (DateTime)m.Fecha_solicitud,
-                    //                Inicio_cosecha = (DateTime)an.Inicio_cosecha,
-                    //                Ubicacion = loc.Descripcion,
-                    //                Telefono = an.Telefono,
-                    //                Liberacion = an.Liberacion,
-                    //                Fecha_ejecucion = (DateTime)an.Fecha_ejecucion,
-                    //                Analisis = man.Estatus,
-                    //                Calidad_fruta = mc.Estatus,
-                    //                IdAgenC = (short)mcam.IdAgenC,
-                    //                AsesorC = ageC.Abrev,
-                    //                AsesorCS = ageCS.Abrev,
-                    //                Tarjeta = an.Tarjeta,
-                    //                IdRegion = ageP.IdRegion,
-                    //                Fecha_analisis = man.Fecha
-                    //            }).Distinct();
-                    //}
-                    else
-                    {
-                        item = (from m in (from m in _context.ProdMuestreo
-                                       group m by new
-                                       {
-                                           Cod_Empresa = m.Cod_Empresa,
-                                           Cod_Prod = m.Cod_Prod,
-                                           Cod_Campo = m.Cod_Campo,
-                                           IdSector = m.IdSector
-                                       } into x
-                                       select new
-                                       {
-                                           Cod_Empresa = x.Key.Cod_Empresa,
-                                           Cod_Prod = x.Key.Cod_Prod,
-                                           Cod_Campo = x.Key.Cod_Campo,
-                                           IdSector = x.Key.IdSector,
-                                           Fecha_solicitud = x.Max(m => m.Fecha_solicitud)
-                                       })
-
-                            join an in _context.ProdMuestreo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha_solicitud } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha_solicitud } into MuestreoR
-                            from an in MuestreoR.DefaultIfEmpty()
-
-                            join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                            from mcam in MuestreoCam.DefaultIfEmpty()
-
-                            join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                            from prod in MuestreoProd.DefaultIfEmpty()
-
-                            join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
-                            from ms in MuestreoSc.DefaultIfEmpty()
-
-                            join r in _context.ProdAnalisis_Residuo on an.Id equals r.Id_Muestreo into MuestreoAn
-                            from man in MuestreoAn.DefaultIfEmpty()
-
-                            join a in _context.ProdAgenteCat on an.IdAgen equals a.IdAgen into MuestreoAgentes
-                            from ageP in MuestreoAgentes.DefaultIfEmpty()
-
-                            join cf in _context.ProdCalidadMuestreo on an.Id equals cf.Id_Muestreo into MuestreoCa
-                            from mc in MuestreoCa.DefaultIfEmpty()
-
-                            join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
-                            from ageC in MuestreoAgenC.DefaultIfEmpty()
-
-                            join a in _context.ProdAgenteCat on mcam.IdAgenC equals a.IdAgen into MuestreoAgenSC
-                            from ageCS in MuestreoAgenSC.DefaultIfEmpty()
-
-                            join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
-                            from loc in MuestreoLoc.DefaultIfEmpty()
-
-                            where man.Estatus != "L" && (mcam.IdAgen == idAgen || mcam.IdAgenC == idAgen || mcam.IdAgenI == idAgen) //&& (cf.Estatus != "1" || cf.Estatus != "2") && m.Tarjeta != "S"                           
-
-                            select new MuestreosClass
-                            {
-                                IdMuestreo = an.Id,
-                                IdAgen=an.IdAgen,
-                                Cod_Prod = m.Cod_Prod,
-                                Productor = prod.Nombre,
-                                Cod_Campo = m.Cod_Campo,
-                                Campo = mcam.Descripcion,
-                                Sector=ms.Sector,
-                                Compras_oportunidad = mcam.Compras_Oportunidad,
-                                Fecha_solicitud = (DateTime)m.Fecha_solicitud,
-                                Inicio_cosecha = (DateTime)an.Inicio_cosecha,
-                                Ubicacion = loc.Descripcion,
-                                Telefono = an.Telefono,
-                                Liberacion = an.Liberacion,                               
-                                IdAgenI = an.IdAgenI,
-                                Fecha_ejecucion = an.Fecha_ejecucion,
-                                IdAgenC = mc.IdAgen,
-                                Estatus = mc.Estatus,
-                                Incidencia=mc.Incidencia,
-                                Propuesta=mc.Propuesta
-                            }).Distinct();
-                    }        
+                    var res = Tuple.Create(item.OrderByDescending(x => x.Fecha_solicitud).ToList(), analisis.OrderByDescending(x => x.Fecha_solicitud).ToList());
+                    return Ok(res);
                 }
                 else
                 {
-                    item = (from m in (from m in _context.ProdMuestreo
-                                       group m by new
-                                       {
-                                           Cod_Empresa = m.Cod_Empresa,
-                                           Cod_Prod = m.Cod_Prod,
-                                           Cod_Campo = m.Cod_Campo,
-                                           IdSector = m.IdSector
-                                       } into x
-                                       select new
-                                       {
-                                           Cod_Empresa = x.Key.Cod_Empresa,
-                                           Cod_Prod = x.Key.Cod_Prod,
-                                           Cod_Campo = x.Key.Cod_Campo,
-                                           IdSector = x.Key.IdSector,
-                                           Fecha_solicitud = x.Max(m => m.Fecha_solicitud)
-                                       })
-
-                            join an in _context.ProdMuestreo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha_solicitud } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha_solicitud } into MuestreoR
-                            from an in MuestreoR.DefaultIfEmpty()
-
-                            join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                            from mcam in MuestreoCam.DefaultIfEmpty()
-
-                            join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                            from prod in MuestreoProd.DefaultIfEmpty()
-
-                            join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
-                            from loc in MuestreoLoc.DefaultIfEmpty()
-
-                            where an.Id == id
-                            select new MuestreosClass
-                            {
-                                IdMuestreo = an.Id,
-                                Cod_Prod = m.Cod_Prod,
-                                Productor = prod.Nombre,
-                                Cod_Campo = m.Cod_Campo,
-                                Campo = mcam.Descripcion,
-                                Compras_oportunidad = mcam.Compras_Oportunidad,
-                                Fecha_solicitud = (DateTime)m.Fecha_solicitud,
-                                Inicio_cosecha = (DateTime)an.Inicio_cosecha,
-                                Ubicacion = loc.Descripcion,
-                                Telefono = an.Telefono,
-                                Liberacion = an.Liberacion,
-                                IdAgen = an.IdAgen,
-                                IdAgenI = an.IdAgenI,
-                                Fecha_ejecucion = an.Fecha_ejecucion
-                            }).Distinct();
+                    if (idAgen == 153 || idAgen == 281 || idAgen == 167 || idAgen == 182)
+                    {
+                        item = item.Distinct();
+                    }
+                    else if (idAgen == 1)
+                    {
+                        item = item.Where(x => x.IdRegion == 1 || x.IdRegion == 3 || x.IdRegion == 4 || x.IdRegion == 5).Distinct();
+                    }
+                    else if (idAgen == 5)
+                    {
+                        item = item.Where(x => x.IdRegion == 2).Distinct();
+                    }
+                    else
+                    {
+                        item = item.Where(x => x.IdAgen == idAgen || x.IdAgenC == idAgen || x.IdAgenI == idAgen).Distinct();
+                    }
+                    return Ok(item.OrderByDescending(x => x.Fecha_solicitud).ToList());
                 }
-                return Ok(item.OrderByDescending(x => x.Fecha_solicitud).ToList());
             }
             catch (Exception e)
             {
@@ -522,10 +274,10 @@ namespace Indicadores.Controllers
         public ActionResult Post([FromBody] ProdMuestreo model)
         {
             try
-            {                
+            {
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
 
-                var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada== catSemanas.Temporada);
+                var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada == catSemanas.Temporada);
                 if (modeloExistente == null)
                 {
                     var usuario = _context.SIPGUsuarios.Where(x => x.IdAgen == model.IdAgen).First();
@@ -557,14 +309,12 @@ namespace Indicadores.Controllers
         }
 
         // PUT api/<MuestreoController>/5
-        //fecha_ejecucion ---------- Reasignar codigo
-        [HttpPut("{id}/{idAgen}/{sector}/{tipo}")]
-        public ActionResult Put(int id, short idAgen, short sector, string tipo, [FromBody] ProdMuestreo model)
+        //fecha_ejecucion  
+        [HttpPut("{id}/{idAgen}/{sector}")]
+        public ActionResult Put(int id, short idAgen, short sector,[FromBody] ProdMuestreo model)
         {
             try
             {
-                if (tipo == "")
-                {
                     ProdMuestreoSector prodMuestreoSector = new ProdMuestreoSector();
                     int IdMuestreoSector = 0;
 
@@ -593,37 +343,16 @@ namespace Indicadores.Controllers
                             item.IdAgenI = idAgen;
                             item.Fecha_ejecucion = model.Fecha_ejecucion;
                             title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
-                            body = "Fecha de muestreo agregada: " +  model.Fecha_ejecucion;
+                            body = "Fecha de muestreo agregada: " + model.Fecha_ejecucion;
                         }
                         else
                         {
                             return BadRequest();
                         }
-                    }
-                }
+                    }               
 
-                else
-                {
-                    var model_campo = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == model.Cod_Prod && x.Cod_Campo == model.Cod_Campo);
-                    if (tipo == "P")
-                    {
-                        model_campo.IdAgen = idAgen;
-                    }
-                    else if (tipo == "C")
-                    {
-                        model_campo.IdAgenC = idAgen;
-                    }
-                    else if (tipo == "I")
-                    {
-                        model_campo.IdAgenI = idAgen;
-                    }
-                    //_context.SaveChanges();
-
-                    title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
-                    body = "Se le ha asignado un nuevo código";
-                }
-                notificaciones.SendNotificationJSON(title, body);
                 _context.SaveChanges();
+                notificaciones.SendNotificationJSON(title, body);
                 return CreatedAtRoute("GetMuestreo", new { id = 0, idAgen = idAgen }, model);
             }
             catch (Exception e)
@@ -632,9 +361,9 @@ namespace Indicadores.Controllers
             }
         }
 
-        //Liberar solicitud - Calidad
-        [HttpPut("{id}/{idAgen}")]
-        public ActionResult Put(int id, short idAgen, [FromBody] ProdCalidadMuestreo model)
+        //Liberar solicitud 
+        [HttpPatch("{id}/{idAgen}")]
+        public ActionResult Patch(int id, short idAgen)
         {
             try
             {
@@ -642,56 +371,9 @@ namespace Indicadores.Controllers
 
                 if (muestreo.Id == id)
                 {
-                    if (model.Estatus != null)
-                    {
-                        var item_calidad = _context.ProdCalidadMuestreo.Where(x => x.Id_Muestreo == id).FirstOrDefault();
-                        if (item_calidad == null)
-                        {
-                            ProdCalidadMuestreo prodCalidadMuestreo = new ProdCalidadMuestreo();
-                            prodCalidadMuestreo.Estatus = model.Estatus;
-                            prodCalidadMuestreo.Fecha = DateTime.Now;
-                            prodCalidadMuestreo.Incidencia = model.Incidencia;
-                            prodCalidadMuestreo.Propuesta = model.Propuesta;
-                            prodCalidadMuestreo.IdAgen = idAgen;
-                            prodCalidadMuestreo.Id_Muestreo = id;
-                            _context.ProdCalidadMuestreo.Add(prodCalidadMuestreo);
-                        }
-                        else
-                        {
-                            item_calidad.Estatus = model.Estatus;
-                            item_calidad.Fecha = DateTime.Now;
-                            item_calidad.Incidencia = model.Incidencia;
-                            item_calidad.Propuesta = model.Propuesta;
-                            item_calidad.IdAgen = idAgen;
-                        }
-
-                        _context.SaveChanges();
-
-                        if (model.Estatus == "1")
-                        {
-                            muestreo.Tarjeta = "S";
-                        }
-                        else if (model.Estatus == "2")
-                        {
-                            muestreo.Tarjeta = "N";
-                        }
-                        else if (model.Estatus == "3")
-                        {
-                            muestreo.Tarjeta = "N";
-                        }
-
-                        _context.SaveChanges();
-
-                        title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
-                        body = "Calidad evaluada: estatus " + model;
-                    }
-                    else
-                    {
-                        muestreo.Liberacion = "S";
-
-                        title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
-                        body = "Solicitud de muestreo liberada por producción " + model;
-                    }
+                    muestreo.Liberacion = "S";
+                    title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
+                    body = "Solicitud de muestreo liberada por producción ";
 
                     notificaciones.SendNotificationJSON(title, body);
                     _context.SaveChanges();

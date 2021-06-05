@@ -1,3 +1,4 @@
+using ApiIndicadores.Context;
 using Indicadores.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,18 +30,23 @@ namespace Indicadores
         {
             services.AddCors();
             services.AddControllers();
-            services.AddDbContext<AppDbContext>(options=>options.UseSqlServer(Configuration.GetConnectionString("conexion")));
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("conexion")));
+            services.AddDbContext<AppDBContextRH>(options => options.UseSqlServer(Configuration.GetConnectionString("conexionRH")));
             services.AddControllers().AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Cors
             app.UseCors(options =>
             {
-                options.WithOrigins("http://localhost:3000");
-                options.AllowAnyMethod();
                 options.AllowAnyHeader();
+                options.AllowAnyMethod();
+                options.AllowCredentials();
+                options.AllowAnyOrigin();  
+                options.WithOrigins("https://www.giddingsfruit.mx/indicadores");  
+                options.WithOrigins("http://localhost:3000"); 
             });
 
             if (env.IsDevelopment())

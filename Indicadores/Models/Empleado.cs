@@ -28,7 +28,7 @@ namespace ApiIndicadores.Models
         public string ciudad_nacimiento { get; set; }
         public string estado_nacimiento { get; set; }
         public string email { get; set; }
-        public string email_cooporativo { get; set; }
+        public string email_coorporativo { get; set; }
         public string lic_manejo { get; set; }
         public string num_tarjeta { get; set; }
         public string num_nomina_paq { get; set; }

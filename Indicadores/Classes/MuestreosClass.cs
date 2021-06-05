@@ -38,7 +38,19 @@ namespace Indicadores.Classes
         public string Propuesta { get; set; }
         public string Compras_oportunidad { get; set; }
         public DateTime? Fecha_analisis { get; set; }
+
+        public string Zona { get; set; }
+        public string Tipo { get; set; }
+        public string Producto { get; set; }
+        public string Folio { get; set; }
+        public DateTime? Fecha_envio { get; set; }
+        public DateTime? Fecha_entrega{ get; set; }
+        public DateTime? LiberacionUSA { get; set; }
+        public DateTime? LiberacionEU { get; set; }
         public string Analisis { get; set; }
+        public int? Num_analisis { get; set; }
+        public string Laboratorio { get; set; }
+        public string Traza { get; set; }
 
     }
 }

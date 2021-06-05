@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Indicadores.Controllers
 {
     [Route("api/[controller]")]
@@ -109,90 +107,6 @@ namespace Indicadores.Controllers
                     "Inner Join RH_EntityModel..Centro_Acopio ca on ca.id_centro_acopio = su.id_centro_acopio " +
                     "Inner Join RH_EntityModel..Zonas zo on zo.id_zona = ca.id_zona " +
                     "Where em.[status] = 1 and E.Id = "+id+" and L.IdRelacion is not null").ToList();
-                //var respuestas = (from e in _context.EncuestasCat
-                //                  join u in _context.EncuestasUsuarios on e.Id equals u.IdEncuesta
-                //                  join s in _context.SIPGUsuarios on u.IdUsuario equals s.Id
-                //                  join p in _context.EncuestasDet on e.Id equals p.IdEncuesta
-                //                  join r in _context.EncuestasRelacion on p.Id equals r.IdPregunta
-                //                  join rs in _context.EncuestasRes on r.IdRespuesta equals rs.Id
-                //                  join l in _context.EncuestasLog on u.Id equals l.IdAsingUsuario
-
-                //                  join em in _context.Empleado on s.id_empleado equals em.id_empleado
-                //                  join pu in _context.Puesto on em.id_puesto equals pu.id_puesto
-                //                  join de in _context.Departamentos on pu.id_departamento equals de.id_departamentos
-                //                  join su in _context.Subacopio on em.id_subacopio equals su.id_subacopio
-                //                  join ca in _context.Centro_Acopio on su.id_centro_acopio equals ca.id_centro_acopio
-                //                  join zo in _context.Zonas on ca.id_zona equals zo.id_zona
-
-                //                  group e by new
-                //                  {
-                //                      IdEncuesta = e.Id,
-                //                      Encuesta = e.Nombre,
-                //                      Zona = zo.nombre_zona,
-                //                      Departamento = de.nombre_departamentos,
-                //                      IdUsuario = u.IdUsuario,
-                //                      Usuario = s.Completo,
-                //                      IdPregunta = r.IdPregunta,
-                //                      Pregunta = p.Pregunta,
-                //                      IdRespuesta = r.IdRespuesta,
-                //                      Respuesta = rs.Respuesta,
-                //                      IdRelacion = l.IdRelacion
-                //                  } into x
-                //                  select new
-                //                  {
-                //                      IdEncuesta = x.Key.IdEncuesta,
-                //                      Encuesta = x.Key.Encuesta,
-                //                      Zona = x.Key.Zona,
-                //                      Departamento = x.Key.Departamento,
-                //                      IdUsuario = x.Key.IdUsuario,
-                //                      Usuario = x.Key.Usuario,
-                //                      IdPregunta = x.Key.IdPregunta,
-                //                      Pregunta = x.Key.Pregunta,
-                //                      IdRespuesta = x.Key.IdRespuesta,
-                //                      Respuesta = x.Key.Respuesta,
-                //                      IdRelacion = x.Key.IdRelacion
-                //                  }).Where(e => e.IdEncuesta == id && e.IdRelacion != 0).OrderBy(x => x.IdPregunta).Distinct();
-
-
-                ////lista de respuestas 
-                //var item = (from log in _context.EncuestasLog
-                //            join u in _context.EncuestasUsuarios on log.IdAsingUsuario equals u.Id
-                //            join su in _context.SIPGUsuarios on u.IdUsuario equals su.Id
-                //            //join z in _context.SIPGUsuarios on u.IdUsuario equals su.Id
-                //            join e in _context.EncuestasCat on u.IdEncuesta equals e.Id
-                //            join r in _context.EncuestasRelacion on log.IdRelacion equals r.Id
-                //            join p in _context.EncuestasDet on r.IdPregunta equals p.Id
-                //            join rs in _context.EncuestasRes on r.IdRespuesta equals rs.Id
-
-                //            group e by new
-                //            {
-                //                IdEncuesta = e.Id,
-                //                Encuesta = e.Nombre,
-                //                IdRegion = su.IdRegion,
-                //                Tipo = su.Tipo,
-                //                IdUsuario = u.IdUsuario,
-                //                Usuario = su.Completo,
-                //                IdPregunta = r.IdPregunta,
-                //                Pregunta = p.Pregunta,
-                //                IdRespuesta = r.IdRespuesta,
-                //                Respuesta = rs.Respuesta,
-                //                IdRelacion = log.IdRelacion
-                //            } into x
-                //            select new
-                //            {
-                //                IdEncuesta = x.Key.IdEncuesta,
-                //                Encuesta = x.Key.Encuesta,
-                //                IdRegion = x.Key.IdRegion,
-                //                Tipo = x.Key.Tipo,
-                //                IdUsuario = x.Key.IdUsuario,
-                //                Usuario = x.Key.Usuario,
-                //                IdPregunta = x.Key.IdPregunta,
-                //                Pregunta = x.Key.Pregunta,
-                //                IdRespuesta = x.Key.IdRespuesta,
-                //                Respuesta = x.Key.Respuesta,
-                //                IdRelacion = x.Key.IdRelacion
-                //            }).Where(e => e.IdEncuesta == id && e.IdRelacion != 0).OrderBy(x => x.IdPregunta).Distinct();
-
 
                 if (respuestas == null)
                 {

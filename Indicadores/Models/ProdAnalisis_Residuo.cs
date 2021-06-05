@@ -30,5 +30,6 @@ namespace Indicadores.Models
         public short? Cod_Empresa { get; set; }
         public string Folio { get; set; }
         public string Temporada { get; set; }
+        public string Traza { get; set; }
     }
 }

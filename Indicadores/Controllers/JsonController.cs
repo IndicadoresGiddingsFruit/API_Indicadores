@@ -25,7 +25,7 @@ namespace Indicadores.Models
         {
             try
             {
-                return await _context.ProdZonasRastreoCat.ToListAsync();
+                return await _context.ProdZonasRastreoCat.OrderBy(x=>x.DescZona).ToListAsync();
             }
             catch (Exception e)
             {
@@ -103,7 +103,7 @@ namespace Indicadores.Models
                                 IdAgen = a.IdAgen,
                                 Asesor=a.Nombre,
                                 Tipo=a.Depto
-                            }).Distinct().ToList();
+                            }).OrderBy(x=>x.Asesor).Distinct().ToList();
                 }                
                 return Ok(item);
             }

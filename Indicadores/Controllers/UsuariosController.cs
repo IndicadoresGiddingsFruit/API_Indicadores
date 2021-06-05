@@ -1,4 +1,5 @@
-﻿using Indicadores.Context;
+﻿using ApiIndicadores.Context;
+using Indicadores.Context;
 using Indicadores.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,17 @@ namespace Indicadores.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly AppDBContextRH _contextRH;
 
-        public UsuariosController(AppDbContext context) {
+        public UsuariosController(AppDbContext context, AppDBContextRH contextRH) {
             _context = context;
+            _contextRH = contextRH;
         }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SIPGUsuarios>>> GetUsuarios() 
         {
-            return await _context.SIPGUsuarios.Where(x=>x.Completo!="").OrderBy(u=>u.Completo).ToListAsync();    
+            return await _context.SIPGUsuarios.OrderBy(u=>u.Completo).ToListAsync();    
         }
 
         [HttpGet("{id}")]
@@ -65,18 +69,28 @@ namespace Indicadores.Controllers
                 var catUsuarios = _context.CatUsuariosA.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
                 if (catUsuarios != null)
                 {
-                    var sipgUsuarios = _context.SIPGUsuarios.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
-                    if (sipgUsuarios == null)
-                    {
-                        usuarios.Completo = catUsuarios.Completo;
-                        _context.SIPGUsuarios.Add(usuarios);
-                        await _context.SaveChangesAsync();
-                        return Ok();
-                    }
-                    else
-                    {
-                        return BadRequest("El usuario ya existe");
-                    }
+                    //var empleado = _contextRH.Empleado.ToList();//.Where(e => (e.nombre + " " + e.apellido_materno + " " + e.apellido_paterno).Contains(catUsuarios.Completo)).FirstOrDefault();
+                    
+                    //if (empleado != null)
+                    //{
+                        var sipgUsuarios = _context.SIPGUsuarios.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
+                        if (sipgUsuarios == null)
+                        {
+                            //usuarios.id_empleado = empleado.id_empleado;
+                            usuarios.Completo = catUsuarios.Completo;
+                            _context.SIPGUsuarios.Add(usuarios);
+                            await _context.SaveChangesAsync();
+                            return Ok();
+                        }
+                        else
+                        {
+                            return BadRequest("El usuario ya existe");
+                        }
+                    //}
+                    //else
+                    //{
+                    //    return BadRequest("Usuario incorrecto");
+                    //}
                 }
                 else
                 {
