@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Indicadores.Classes
+namespace ApiIndicadores.Classes
 {
     public class VisitasGraph
     {

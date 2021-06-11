@@ -1,5 +1,5 @@
 using ApiIndicadores.Context;
-using Indicadores.Context;
+using ApiIndicadores.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Indicadores
+namespace ApiIndicadores
 {
     public class Startup
     {
@@ -45,7 +45,7 @@ namespace Indicadores
                 options.AllowAnyMethod();
                 options.AllowCredentials();
                 options.AllowAnyOrigin();  
-                options.WithOrigins("https://www.giddingsfruit.mx/indicadores");  
+                options.WithOrigins("https://www.giddingsfruit.mx/ApiIndicadores");  
                 options.WithOrigins("http://localhost:3000"); 
             });
 

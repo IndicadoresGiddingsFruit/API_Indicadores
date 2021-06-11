@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Indicadores.Classes
+namespace ApiIndicadores.Classes
 {
     public class Notificaciones
     {

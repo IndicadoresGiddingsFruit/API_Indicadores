@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Indicadores.Classes
+namespace ApiIndicadores.Classes
 {
     public class VisitasTable
     {
@@ -14,8 +14,9 @@ namespace Indicadores.Classes
         public int? TotalCampos { get; set; }
         public Double? TotalCamposVisit { get; set; }
         public string Eficiencia { get; set; }
-        public string Efectividad { get; set; }
+        public string Efectividad { get; set; }       
         public Double? Promedio { get; set; }
+        
         public string _1 { get; set; }
         public string _2 { get; set; }
         public string _3 { get; set; }

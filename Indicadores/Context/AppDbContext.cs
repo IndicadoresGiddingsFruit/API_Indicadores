@@ -1,5 +1,5 @@
-﻿using Indicadores.Models;
-using Indicadores.Classes;
+﻿using ApiIndicadores.Models;
+using ApiIndicadores.Classes;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using ApiIndicadores.Models;
 using ApiIndicadores.Classes;
 
-namespace Indicadores.Context
+namespace ApiIndicadores.Context
 {
     public class AppDbContext: DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        { 
+        {
+            Database.SetCommandTimeout(180);
         }
         public DbSet<SIPGUsuarios> SIPGUsuarios { get; set; }
         public DbSet<CatUsuariosA> CatUsuariosA { get; set; }
@@ -36,6 +37,7 @@ namespace Indicadores.Context
         public DbSet<ProdVisitasCab> ProdVisitasCab { get; set; }
         public DbSet<VisitasGraph> VisitasGraph { get; set; }
         public DbSet<VisitasTable> VisitasTable { get; set; }
+        public DbSet<VisitasReport> VisitasReport { get; set; }
 
         public DbSet<Seguimiento_financ> Seguimiento_financ { get; set; }
         public DbSet<SeguimientoClass> SeguimientoClass { get; set; }

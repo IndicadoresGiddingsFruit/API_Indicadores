@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Indicadores.Models
+namespace ApiIndicadores.Models
 {
     [Table("ProdCamposCat")]
     public class ProdCamposCat

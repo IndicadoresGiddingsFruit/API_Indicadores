@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Indicadores": {
+    "ApiIndicadores": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "weatherforecast",

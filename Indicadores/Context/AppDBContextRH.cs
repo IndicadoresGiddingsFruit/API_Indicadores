@@ -1,6 +1,6 @@
 ﻿using ApiIndicadores.Classes;
 using ApiIndicadores.Models;
-using Indicadores.Models;
+using ApiIndicadores.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

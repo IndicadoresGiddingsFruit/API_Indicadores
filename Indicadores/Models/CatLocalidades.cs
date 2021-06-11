@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Indicadores.Models
+namespace ApiIndicadores.Models
 {
     [Table("CatLocalidades")]
     public class CatLocalidades

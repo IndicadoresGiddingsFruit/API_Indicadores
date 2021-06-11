@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Indicadores.Models
+namespace ApiIndicadores.Models
 {
     [Table("CatTiposProd")]
     public class CatTiposProd
