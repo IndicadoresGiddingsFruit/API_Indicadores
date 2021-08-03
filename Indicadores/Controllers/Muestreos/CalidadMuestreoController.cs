@@ -112,7 +112,7 @@ namespace ApiIndicadores.Controllers
                     enviar(idAgen, muestreo.Cod_Prod, muestreo.Cod_Campo, "Calidad fruta");
 
                     _context.SaveChanges();
-                    return Ok();
+                    return Ok(model);
                 }
                 else
                 {
