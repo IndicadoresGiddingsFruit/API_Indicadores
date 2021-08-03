@@ -8,9 +8,15 @@ namespace ApiIndicadores.Models
     public class ProdCamposCat
     {
         [Key]
+        [Column(Order = 1)]
+        public short Cod_Empresa { get; set; }
+        [Key]
+        [Column(Order = 2)]
         public string Cod_Prod { get; set; }
-        public short? Cod_Empresa { get; set; }              
-        public short? Cod_Campo { get; set; }
+        [Key]
+        [Column(Order = 3)]
+        public short Cod_Campo { get; set; }
+
         public string Descripcion { get; set; }
         public short Tipo { get; set; }
         public short Producto { get; set; }

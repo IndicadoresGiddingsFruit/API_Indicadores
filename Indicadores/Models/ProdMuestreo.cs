@@ -12,9 +12,9 @@ namespace ApiIndicadores.Models
     {
         [Key]
         public int Id { get; set; }
-        public short? Cod_Empresa { get; set; }
+        public short Cod_Empresa { get; set; }
         public string Cod_Prod { get; set; }
-        public short? Cod_Campo { get; set; }
+        public short Cod_Campo { get; set; }
         public Nullable<System.DateTime> Fecha_solicitud { get; set; }
         public string Telefono { get; set; }
         public Nullable<System.DateTime> Inicio_cosecha { get; set; }

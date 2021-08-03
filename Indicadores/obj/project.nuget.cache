@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xVoyMF1mL8CPWFDqs0lKPny1C32xa8CDVP3e//V+rjygslgU6TR+ziVQ2Ir8v+y1OBRgdHAH7ha8IPmCsZm9BQ==",
+  "dgSpecHash": "89sP/SaS06RjKTNP6qigzKlT+YJRgQ+hzgWvgfwu/UGiTNaYMB6cfyvjEOHKeIC9WQl/+4yr+p6BjhGb/7OUhQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\marholym\\Desktop\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
+  "projectFilePath": "E:\\Programas\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\marholym\\.nuget\\packages\\bouncycastle\\1.8.6.1\\bouncycastle.1.8.6.1.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\csvhelper\\26.0.1\\csvhelper.26.0.1.nupkg.sha512",

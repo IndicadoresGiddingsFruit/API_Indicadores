@@ -14,9 +14,9 @@ namespace ApiIndicadores.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
-        public DateTime? Fecha { get; set; }
+        public DateTime Fecha { get; set; }
         public DateTime? Fecha_modificacion { get; set; }
         public string Estatus { get; set; }
-        public int IdTipo { get; set; }
+        public int? IdTipo { get; set; }
     }
 }

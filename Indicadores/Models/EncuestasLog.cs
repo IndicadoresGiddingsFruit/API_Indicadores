@@ -11,8 +11,8 @@ namespace ApiIndicadores.Models
     public class EncuestasLog
     {
         [Key]
-        public int Id { get; set; }
-        public int IdAsingUsuario { get; set; }
-        public int IdRelacion { get; set; }       
+        public int? Id { get; set; }
+        public int? IdAsingUsuario { get; set; }
+        public int? IdRelacion { get; set; }       
     }
 }

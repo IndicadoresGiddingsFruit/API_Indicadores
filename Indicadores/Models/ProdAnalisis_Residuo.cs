@@ -13,7 +13,7 @@ namespace ApiIndicadores.Models
         [Key]
         public int Id { get; set; }
         public string Cod_Prod { get; set; }
-        public short? Cod_Campo { get; set; }
+        public short Cod_Campo { get; set; }
         public string CodZona { get; set; }
         public Nullable<System.DateTime> Fecha_envio { get; set; }
         public Nullable<System.DateTime> Fecha_entrega { get; set; }

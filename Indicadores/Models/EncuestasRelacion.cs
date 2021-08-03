@@ -11,8 +11,8 @@ namespace ApiIndicadores.Models
     public class EncuestasRelacion
     {
         [Key]
-        public int Id { get; set; }
-        public int IdPregunta { get; set; }
-        public int IdRespuesta { get; set; }
+        public int? Id { get; set; }
+        public int? IdPregunta { get; set; }
+        public int? IdRespuesta { get; set; }
     }
 }

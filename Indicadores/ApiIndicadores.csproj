@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>ApiIndicadores</AssemblyName>
     <RootNamespace>ApiIndicadores</RootNamespace>
+    <UserSecretsId>ce5c1b15-7df3-42cd-8d8a-3798f6647cc5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

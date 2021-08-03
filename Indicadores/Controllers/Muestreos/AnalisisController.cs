@@ -5,6 +5,7 @@ using System;
 using ApiIndicadores.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,6 +15,7 @@ namespace ApiIndicadores.Controllers
     [ApiController]
     public class AnalisisController : ControllerBase
     {
+        Correo correo = new Correo();
         private readonly AppDbContext _context;
         public AnalisisController(AppDbContext context)
         {
@@ -22,6 +24,7 @@ namespace ApiIndicadores.Controllers
 
         Notificaciones notificaciones = new Notificaciones();
         string title = "", body = "";
+        int num_analisis;
 
         // GET: api/<AnalisisController>
         [HttpGet]
@@ -38,110 +41,33 @@ namespace ApiIndicadores.Controllers
         }
 
         // GET api/<AnalisisController>/5
-        [HttpGet("{id}/{idAgen}")]
-        public ActionResult Get(int id, short idAgen)
+        [HttpGet("{idAgen}/{tipo}/{cod_Prod}/{cod_Campo}")]
+        public ActionResult Get(short idAgen, string tipo, string cod_Prod = "", short cod_Campo = 0)
         {
             try
             {
-                IQueryable<AnalisisClass> item = null;
-                if (idAgen==1 || idAgen == 205 || idAgen == 153 || idAgen == 281 || idAgen == 167 || idAgen == 182)
+                var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
+                var analisis = (dynamic)null;
+
+                if (cod_Prod != "" && cod_Campo != 0)
                 {
-                    item = from r in _context.ProdAnalisis_Residuo
-                           join c in _context.ProdCamposCat on new { r.Cod_Empresa, r.Cod_Prod, r.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                           from mcam in MuestreoCam.DefaultIfEmpty()
-                           join s in _context.ProdMuestreoSector on r.IdSector equals s.id into MuestreoSc
-                           from ms in MuestreoSc.DefaultIfEmpty()
-                           join p in _context.ProdProductoresCat on r.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                           from prod in MuestreoProd.DefaultIfEmpty()
-                           join l in _context.ProdZonasRastreoCat on mcam.IdZona equals l.IdZona into Zonas
-                           from z in Zonas.DefaultIfEmpty()
-                           join t in _context.CatTiposProd on mcam.Tipo equals t.Tipo into Tipos
-                           from tp in Tipos.DefaultIfEmpty()
-                           join pr in _context.CatProductos on new { mcam.Tipo, mcam.Producto } equals new { pr.Tipo, pr.Producto } into Productos
-                           from prd in Productos.DefaultIfEmpty()
-                           orderby r.Fecha
-                           select new AnalisisClass
-                           {
-                               Cod_Prod = r.Cod_Prod,
-                               Cod_Campo = r.Cod_Campo,
-                               Sector = (short)ms.Sector,
-                               Productor = prod.Nombre,
-                               Tipo = tp.Descripcion,
-                               Producto = prd.Descripcion,
-                               Zona = z.DescZona,
-                               Fecha_envio = (DateTime)r.Fecha_envio,
-                               Fecha_entrega = (DateTime)r.Fecha_entrega,
-                               Estatus =
-                                (
-                                    r.Estatus == "R" ? "CON RESIDUOS" :
-                                    r.Estatus == "P" ? "EN PROCESO" :
-                                    r.Estatus == "F" ? "FUERA DEL LIMITE" :
-                                    r.Estatus == "L" ? "LIBERADO" : ""
-                                ),
-                               Num_analisis = r.Num_analisis,
-                               Laboratorio = r.Laboratorio,
-                               LiberacionUSA = (DateTime)r.LiberacionUSA,
-                               LiberacionEU = (DateTime)r.LiberacionEU,
-                               Comentarios = r.Comentarios,
-                               IdAgen = mcam.IdAgen,
-                               IdAgenC = (short?)(int)mcam.IdAgenC,
-                               IdAgenI = mcam.IdAgenI,
-                               Fecha = r.Fecha
-                           };
+                    buscarnum_analisis(cod_Prod, cod_Campo);
+                    return Ok(num_analisis);
                 }
                 else
                 {
-                    item = from r in _context.ProdAnalisis_Residuo
-                           join c in _context.ProdCamposCat on new { r.Cod_Empresa, r.Cod_Prod, r.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                           from mcam in MuestreoCam.DefaultIfEmpty()
-                           join s in _context.ProdMuestreoSector on r.IdSector equals s.id into MuestreoSc
-                           from ms in MuestreoSc.DefaultIfEmpty()
-                           join p in _context.ProdProductoresCat on r.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                           from prod in MuestreoProd.DefaultIfEmpty()
-                           join l in _context.ProdZonasRastreoCat on mcam.IdZona equals l.IdZona into Zonas
-                           from z in Zonas.DefaultIfEmpty()
-                           join t in _context.CatTiposProd on mcam.Tipo equals t.Tipo into Tipos
-                           from tp in Tipos.DefaultIfEmpty()
-                           join pr in _context.CatProductos on new { mcam.Tipo, mcam.Producto } equals new { pr.Tipo, pr.Producto } into Productos
-                           from prd in Productos.DefaultIfEmpty()
-                           where mcam.IdAgen == idAgen || mcam.IdAgenC == idAgen || mcam.IdAgenI == idAgen
-                           orderby r.Fecha
-                           select new AnalisisClass
-                           {
-                               Cod_Prod = r.Cod_Prod,
-                               Cod_Campo = r.Cod_Campo,
-                               Sector = (short)ms.Sector,
-                               Productor = prod.Nombre,
-                               Tipo = tp.Descripcion,
-                               Producto = prd.Descripcion,                               
-                               Zona = z.DescZona,
-                               Fecha_envio = (DateTime)r.Fecha_envio,
-                               Fecha_entrega = (DateTime)r.Fecha_entrega,
-                               Estatus =
-                                (
-                                    r.Estatus == "R" ? "CON RESIDUOS" :
-                                    r.Estatus == "P" ? "EN PROCESO" :
-                                    r.Estatus == "F" ? "FUERA DEL LIMITE" :
-                                    r.Estatus == "L" ? "LIBERADO" : ""
-                                ),
-                               Num_analisis = r.Num_analisis,
-                               Laboratorio = r.Laboratorio,
-                               LiberacionUSA = (DateTime)r.LiberacionUSA,
-                               LiberacionEU = (DateTime)r.LiberacionEU,
-                               Comentarios = r.Comentarios,
-                               Fecha = r.Fecha
-                           };
-                }
-                if (id != 0)
-                {
-                    item = item.Where(x => x.IdAnalisis_Residuo == id).Distinct();
-                }              
-                else
-                {
-                    item = item.Distinct();
+                    if (idAgen == 1 || idAgen == 205 || idAgen == 153 || idAgen == 281 || idAgen == 167 || idAgen == 182)
+                    {
+                        analisis = _context.AnalisisClass.FromSqlRaw($"sp_GetAnalisis " + 205 + "," + tipo + "").ToList();
+                    }
+                    else
+                    {
+                        analisis = _context.AnalisisClass.FromSqlRaw($"sp_GetAnalisis " + idAgen + "," + tipo + "").ToList();
+
+                    }
+                    return Ok(analisis);
                 }
 
-                return Ok(item.OrderByDescending(x => x.Fecha).ToList());
             }
             catch (Exception e)
             {
@@ -149,9 +75,23 @@ namespace ApiIndicadores.Controllers
             }
         }
 
+        public void buscarnum_analisis(string cod_Prod, short? cod_Campo)
+        {
+            try
+            {
+                var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
+                var item = _context.ProdAnalisis_Residuo.FirstOrDefault(a => a.Temporada == catSemanas.Temporada && a.Cod_Prod == cod_Prod && a.Cod_Campo == cod_Campo && a.Fecha == (from c in _context.ProdAnalisis_Residuo where c.Cod_Prod == a.Cod_Prod select c).Max(c => c.Fecha));
+                num_analisis = (int)((item == null ? 0 : item.Num_analisis) + 1);
+            }
+            catch (Exception e)
+            {
+                e.ToString();
+            }
+        }
+
         // POST api/<AnalisisController>
-        [HttpPost("{id_Muestreo}/{liberacion_USA}/{liberacion_EU}/{sector}")]
-        public ActionResult Post(int id_Muestreo, int liberacion_USA, int liberacion_EU, short sector, [FromBody] ProdAnalisis_Residuo model)
+        [HttpPost("{idMuestreo}/{idAnalisis}/{liberacion_USA}/{liberacion_EU}/{sector}")]
+        public ActionResult Post(int idMuestreo, int idAnalisis, int liberacion_USA, int liberacion_EU, short sector, [FromBody] ProdAnalisis_Residuo model)
         {
             try
             {
@@ -159,84 +99,107 @@ namespace ApiIndicadores.Controllers
                 int IdSector = 0;
                 DateTime fechaLiberacionUSA = DateTime.Now, fechaLiberacionEU = DateTime.Now;
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
-                var muestreo = _context.ProdMuestreo.Find(id_Muestreo);
 
-                if (muestreo != null)
+                string cod_Prod = "";
+                short cod_Campo;
+                if (idMuestreo != 0)
                 {
-                    var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(m => m.Cod_Prod == muestreo.Cod_Prod && m.Cod_Campo == muestreo.Cod_Campo && m.Fecha_entrega == model.Fecha_entrega && m.Fecha_envio == model.Fecha_envio && m.Estatus == model.Estatus && m.Num_analisis == model.Num_analisis && m.Temporada == catSemanas.Temporada);
-
-                    if (analisis == null)
-                    {
-                        var model_sector = _context.ProdMuestreoSector.FirstOrDefault(m => m.Cod_Prod == muestreo.Cod_Prod && m.Cod_Campo == muestreo.Cod_Campo && m.Sector == sector);
-                        if (model_sector == null)
-                        {
-                            prodMuestreoSector.Cod_Prod = model.Cod_Prod;
-                            prodMuestreoSector.Cod_Campo = model.Cod_Campo;
-                            prodMuestreoSector.Sector = sector;
-                            _context.ProdMuestreoSector.Add(prodMuestreoSector);
-                            _context.SaveChanges();
-
-                            IdSector = prodMuestreoSector.id;
-                        }
-                        else
-                        {
-                            IdSector = model_sector.id;
-                        }
-
-                        model.Cod_Empresa = 2;
-                        model.Cod_Prod = muestreo.Cod_Prod;
-                        model.Cod_Campo = muestreo.Cod_Campo;
-                        model.Fecha = DateTime.Now;
-                        model.Temporada = catSemanas.Temporada;
-                        model.IdSector = IdSector;
-                        model.Id_Muestreo = id_Muestreo;
-
-                        if (model.Estatus == "F")
-                        {
-                            fechaLiberacionUSA = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_USA);
-                            fechaLiberacionEU = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_EU);
-
-                            model.LiberacionUSA = fechaLiberacionUSA;
-                            model.LiberacionEU = fechaLiberacionEU;
-                        }
-
-                        _context.ProdAnalisis_Residuo.Add(model);
-                        _context.SaveChanges();
-
-                        string estatus = "";
-
-                        if (model.Estatus == "R")
-                        {
-                            estatus = "CON RESIDUOS";
-                        }
-                        else if (model.Estatus == "P")
-                        {
-                            estatus = "EN PROCESO";
-                        }
-                        else if (model.Estatus == "F")
-                        {
-                            estatus = "FUERA DEL LIMITE";
-                        }
-                        else if (model.Estatus == "L")
-                        {
-                            estatus = "LIBERADO";
-                        }
-
-                        title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
-                        body = "Resultado del análisis: " + estatus;
-                        notificaciones.SendNotificationJSON(title, body);
-
-                        return Ok();
-                    }
-
-                    else
-                    {
-                        return BadRequest();
-                    }
+                    var item = _context.ProdMuestreo.Find(idMuestreo);
+                    cod_Prod = item.Cod_Prod;
+                    cod_Campo = (short)item.Cod_Campo;
+                }
+                else if (idAnalisis != 0)
+                {
+                    var item = _context.ProdAnalisis_Residuo.Find(idAnalisis);
+                    cod_Prod = item.Cod_Prod;
+                    cod_Campo = (short)item.Cod_Campo;
                 }
                 else
                 {
-                    return BadRequest();
+                    cod_Prod = model.Cod_Prod;
+                    cod_Campo = (short)model.Cod_Campo;
+                }
+
+                buscarnum_analisis(cod_Prod, cod_Campo);
+
+                var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo && m.Fecha_entrega == model.Fecha_entrega && m.Fecha_envio == model.Fecha_envio && m.Estatus == model.Estatus && m.Num_analisis == model.Num_analisis && m.Temporada == catSemanas.Temporada);
+
+                if (analisis == null)
+                {
+                    var model_sector = _context.ProdMuestreoSector.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo && m.Sector == sector);
+                    if (model_sector == null)
+                    {
+                        prodMuestreoSector.Cod_Prod = cod_Prod;
+                        prodMuestreoSector.Cod_Campo = cod_Campo;
+                        prodMuestreoSector.Sector = sector;
+                        _context.ProdMuestreoSector.Add(prodMuestreoSector);
+                        _context.SaveChanges();
+
+                        IdSector = prodMuestreoSector.id;
+                    }
+                    else
+                    {
+                        IdSector = model_sector.id;
+                    }
+
+                    model.Cod_Empresa = 2;
+                    model.Cod_Prod = cod_Prod;
+                    model.Cod_Campo = cod_Campo;
+                    model.Fecha = DateTime.Now;
+                    model.Temporada = catSemanas.Temporada;
+                    model.IdSector = IdSector;
+                    model.Num_analisis = num_analisis;
+                    if (idMuestreo != 0)
+                    {
+                        model.Id_Muestreo = idMuestreo;
+                    }
+
+                    if (model.Estatus == "F")
+                    {
+                        fechaLiberacionUSA = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_USA);
+                        fechaLiberacionEU = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_EU);
+
+                        model.LiberacionUSA = fechaLiberacionUSA;
+                        model.LiberacionEU = fechaLiberacionEU;
+                    }
+                    if (model.Traza == "on")
+                    {
+                        model.Traza = "1";
+                    }
+                    _context.ProdAnalisis_Residuo.Add(model);
+                    _context.SaveChanges();
+
+                    string estatus = "";
+
+                    if (model.Estatus == "R")
+                    {
+                        estatus = "CON RESIDUOS";
+                    }
+                    else if (model.Estatus == "P")
+                    {
+                        estatus = "EN PROCESO";
+                    }
+                    else if (model.Estatus == "F")
+                    {
+                        estatus = "FUERA DEL LIMITE";
+                    }
+                    else if (model.Estatus == "L")
+                    {
+                        estatus = "LIBERADO";
+                    }
+
+                    title = "Código: " + cod_Prod + " campo: " + cod_Campo;
+                    body = "Resultado del análisis: " + estatus;
+                    notificaciones.SendNotificationJSON(title, body);
+
+                    enviar(model.IdAgen, cod_Prod, cod_Campo, "Resultado análisis");
+
+                    return Ok(model);
+                }
+
+                else
+                {
+                    return BadRequest();//información duplicada
                 }
             }
 
@@ -246,16 +209,189 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // PUT api/<AnalisisController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void enviar(short? idAgen_Session, string cod_Prod, short? cod_Campo, string tipo_correo)
         {
+            try
+            {
+                string correo_p, correo_c = "", correo_i = "";
+                var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo);
+                //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
+                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Tipo == "P");
+                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Tipo == "C");
+                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Tipo == "I");
+
+                correo_p = email_p.correo;
+
+                var sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == idAgen_Session);
+                var analisis = (dynamic)null;
+                var muestreo = _context.ProdMuestreo.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).FirstOrDefault();
+                if (muestreo != null)
+                {
+                    analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
+                    var calidad_muestreo = _context.ProdCalidadMuestreo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
+                }
+                else
+                {
+                    analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo);
+                }
+
+                if (email_c == null)
+                {
+                    var item = _context.ProdCamposCat.Where(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo).FirstOrDefault();
+                    if (sesion.IdRegion == 3)
+                    {
+                        item.IdAgenC = 168;
+                        correo_c = "juan.mares@giddingsfruit.mx";
+                    }
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8)
+                    {
+                        item.IdAgenC = 167;
+                        correo_c = "mayra.ramirez@giddingsfruit.mx";
+                    }
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    correo_c = email_c.correo;
+                }
+
+                if (email_i == null)
+                {
+                    if (sesion.IdRegion == 3)
+                    {
+                        correo_c = "hector.torres@giddingsfruit.mx";
+                    }
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8) //Los Reyes
+                    {
+                        var item = _context.ProdCamposCat.Where(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo).First();
+                        item.IdAgenI = 205;
+                        _context.SaveChanges();
+                        correo_i = "jesus.palafox@giddingsfruit.mx";
+                    }
+                    else
+                    {
+                        correo_i = email_i.correo;
+                    }
+                }
+
+                try
+                {
+                    MailMessage correo = new MailMessage();
+                    correo.From = new MailAddress("indicadores.giddingsfruit@gmail.com", "Indicadores GiddingsFruit");
+                    var prod = _context.ProdProductoresCat.FirstOrDefault(x => x.Cod_Prod == campo.Cod_Prod);
+                    var Fecha_envio = String.Format("{0:d}", analisis.Fecha_envio);
+                    var Fecha_entrega = String.Format("{0:d}", analisis.Fecha_entrega);
+
+
+                    string res_analisis = "";
+                    if (analisis.Estatus == "R")
+                    {
+                        res_analisis = "CON RESIDUOS";
+                    }
+                    else if (analisis.Estatus == "P")
+                    {
+                        res_analisis = "EN PROCESO";
+                    }
+                    else if (analisis.Estatus == "F")
+                    {
+                        res_analisis = "FUERA DEL LIMITE";
+                    }
+                    else if (analisis.Estatus == "L")
+                    {
+                        res_analisis = "LIBERADO";
+                    }
+
+                    if (campo.Cod_Prod == "99999")
+                    {
+                        correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                    }
+                    else
+                    {
+                        correo.To.Add(sesion.correo);
+                        correo.CC.Add(correo_p);
+                        correo.CC.Add(correo_c);
+                        if (correo_i != "jesus.palafox@giddingsfruit.mx")
+                        {
+                            correo.CC.Add(correo_i);
+                        }
+                    }
+                    correo.Subject = "Analisis de residuos: " + campo.Cod_Prod + " - " + res_analisis;
+                    correo.Body += "Productor: " + campo.Cod_Prod + " - " + prod.Nombre + " <br/>";
+                    correo.Body += " <br/>";
+                    correo.Body += "Campo: " + campo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
+                    correo.Body += " <br/>";
+                    correo.Body += "Fecha de envio: " + Fecha_envio + "<br/>";
+                    correo.Body += " <br/>";
+                    correo.Body += "Fecha de entrega: " + Fecha_entrega + "<br/>";
+                    correo.Body += " <br/>";
+                    correo.Body += "Estatus: " + res_analisis + "<br/>";
+                    correo.Body += " <br/>";
+
+                    if (muestreo != null)
+                    {
+                        if (muestreo.Tarjeta != null)
+                        {
+                            if (analisis.Estatus == "L" && muestreo.Tarjeta == "S")
+                            {
+                                correo.Body += "Entregar tarjeta <br/>";
+                                correo.Body += " <br/>";
+                            }
+                        }
+                    }
+
+                    if (analisis.Estatus == "F")
+                    {
+                        var LiberacionUSA = String.Format("{0:d}", analisis.LiberacionUSA);
+                        var LiberacionEU = String.Format("{0:d}", analisis.LiberacionEU);
+
+                        if (analisis.LiberacionUSA != null)
+                        {
+                            correo.Body += "Fecha de liberacion para USA: " + LiberacionUSA + "<br/>";
+                            correo.Body += " <br/>";
+                        }
+                        if (analisis.LiberacionEU != null)
+                        {
+                            correo.Body += "Fecha de liberacion para EUROPA: " + LiberacionEU + "<br/>";
+                            correo.Body += " <br/>";
+                        }
+                    }
+                    correo.Body += "Numero de analisis: " + analisis.Num_analisis + "<br/>";
+                    correo.Body += " <br/>";
+                    correo.Body += "Laboratorio: " + analisis.Laboratorio + "<br/>";
+                    correo.Body += " <br/>";
+                    if (analisis.Comentarios != null)
+                    {
+                        correo.Body += "Comentarios: " + analisis.Comentarios + "<br/>";
+                        correo.Body += " <br/>";
+                    }
+
+
+                    correo.IsBodyHtml = true;
+                    correo.Priority = MailPriority.Normal;
+
+                    string sSmtpServer = "";
+                    sSmtpServer = "smtp.gmail.com";
+
+                    SmtpClient a = new SmtpClient();
+                    a.Host = sSmtpServer;
+                    a.Port = 587;//25
+                    a.EnableSsl = true;
+                    a.UseDefaultCredentials = true;
+                    a.Credentials = new System.Net.NetworkCredential
+                       ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                    a.Send(correo);
+                }
+                catch (Exception e)
+                {
+                    e.ToString();
+                }
+
+            }
+            catch (Exception e)
+            {
+                e.ToString();
+            }
         }
 
-        // DELETE api/<AnalisisController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }

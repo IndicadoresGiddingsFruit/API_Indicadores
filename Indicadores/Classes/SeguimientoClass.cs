@@ -13,6 +13,7 @@ namespace ApiIndicadores.Classes
             public string Cod_Prod { get; set; }
             public string Productor { get; set; }
             public string Estatus { get; set; }
+            public string DescEstatus { get; set; }
             public string Comentarios { get; set; }
             public DateTime? Fecha { get; set; }
             public int? dias { get; set; }

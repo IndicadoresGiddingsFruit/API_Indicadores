@@ -12,7 +12,7 @@ namespace ApiIndicadores.Models
         [Key]
         public int id { get; set; }
         public string Cod_Prod { get; set; }
-        public Nullable<short> Cod_Campo { get; set; }
+        public short Cod_Campo { get; set; }
         public Nullable<short> Sector { get; set; }
     }
 }

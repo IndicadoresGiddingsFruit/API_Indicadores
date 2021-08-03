@@ -123,7 +123,6 @@ namespace ApiIndicadores.Controllers
             }
             return usuarios;
         }
-
         private bool UsuariosExist(int id) {
             return _context.SIPGUsuarios.Any(e=>e.Id==id);
         }

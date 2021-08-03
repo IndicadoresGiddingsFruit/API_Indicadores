@@ -11,9 +11,10 @@ namespace ApiIndicadores.Models
     public class EncuestasUsuarios
     {
         [Key]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public int? IdEncuesta { get; set; }
         public int? IdUsuario { get; set; }
         public DateTime? Fecha { get; set; }
+        public string Identificador { get; set; }
     }
 }

@@ -49,13 +49,15 @@ namespace ApiIndicadores.Controllers
                             {
                                 IdEncuesta = u.IdEncuesta,
                                 IdUsuario = u.IdUsuario,
-                                Usuario = c.Completo
+                                Usuario = c.Completo,
+                                Identificador=u.Identificador
                             } into x
                             select new
                             {
                                 IdEncuesta = x.Key.IdEncuesta,
                                 IdUsuario = x.Key.IdUsuario,
-                                Usuario = x.Key.Usuario
+                                Usuario = x.Key.Usuario,
+                                Identificador=x.Key.Identificador
                             }).Distinct();
 
                 if (item == null)
@@ -119,6 +121,29 @@ namespace ApiIndicadores.Controllers
                 else
                 {
                     return BadRequest("Algo salió mal");
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPatch("{id}/{identificador}")]
+        public async Task<ActionResult<EncuestasUsuarios>> Patch(int id, string identificador)
+        {
+            try
+            {
+                var model = _context.EncuestasUsuarios.Find(id);
+                if (model != null)
+                {
+                    model.Identificador = identificador;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
                 }
             }
             catch (Exception e)

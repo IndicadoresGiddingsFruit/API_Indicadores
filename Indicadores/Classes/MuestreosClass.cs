@@ -9,12 +9,11 @@ namespace ApiIndicadores.Classes
 {
     public class MuestreosClass
     {
-        [Key]
         public int? IdMuestreo { get; set; }
-        public int? IdAnalisis_Residuo { get; set; }        
+        public int? IdAnalisis_Residuo { get; set; }
         public string Cod_Prod { get; set; }
-        public string Productor { get; set; }
         public Int16? Cod_Campo { get; set; }
+        public string Productor { get; set; }
         public string Campo { get; set; }
         public decimal? Ha { get; set; }
         public string Ubicacion { get; set; }
@@ -28,11 +27,10 @@ namespace ApiIndicadores.Classes
         public Int16? IdAgen { get; set; }
         public string Asesor { get; set; }
         public Int16? IdRegion { get; set; }
-        public Int16? IdAgenC { get; set; }
+        public int? IdAgenC { get; set; }
         public string AsesorC { get; set; }
         public string AsesorCS { get; set; }
         public Int16? IdAgenI { get; set; }
-        public DateTime? Fecha { get; set; }
         public DateTime? Inicio_cosecha { get; set; }
         public string Incidencia { get; set; }
         public string Propuesta { get; set; }
@@ -51,6 +49,18 @@ namespace ApiIndicadores.Classes
         public int? Num_analisis { get; set; }
         public string Laboratorio { get; set; }
         public string Traza { get; set; }
+        public string Temporada { get; set; }
 
+        //public List<SectoresClass> listaSectores { get; set; }
+    }
+
+    public class SectoresClass
+    {
+        [Key]
+        public int? IdMuestreo { get; set; }       
+        public string Cod_Prod { get; set; }
+        public Int16? Cod_Campo { get; set; }
+        public int? IdSector { get; set; }
+        public Int16? Sector { get; set; }
     }
 }

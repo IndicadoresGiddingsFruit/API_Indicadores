@@ -1,5 +1,4 @@
 using ApiIndicadores.Context;
-using ApiIndicadores.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;

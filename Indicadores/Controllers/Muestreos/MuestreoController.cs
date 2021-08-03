@@ -2,8 +2,11 @@
 using ApiIndicadores.Context;
 using ApiIndicadores.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace ApiIndicadores.Controllers
 {
@@ -19,6 +22,7 @@ namespace ApiIndicadores.Controllers
 
         Notificaciones notificaciones = new Notificaciones();
         string title = "", body = "";
+        string correo_p, correo_c, correo_i;
 
         // GET: api/<MuestreoController>
         [HttpGet]
@@ -35,233 +39,35 @@ namespace ApiIndicadores.Controllers
         }
 
         // GET api/<MuestreoController>/5
-        [HttpGet("{id}/{idAgen}", Name = "GetMuestreo")]
-        public ActionResult Get(int id, short idAgen)
+        [HttpGet("{idAgen}/{tipo}", Name = "GetMuestreo")]
+        public async Task<ActionResult<MuestreosClass>> Get(short idAgen, string tipo)
         {
             try
             {
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
 
-                IQueryable<MuestreosClass> analisis = null;
-                IQueryable<MuestreosClass> item = (from m in (from m in _context.ProdMuestreo
-                                                              group m by new
-                                                              {
-                                                                  Cod_Empresa = m.Cod_Empresa,
-                                                                  Cod_Prod = m.Cod_Prod,
-                                                                  Cod_Campo = m.Cod_Campo,
-                                                                  IdSector = m.IdSector
-                                                              } into x
-                                                              select new
-                                                              {
-                                                                  Cod_Empresa = x.Key.Cod_Empresa,
-                                                                  Cod_Prod = x.Key.Cod_Prod,
-                                                                  Cod_Campo = x.Key.Cod_Campo,
-                                                                  IdSector = x.Key.IdSector,
-                                                                  Fecha_solicitud = x.Max(m => m.Fecha_solicitud)
-                                                              })
+                IQueryable<SectoresClass> listaSectores = (from m in _context.ProdMuestreo
+                                                           join s in _context.ProdMuestreoSector on new { m.Cod_Prod, m.Cod_Campo } equals new { s.Cod_Prod, s.Cod_Campo } into Sectores
+                                                           from s in Sectores.DefaultIfEmpty()
+                                                           group m by new
+                                                           {
+                                                               IdMuestreo = m.Id,
+                                                               Cod_Prod = m.Cod_Prod,
+                                                               Cod_Campo = m.Cod_Campo,
+                                                               IdSector = s.id,
+                                                               Sector = s.Sector
+                                                           } into x
+                                                           select new SectoresClass()
+                                                           {
+                                                               IdMuestreo = x.Key.IdMuestreo,
+                                                               Cod_Prod = x.Key.Cod_Prod,
+                                                               Cod_Campo = x.Key.Cod_Campo,
+                                                               IdSector = x.Key.IdSector,
+                                                               Sector = x.Key.Sector,
+                                                           }).Distinct();
 
-                                                   join an in _context.ProdMuestreo on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo, m.IdSector, m.Fecha_solicitud } equals new { an.Cod_Empresa, an.Cod_Prod, an.Cod_Campo, an.IdSector, an.Fecha_solicitud } into MuestreoR
-                                                   from an in MuestreoR.DefaultIfEmpty()
-
-                                                   join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                                                   from mcam in MuestreoCam.DefaultIfEmpty()
-
-                                                   join p in _context.ProdProductoresCat on mcam.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                                                   from prod in MuestreoProd.DefaultIfEmpty()
-
-                                                   join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
-                                                   from ms in MuestreoSc.DefaultIfEmpty()
-
-                                                   join al in (from m in _context.ProdAnalisis_Residuo
-                                                               group m by new
-                                                               {
-                                                                   Cod_Empresa = m.Cod_Empresa,
-                                                                   Cod_Prod = m.Cod_Prod,
-                                                                   Cod_Campo = m.Cod_Campo
-                                                               } into x
-                                                               select new
-                                                               {
-                                                                   Cod_Empresa = x.Key.Cod_Empresa,
-                                                                   Cod_Prod = x.Key.Cod_Prod,
-                                                                   Cod_Campo = x.Key.Cod_Campo,
-                                                                   Num_analisis = x.Max(m => m.Num_analisis),
-                                                                   Fecha = x.Max(m => m.Fecha)
-                                                               }) on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { al.Cod_Empresa, al.Cod_Prod, al.Cod_Campo } into Analisis
-                                                   from al in Analisis.DefaultIfEmpty()
-
-                                                   join man in _context.ProdAnalisis_Residuo on new { al.Cod_Empresa, al.Cod_Prod, al.Cod_Campo, al.Num_analisis, al.Fecha } equals new { man.Cod_Empresa, man.Cod_Prod, man.Cod_Campo, man.Num_analisis, man.Fecha } into Analisis2
-                                                   from man in Analisis2.DefaultIfEmpty()
-
-                                                   join a in _context.ProdAgenteCat on an.IdAgen equals a.IdAgen into MuestreoAgentes
-                                                   from ageP in MuestreoAgentes.DefaultIfEmpty()
-
-                                                   join cf in _context.ProdCalidadMuestreo on an.Id equals cf.Id_Muestreo into MuestreoCa
-                                                   from mc in MuestreoCa.DefaultIfEmpty()
-
-                                                   join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
-                                                   from ageC in MuestreoAgenC.DefaultIfEmpty()
-
-                                                   join a in _context.ProdAgenteCat on mcam.IdAgenC equals a.IdAgen into MuestreoAgenSC
-                                                   from ageCS in MuestreoAgenSC.DefaultIfEmpty()
-
-                                                   join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
-                                                   from loc in MuestreoLoc.DefaultIfEmpty()
-
-                                                   join t in _context.CatTiposProd on new { mcam.Tipo } equals new { t.Tipo } into Tipos
-                                                   from t in Tipos.DefaultIfEmpty()
-
-                                                   join p in _context.CatProductos on new { mcam.Tipo, mcam.Producto } equals new { p.Tipo, p.Producto } into Productos
-                                                   from p in Productos.DefaultIfEmpty()
-
-                                                   join z in _context.ProdZonasRastreoCat on man.CodZona equals z.Codigo into Zonas
-                                                   from z in Zonas.DefaultIfEmpty()
-
-                                                   where man.Estatus != "L" && an.Temporada == catSemanas.Temporada
-                                                   select new MuestreosClass
-                                                   {
-                                                       IdAnalisis_Residuo = man.Id,
-                                                       IdMuestreo = an.Id,
-                                                       IdAgen = mcam.IdAgen,
-                                                       Asesor = ageP.Abrev,
-                                                       Cod_Prod = m.Cod_Prod,
-                                                       Productor = prod.Nombre,
-                                                       Cod_Campo = m.Cod_Campo,
-                                                       Campo = mcam.Descripcion,
-                                                       Sector = (short)ms.Sector,
-                                                       Ha = mcam.Hectareas,
-                                                       Compras_oportunidad = mcam.Compras_Oportunidad,
-                                                       Tipo = t.Descripcion,
-                                                       Producto = p.Descripcion,
-                                                       Fecha_solicitud = (DateTime)m.Fecha_solicitud,
-                                                       Inicio_cosecha = (DateTime)an.Inicio_cosecha,
-                                                       Ubicacion = loc.Descripcion,
-                                                       Telefono = an.Telefono,
-                                                       Liberacion = an.Liberacion,
-                                                       Fecha_ejecucion = (DateTime)an.Fecha_ejecucion,
-                                                       Analisis = man.Estatus,
-                                                       IdAgenI = mcam.IdAgenI,
-                                                       Estatus = mc.Estatus,
-                                                       IdAgenC = (short)mcam.IdAgenC,
-                                                       AsesorC = ageC.Abrev,
-                                                       AsesorCS = ageCS.Abrev,
-                                                       Tarjeta = an.Tarjeta,
-                                                       IdRegion = ageP.IdRegion,
-                                                       Fecha_analisis = man.Fecha,
-                                                       //Folio = man.Folio,
-                                                       //Zona = z.DescZona,
-                                                       //Fecha_envio = man.Fecha_envio,
-                                                       //Fecha_entrega = man.Fecha_entrega,
-                                                       //LiberacionUSA = man.LiberacionUSA,
-                                                       //LiberacionEU = man.LiberacionEU,
-                                                       //Num_analisis = man.Num_analisis,
-                                                       //Laboratorio = man.Laboratorio,
-                                                       //Traza = man.Traza
-                                                   }).Distinct();
-
-                if (idAgen == 205)
-                {
-                    analisis = (from m in _context.ProdMuestreo
-
-                                join a in _context.ProdAgenteCat on m.IdAgen equals a.IdAgen into MuestreoAgentes
-                                from ageP in MuestreoAgentes.DefaultIfEmpty()
-
-                                join p in _context.ProdProductoresCat on m.Cod_Prod equals p.Cod_Prod into MuestreoProd
-                                from prod in MuestreoProd.DefaultIfEmpty()
-
-                                join r in _context.ProdAnalisis_Residuo on m.Id equals r.Id_Muestreo into MuestreoAn
-                                from man in MuestreoAn.DefaultIfEmpty()
-
-                                join s in _context.ProdMuestreoSector on m.IdSector equals s.id into MuestreoSc
-                                from ms in MuestreoSc.DefaultIfEmpty()
-
-                                join cf in _context.ProdCalidadMuestreo on m.Id equals cf.Id_Muestreo into MuestreoCa
-                                from mc in MuestreoCa.DefaultIfEmpty()
-
-                                join c in _context.ProdCamposCat on new { m.Cod_Empresa, m.Cod_Prod, m.Cod_Campo } equals new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo } into MuestreoCam
-                                from mcam in MuestreoCam.DefaultIfEmpty()
-
-                                join a in _context.ProdAgenteCat on mc.IdAgen equals a.IdAgen into MuestreoAgenC
-                                from ageC in MuestreoAgenC.DefaultIfEmpty()
-
-                                join a in _context.ProdAgenteCat on mcam.IdAgenC equals a.IdAgen into MuestreoAgenSC
-                                from ageCS in MuestreoAgenSC.DefaultIfEmpty()
-
-                                join l in _context.CatLocalidades on mcam.CodLocalidad equals l.CodLocalidad into MuestreoLoc
-                                from loc in MuestreoLoc.DefaultIfEmpty()
-
-                                join t in _context.CatTiposProd on new { mcam.Tipo } equals new { t.Tipo } into Tipos
-                                from t in Tipos.DefaultIfEmpty()
-
-                                join p in _context.CatProductos on new { t.Tipo, mcam.Producto } equals new { p.Tipo,p.Producto } into Productos
-                                from p in Productos.DefaultIfEmpty()
-
-                                join z in _context.ProdZonasRastreoCat on man.CodZona equals z.Codigo into Zonas
-                                from z in Zonas.DefaultIfEmpty()
-
-                                where m.Temporada == catSemanas.Temporada && man.Fecha == (from c in _context.ProdAnalisis_Residuo where c.Cod_Prod == man.Cod_Prod select c).Max(c => c.Fecha) && man.Estatus == null
-                                select new MuestreosClass
-                                {
-                                    IdMuestreo = m.Id,
-                                    IdAgen = mcam.IdAgen,
-                                    Asesor = ageP.Abrev,
-                                    Cod_Prod = m.Cod_Prod,
-                                    Productor = prod.Nombre,
-                                    Cod_Campo = m.Cod_Campo,
-                                    Campo = mcam.Descripcion,
-                                    Sector = (short)ms.Sector,
-                                    Ha = mcam.Hectareas,
-                                    Compras_oportunidad = mcam.Compras_Oportunidad,
-                                    Tipo=t.Descripcion,
-                                    Producto=p.Descripcion,
-                                    Fecha_solicitud = (DateTime)m.Fecha_solicitud,
-                                    Inicio_cosecha = (DateTime)m.Inicio_cosecha,
-                                    Ubicacion = loc.Descripcion,
-                                    Telefono = m.Telefono,
-                                    Liberacion = m.Liberacion,
-                                    Fecha_ejecucion = (DateTime)m.Fecha_ejecucion,
-                                    IdAnalisis_Residuo = man.Id,
-                                    Analisis = man.Estatus,
-                                    IdAgenI = mcam.IdAgenI,
-                                    Estatus = mc.Estatus,
-                                    IdAgenC = (short)mcam.IdAgenC,
-                                    AsesorC = ageC.Abrev,
-                                    AsesorCS = ageCS.Abrev,
-                                    Tarjeta = m.Tarjeta,
-                                    IdRegion = ageP.IdRegion,
-                                    Fecha_analisis = man.Fecha,
-                                    //Folio= man.Folio,
-                                    //Zona=z.DescZona,
-                                    //Fecha_envio=man.Fecha_envio,
-                                    //Fecha_entrega=man.Fecha_entrega,
-                                    //LiberacionUSA=man.LiberacionUSA,
-                                    //LiberacionEU=man.LiberacionEU,
-                                    //Num_analisis=man.Num_analisis,
-                                    //Laboratorio=man.Laboratorio,
-                                    //Traza=man.Traza
-                                }).Distinct();
-                    var res = Tuple.Create(item.OrderByDescending(x => x.Fecha_solicitud).ToList(), analisis.OrderByDescending(x => x.Fecha_solicitud).ToList());
-                    return Ok(res);
-                }
-                else
-                {
-                    if (idAgen == 153 || idAgen == 281 || idAgen == 167 || idAgen == 182)
-                    {
-                        item = item.Distinct();
-                    }
-                    else if (idAgen == 1)
-                    {
-                        item = item.Where(x => x.IdRegion == 1 || x.IdRegion == 3 || x.IdRegion == 4 || x.IdRegion == 5).Distinct();
-                    }
-                    else if (idAgen == 5)
-                    {
-                        item = item.Where(x => x.IdRegion == 2).Distinct();
-                    }
-                    else
-                    {
-                        item = item.Where(x => x.IdAgen == idAgen || x.IdAgenC == idAgen || x.IdAgenI == idAgen).Distinct();
-                    }
-                    return Ok(item.OrderByDescending(x => x.Fecha_solicitud).ToList());
-                }
+                var muestreos =  _context.MuestreosClass.FromSqlRaw($"sp_GetMuestreos " + idAgen + "," + tipo + "").ToListAsync();
+                return Ok(await muestreos);
             }
             catch (Exception e)
             {
@@ -275,7 +81,9 @@ namespace ApiIndicadores.Controllers
         {
             try
             {
-                var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
+                var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now.Date >= m.Inicio && DateTime.Now.Date <= m.Fin);
+                var agente = _context.SIPGUsuarios.FirstOrDefault(s => s.IdAgen == model.IdAgen);
+                var campos = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo);
 
                 var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada == catSemanas.Temporada);
                 if (modeloExistente == null)
@@ -288,6 +96,10 @@ namespace ApiIndicadores.Controllers
                     }
                     model.Fecha_solicitud = DateTime.Now;
                     model.Temporada = catSemanas.Temporada;
+                    if (agente.Tipo != "P")
+                    {
+                        model.IdAgen = campos.IdAgen;
+                    }
                     _context.ProdMuestreo.Add(model);
                     _context.SaveChanges();
 
@@ -295,7 +107,9 @@ namespace ApiIndicadores.Controllers
                     body = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
                     notificaciones.SendNotificationJSON(title, body);
 
-                    return CreatedAtRoute("GetMuestreo", new { id = model.Id, idAgen = 0 }, model);
+                    enviar(agente.IdAgen, model.Cod_Prod, model.Cod_Campo, "nuevo");
+
+                    return Ok(model);
                 }
                 else
                 {
@@ -311,49 +125,55 @@ namespace ApiIndicadores.Controllers
         // PUT api/<MuestreoController>/5
         //fecha_ejecucion  
         [HttpPut("{id}/{idAgen}/{sector}")]
-        public ActionResult Put(int id, short idAgen, short sector,[FromBody] ProdMuestreo model)
+        public ActionResult Put(int id, short idAgen, short sector, [FromBody] ProdMuestreo model)
         {
             try
             {
-                    ProdMuestreoSector prodMuestreoSector = new ProdMuestreoSector();
-                    int IdMuestreoSector = 0;
+                ProdMuestreoSector prodMuestreoSector = new ProdMuestreoSector();
+                int IdMuestreoSector = 0;
 
-                    var item = _context.ProdMuestreo.Find(id);
-                    if (item.Id == id)
+                var item = _context.ProdMuestreo.Find(id);
+                if (item.Id == id)
+                {
+                    var model_sector = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == item.Cod_Prod && x.Cod_Campo == item.Cod_Campo && x.Sector == sector).FirstOrDefault();
+                    if (model_sector == null)
                     {
-                        var model_sector = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == item.Cod_Prod && x.Cod_Campo == item.Cod_Campo && x.Sector == sector).FirstOrDefault();
-                        if (model_sector == null)
-                        {
-                            prodMuestreoSector.Cod_Prod = item.Cod_Prod;
-                            prodMuestreoSector.Cod_Campo = item.Cod_Campo;
-                            prodMuestreoSector.Sector = sector;
-                            _context.ProdMuestreoSector.Add(prodMuestreoSector);
-                            _context.SaveChanges();
+                        prodMuestreoSector.Cod_Prod = item.Cod_Prod;
+                        prodMuestreoSector.Cod_Campo = item.Cod_Campo;
+                        prodMuestreoSector.Sector = sector;
+                        _context.ProdMuestreoSector.Add(prodMuestreoSector);
+                        _context.SaveChanges();
 
-                            IdMuestreoSector = prodMuestreoSector.id;
-                        }
-                        else
-                        {
-                            IdMuestreoSector = model_sector.id;
-                        }
+                        IdMuestreoSector = prodMuestreoSector.id;
+                    }
+                    else
+                    {
+                        IdMuestreoSector = model_sector.id;
+                    }
 
-                        if (IdMuestreoSector != 0)
+                    if (IdMuestreoSector != 0)
+                    {
+                        item.IdSector = IdMuestreoSector;
+                        item.IdAgenI = idAgen;
+                        if (model.Fecha_ejecucion != null)
                         {
-                            item.IdSector = IdMuestreoSector;
-                            item.IdAgenI = idAgen;
                             item.Fecha_ejecucion = model.Fecha_ejecucion;
-                            title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
-                            body = "Fecha de muestreo agregada: " + model.Fecha_ejecucion;
                         }
-                        else
-                        {
-                            return BadRequest();
-                        }
-                    }               
+                        _context.SaveChanges();
 
-                _context.SaveChanges();
-                notificaciones.SendNotificationJSON(title, body);
-                return CreatedAtRoute("GetMuestreo", new { id = 0, idAgen = idAgen }, model);
+                        title = "Código: " + item.Cod_Prod + " campo: " + item.Cod_Campo;
+                        body = "Fecha de muestreo agregada: " + model.Fecha_ejecucion;
+                        notificaciones.SendNotificationJSON(title, body);
+
+                        enviar(idAgen, item.Cod_Prod, item.Cod_Campo, "fecha_ejecucion");
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+                return BadRequest();
             }
             catch (Exception e)
             {
@@ -377,7 +197,10 @@ namespace ApiIndicadores.Controllers
 
                     notificaciones.SendNotificationJSON(title, body);
                     _context.SaveChanges();
-                    return CreatedAtRoute("GetMuestreo", new { id = 0, idAgen = idAgen }, muestreo);
+
+                    enviar(idAgen, muestreo.Cod_Prod, muestreo.Cod_Campo, "Muestreo Liberado");
+
+                    return Ok(muestreo);
                 }
                 else
                 {
@@ -411,6 +234,291 @@ namespace ApiIndicadores.Controllers
             catch (Exception e)
             {
                 return BadRequest(e.Message);
+            }
+        }
+
+        public void enviar(short? idAgen_Session, string cod_Prod, short? cod_Campo, string tipo_correo)
+        {
+            try
+            {
+                var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo);
+                //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
+                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Tipo == "P");
+                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Tipo == "C");
+                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Tipo == "I");
+
+                correo_p = email_p.correo;
+
+                var sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == idAgen_Session);
+
+                var muestreo = _context.ProdMuestreo.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).FirstOrDefault();
+                var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
+                var calidad_muestreo = _context.ProdCalidadMuestreo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
+
+                if (email_c == null)
+                {
+                    var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo && x.Cod_Empresa == 2);
+
+                    if (sesion.IdRegion == 3)
+                    {
+                        item.IdAgenC = 168;
+                        correo_c = "juan.mares@giddingsfruit.mx";
+                    }
+                    if (sesion.IdRegion == 1 || sesion.IdRegion==8)
+                    {
+                        item.IdAgenC = 167;
+                        correo_c = "mayra.ramirez@giddingsfruit.mx";
+                    }
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    correo_c = email_c.correo;
+                }
+
+                if (email_i == null)
+                {
+                    if (sesion.IdRegion == 3)
+                    {
+                        correo_c = "hector.torres@giddingsfruit.mx";
+                    }
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8) //Los Reyes
+                    {
+                        var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo && x.Cod_Empresa == 2);
+                        item.IdAgenI = 205;
+                        _context.SaveChanges();
+                        correo_i = "jesus.palafox@giddingsfruit.mx";
+                    }
+                    else
+                    {
+                        correo_i = email_i.correo;
+                    }
+                }
+
+                try
+                {
+                    MailMessage correo = new MailMessage();
+                    correo.From = new MailAddress("indicadores.giddingsfruit@gmail.com", "Indicadores GiddingsFruit");
+                    var prod = _context.ProdProductoresCat.FirstOrDefault(x => x.Cod_Prod == campo.Cod_Prod);
+
+                    if (tipo_correo == "nuevo")
+                    {
+                        var Inicio_cosecha = String.Format("{0:d}", muestreo.Inicio_cosecha);
+                        if (cod_Prod=="99999") {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+                        else { 
+                        if (sesion.Tipo == "P")
+                        {
+                            correo.To.Add(sesion.correo);
+                            correo.CC.Add(correo_c);
+                            if (sesion.IdAgen == 158 || sesion.IdAgen == 173)
+                            {
+                                if (correo_i != "maria.lopez@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("maria.lopez@giddingsfruit.mx");
+                                }
+                                if (correo_i != "maria.jimenez@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("maria.jimenez@giddingsfruit.mx");
+                                }
+                            }
+                            else
+                            {
+                                correo.CC.Add(correo_i);
+                            }
+                        }
+                        else if (sesion.Tipo == "I")
+                        {
+                            correo.To.Add(sesion.correo);
+                            correo.CC.Add(correo_c);
+                            correo.CC.Add(correo_p);
+                        }
+                        else if (sesion.Tipo == "C")
+                        {
+                            correo.To.Add(sesion.correo);
+                            correo.CC.Add(correo_i);
+                            correo.CC.Add(correo_p);
+
+                            if (sesion.IdRegion == 1)
+                            {
+                                correo.CC.Add("marco.velazquez@giddingsfruit.mx");
+                            }
+
+                            if (sesion.IdRegion == 3)
+                            {
+                                if (correo_c != "juan.mares@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("juan.mares@giddingsfruit.mx");
+                                }
+                                correo.CC.Add("genaro.morales@giddingsfruit.mx");
+                            }
+                        }
+
+                        correo.CC.Add("oscar.castillo@giddingsfruit.mx");
+                    }
+
+                        correo.Subject = "Nuevo Muestreo: " + campo.Cod_Prod;
+                        correo.Body = "Solicitado por: " + sesion.Completo + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Productor: " + campo.Cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Campo: " + campo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Inicio de cosecha: " + Inicio_cosecha + "<br/>";
+
+                    }
+
+                    else if (tipo_correo == "Muestreo Liberado")
+                    {
+                        if (cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+                        else {
+                            correo.To.Add(sesion.correo);//correo_p
+                            correo.CC.Add(correo_c);
+                            correo.CC.Add(correo_i);
+                        }
+                       
+                        correo.Subject = "Muestreo Liberado: " + cod_Prod;
+                        correo.Body = "Liberado por: " + sesion.Completo + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Productor: " + cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Campo: " + cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Ubicacion: " + campo.Ubicacion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
+                        correo.Body += " <br/>";
+                    }
+
+                    else if (tipo_correo == "fecha_ejecucion")
+                    {
+                        if (cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+                        else
+                        {
+                            correo.To.Add(sesion.correo);//correo_p
+                            correo.CC.Add(correo_c);
+                            correo.CC.Add(correo_p);
+                        }
+
+                        correo.Subject = "Fecha ejecucion agregada: " + cod_Prod;
+                        correo.Body = "Agregada por: " + sesion.Completo + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Productor: " + cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Campo: " + cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Ubicacion: " + campo.Ubicacion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Fecha: " + muestreo.Fecha_ejecucion + "<br/>";
+                    }
+
+                    else if (tipo_correo == "Liberar tarjeta ")
+                    {
+                        if (cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+                        else
+                        {
+                            correo.To.Add(sesion.correo);
+                            correo.CC.Add(correo_p);
+                            correo.CC.Add(correo_c);
+                            correo.CC.Add(correo_i);
+                        }
+
+                        correo.Subject = "Entrega de tarjeta: " + cod_Prod;
+                        correo.Body = "Autorizado por: " + sesion.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Se ha autorizado la liberación para entrega de tarjeta del productor: " + cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "campo: " + cod_Campo + " - " + campo.Descripcion + " ubicado en " + campo.Ubicacion + " <br/>";
+                        correo.Body += " <br/>";
+                        if (calidad_muestreo.Estatus == "1")
+                        {
+                            correo.Body += "Evaluacion de calidad: APTA <br/>";
+                        }
+                        else if (calidad_muestreo.Estatus == "2")
+                        {
+                            correo.Body += "Evaluacion de calidad: APTA CON CONDICIONES<br/>";
+                        }
+                        else if (calidad_muestreo.Estatus == "3")
+                        {
+                            correo.Body += "Evaluacion de calidad: PENDIENTE <br/>";
+                        }
+                        correo.Body += " <br/>";
+                        if (calidad_muestreo != null)
+                        {
+                            correo.Body += "Incidencias encontradas: " + calidad_muestreo.Incidencia + " <br/>";
+                            correo.Body += " <br/>";
+                            if (calidad_muestreo.Propuesta != "")
+                            {
+                                correo.Body += "Propuesta: " + calidad_muestreo.Propuesta + " <br/>";
+                                correo.Body += " <br/>";
+                            }
+                        }
+
+                        if (muestreo.Liberar_Tarjeta != "")
+                        {
+                            correo.Body += "Justificación: " + muestreo.Liberar_Tarjeta + "<br/>";
+                            correo.Body += " <br/>";
+                        }
+                        if (analisis != null)
+                        {
+                            if (analisis.Estatus == "R")
+                            {
+                                correo.Body += "Resultado del analisis: CON RESIDUOS <br/>";
+                            }
+                            else if (analisis.Estatus == "P")
+                            {
+                                correo.Body += "Resultado del analisis: EN PROCESO <br/>";
+                            }
+                            else if (analisis.Estatus == "F")
+                            {
+                                correo.Body += "Resultado del analisis: FUERA DE LIMITE <br/>";
+                            }
+                            else if (analisis.Estatus == "L")
+                            {
+                                correo.Body += "Resultado del analisis: LIBERADO <br/>";
+                            }
+                            correo.Body += " <br/>";
+                        }
+                    }                  
+
+                    correo.IsBodyHtml = true;
+                    correo.Priority = MailPriority.Normal;
+
+                    string sSmtpServer = "";
+                    sSmtpServer = "smtp.gmail.com";
+
+                    SmtpClient a = new SmtpClient();
+                    a.Host = sSmtpServer;
+                    a.Port = 587;//25
+                    a.EnableSsl = true;
+                    a.UseDefaultCredentials = true;
+                    a.Credentials = new System.Net.NetworkCredential
+                       ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                    a.Send(correo);
+                }
+                catch (Exception e)
+                {
+                    e.ToString();
+                }
+
+            }
+            catch (Exception e)
+            {
+                e.ToString();
             }
         }
     }

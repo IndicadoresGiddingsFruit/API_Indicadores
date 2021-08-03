@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\marholym\\Desktop\\Indicadores\\Indicadores\\ApiIndicadores.csproj": {}
+    "E:\\Programas\\Indicadores\\Indicadores\\ApiIndicadores.csproj": {}
   },
   "projects": {
-    "C:\\Users\\marholym\\Desktop\\Indicadores\\Indicadores\\ApiIndicadores.csproj": {
+    "E:\\Programas\\Indicadores\\Indicadores\\ApiIndicadores.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\marholym\\Desktop\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
+        "projectUniqueName": "E:\\Programas\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
         "projectName": "ApiIndicadores",
-        "projectPath": "C:\\Users\\marholym\\Desktop\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
+        "projectPath": "E:\\Programas\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
         "packagesPath": "C:\\Users\\marholym\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\marholym\\Desktop\\Indicadores\\Indicadores\\obj\\",
+        "outputPath": "E:\\Programas\\Indicadores\\Indicadores\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -96,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.204\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.205\\RuntimeIdentifierGraph.json"
         }
       }
     }

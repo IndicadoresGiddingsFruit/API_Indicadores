@@ -147,25 +147,26 @@ namespace ApiIndicadores.Controllers
                                 }).Distinct();
 
                 //lista encuestas, preguntas y sus respuestas
-                var encuestas = (from e in _context.EncuestasCat
-                                 join p in _context.EncuestasDet on e.Id equals p.IdEncuesta
-                                 where e.Id == id
-                                 group e by new
-                                 {
-                                     IdEncuesta = e.Id,
-                                     Encuesta = e.Nombre,
-                                     IdPregunta = p.Id,
-                                     Pregunta = p.Pregunta
-                                 } into x
-                                 select new
-                                 {
-                                     IdEncuesta = x.Key.IdEncuesta,
-                                     Encuesta = x.Key.Encuesta,
-                                     IdPregunta = x.Key.IdPregunta,
-                                     Pregunta = x.Key.Pregunta,
-                                     ListaRes = listaRes.Where(r => r.IdPregunta == x.Key.IdPregunta).ToList()
-                                 }).Distinct();
-
+           
+                     var encuestas = (from e in _context.EncuestasCat
+                                     join p in _context.EncuestasDet on e.Id equals p.IdEncuesta
+                                     where e.Id == id
+                                     group e by new
+                                     {
+                                         IdEncuesta = e.Id,
+                                         Encuesta = e.Nombre,
+                                         IdPregunta = p.Id,
+                                         Pregunta = p.Pregunta
+                                     } into x
+                                     select new
+                                     {
+                                         IdEncuesta = x.Key.IdEncuesta,
+                                         Encuesta = x.Key.Encuesta,
+                                         IdPregunta = x.Key.IdPregunta == null ? null : x.Key.IdPregunta,
+                                         Pregunta = x.Key.Pregunta== null ? null : x.Key.Pregunta,
+                                         ListaRes = listaRes == null ? null : listaRes.Where(r => r.IdPregunta == x.Key.IdPregunta).ToList()  
+                                     }).Distinct();
+                
                 var usuarios = (from u in _context.EncuestasUsuarios
                                 join e in _context.EncuestasCat on u.IdEncuesta equals e.Id
                                 join s in _context.SIPGUsuarios on u.IdUsuario equals s.Id
@@ -223,7 +224,8 @@ namespace ApiIndicadores.Controllers
                                       IdRespuesta = x.Key.IdRespuesta,
                                       Respuesta = x.Key.Respuesta,
                                       IdRelacion = x.Key.IdRelacion
-                                  }).Where(e => e.IdEncuesta == id && e.IdUsuario == IdUsuario).OrderBy(x => x.IdPregunta).Distinct();
+                                  }).Where(e => e.IdEncuesta == id && e.IdUsuario == IdUsuario).
+                                  OrderBy(x => x.IdPregunta).Distinct();
 
                 var res = Tuple.Create(encuestas.ToList(), usuarios.ToList(), respuestas.ToList());
                 if (res == null)
@@ -367,7 +369,7 @@ namespace ApiIndicadores.Controllers
         // DELETE api/<EncuestasController>/5
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult<EncuestasCat>> Delete(int id)
         {
             try
             {
@@ -375,7 +377,7 @@ namespace ApiIndicadores.Controllers
                 if (model != null)
                 {
                     _context.EncuestasCat.Remove(model);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return Ok(id);
                 }
                 else
@@ -405,11 +407,11 @@ namespace ApiIndicadores.Controllers
                     model.Respuesta = respuesta;
                     _context.EncuestasRes.Add(model);
                     await _context.SaveChangesAsync();
-                    idrespuesta = model.Id;
+                    idrespuesta = (int)model.Id;
                 }
                 else
                 {
-                    idrespuesta = modeloExistente.Id;
+                    idrespuesta = (int)modeloExistente.Id;
                 }
                 var modeloRelacion = _context.EncuestasRelacion.Where(m => m.IdPregunta == idpregunta && m.IdRespuesta == idrespuesta).FirstOrDefault();
                 if (modeloRelacion == null)
@@ -507,5 +509,7 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+       
     }
 }

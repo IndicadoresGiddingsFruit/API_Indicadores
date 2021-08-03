@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ApiIndicadores.Models;
-using ApiIndicadores.Classes;
 
 namespace ApiIndicadores.Context
 {
@@ -14,8 +12,8 @@ namespace ApiIndicadores.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            Database.SetCommandTimeout(180);
-        }
+            Database.SetCommandTimeout(150000);
+        }        
         public DbSet<SIPGUsuarios> SIPGUsuarios { get; set; }
         public DbSet<CatUsuariosA> CatUsuariosA { get; set; }
         public DbSet<CatSemanas> CatSemanas { get; set; }
@@ -23,6 +21,7 @@ namespace ApiIndicadores.Context
         public DbSet<CatTiposProd> CatTiposProd { get; set; }
         public DbSet<CatLocalidades> CatLocalidades { get; set; }
         public DbSet<ProdCamposCat> ProdCamposCat { get; set; }
+      
         public DbSet<ProdProductoresCat> ProdProductoresCat { get; set; }
         public DbSet<ProdAgenteCat> ProdAgenteCat { get; set; }
 
@@ -65,6 +64,8 @@ namespace ApiIndicadores.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RespuestasTotal>().HasNoKey();
+            modelBuilder.Entity<ProdCamposCat>().HasKey(c => new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo });
+            modelBuilder.Entity<MuestreosClass>().HasNoKey();
         }
     }
 }

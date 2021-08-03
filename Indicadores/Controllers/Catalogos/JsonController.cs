@@ -34,7 +34,6 @@ namespace ApiIndicadores.Models
         }
 
         //Campos
-
         [HttpGet("{Cod_Prod}/{Cod_Campo}", Name = "GetData")]
         public ActionResult GetData(string Cod_Prod, short Cod_Campo)
         {

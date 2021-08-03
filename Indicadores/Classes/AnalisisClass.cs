@@ -21,15 +21,17 @@ namespace ApiIndicadores.Classes
         public DateTime? Fecha { get; set; }
         public DateTime? Fecha_envio { get; set; }
         public DateTime? Fecha_entrega { get; set; }
-        public string Estatus { get; set; }
+        public string Analisis { get; set; }
         public int? Num_analisis { get; set; }
         public string Laboratorio { get; set; }
         public DateTime? LiberacionUSA { get; set; }
         public DateTime? LiberacionEU { get; set; }
         public string Comentarios { get; set; }
         public Int16? IdAgen { get; set; }
-        public Int16? IdAgenC { get; set; }
+        public int? IdAgenC { get; set; }
         public Int16? IdAgenI { get; set; }
-
+        public string Temporada { get; set; }
+        public string Traza { get; set; }
+        public string Folio { get; set; }
     }
 }
