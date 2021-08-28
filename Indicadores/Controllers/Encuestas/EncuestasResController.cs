@@ -69,11 +69,45 @@ namespace ApiIndicadores.Controllers
         }
 
         // POST api/<EncuestasResController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{idpregunta}")]
+        public async Task<ActionResult<EncuestasRes>> Post(int idpregunta,[FromBody] List<EncuestasRes> model)
         {
+            try
+            {   
+                foreach (var item in model)
+                {
+                    EncuestasRelacion encuestasRelacion = new EncuestasRelacion();
+                    int idrespuesta = 0;
+                    if (item.Respuesta != "")
+                    {
+                        var modeloExistente = _context.EncuestasRes.FirstOrDefault(m => m.Respuesta == item.Respuesta);
+                        if (modeloExistente == null)
+                        {
+                            _context.EncuestasRes.Add(item);
+                            await _context.SaveChangesAsync();
+                            idrespuesta = (int)item.Id;
+                        }
+                        else
+                        {
+                            idrespuesta = (int)modeloExistente.Id;
+                        }
+                        var modeloRelacion = _context.EncuestasRelacion.Where(m => m.IdPregunta == idpregunta && m.IdRespuesta == idrespuesta).FirstOrDefault();
+                        if (modeloRelacion == null)
+                        {
+                            encuestasRelacion.IdPregunta = idpregunta;
+                            encuestasRelacion.IdRespuesta = idrespuesta;
+                            _context.EncuestasRelacion.Add(encuestasRelacion);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                }
+                return Ok(model);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
-
         // PUT api/<EncuestasResController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)

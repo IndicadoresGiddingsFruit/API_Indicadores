@@ -59,9 +59,7 @@ namespace ApiIndicadores.Controllers
         {
             try
             {
-
                 var model_campo = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == model.Cod_Prod && x.Cod_Campo == model.Cod_Campo && x.Cod_Empresa == 2);
-
                 if (model_campo != null)
                 {
                     if (tipo == "P")
@@ -83,7 +81,7 @@ namespace ApiIndicadores.Controllers
                     body = "Se le ha asignado un nuevo código";
                     notificaciones.SendNotificationJSON(title, body);
 
-                    //enviar(idAgenOriginal, model.Cod_Prod, model.Cod_Campo, tipo);
+                    enviar(idAgenOriginal, model.Cod_Prod, model.Cod_Campo, tipo);
 
                     return Ok(model);
                 }

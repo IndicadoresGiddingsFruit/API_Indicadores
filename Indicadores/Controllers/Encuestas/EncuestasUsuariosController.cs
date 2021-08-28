@@ -49,15 +49,13 @@ namespace ApiIndicadores.Controllers
                             {
                                 IdEncuesta = u.IdEncuesta,
                                 IdUsuario = u.IdUsuario,
-                                Usuario = c.Completo,
-                                Identificador=u.Identificador
+                                Usuario = c.Completo
                             } into x
                             select new
                             {
                                 IdEncuesta = x.Key.IdEncuesta,
                                 IdUsuario = x.Key.IdUsuario,
-                                Usuario = x.Key.Usuario,
-                                Identificador=x.Key.Identificador
+                                Usuario = x.Key.Usuario
                             }).Distinct();
 
                 if (item == null)
@@ -75,30 +73,42 @@ namespace ApiIndicadores.Controllers
 
         // POST api/<EncuestasUsuariosController>
         [HttpPost("{id}/{idUsuario}")]
-        public async Task<IActionResult> Post(int id, int idUsuario, [FromBody] List<EncuestasRelacion> model)
+        public async Task<IActionResult> Post(int id, [FromBody] List<EncuestasLog> model)
         {
             try
             {
-                var EncuestasUsuarios = _context.EncuestasUsuarios.FirstOrDefault(m => m.IdEncuesta == id && m.IdUsuario == idUsuario);
-                if (EncuestasUsuarios != null)
+                foreach (var item in model)
                 {
-                    EncuestasUsuarios.Fecha = DateTime.Now;
-                    await _context.SaveChangesAsync();                    
-
-                    foreach (var item in model)
+                    var EncuestasUsuarios = _context.EncuestasUsuarios.FirstOrDefault(m => m.IdEncuesta == id && m.IdUsuario == item.IdAsingUsuario);
+                    if (EncuestasUsuarios != null)
                     {
+                        EncuestasUsuarios.Fecha = DateTime.Now;
+                        await _context.SaveChangesAsync();
+
                         EncuestasLog EncuestasLog = new EncuestasLog();
-                        EncuestasLog.IdAsingUsuario = EncuestasUsuarios.Id;
-                        EncuestasLog.IdRelacion = item.Id;
+
+                        EncuestasLog.IdAsingUsuario = item.IdAsingUsuario;
+                        if (item.Id != null)
+                        {
+                            EncuestasLog.IdRelacion = item.Id;
+                        }
+                        else
+                        {
+                            var idRespuesta = _context.EncuestasRes.FirstOrDefault(m => m.Respuesta == "Texto libre");
+                            var idRelacion = _context.EncuestasRelacion.FirstOrDefault(m => m.IdRespuesta == idRespuesta.Id);
+                            EncuestasLog.IdRelacion = idRelacion.Id;
+
+                        }
                         _context.EncuestasLog.Add(EncuestasLog);
                         await _context.SaveChangesAsync();
+                        return Ok(item);
                     }
-                    return Ok(); // Created5AtRoute("GetAllEncuestas", model);
+                    else
+                    {
+                        return BadRequest("Algo salió mal");
+                    }                   
                 }
-                else
-                {
-                    return BadRequest("Algo salió mal");
-                }
+                return Ok();
             }
             catch (Exception e)
             {
@@ -137,7 +147,7 @@ namespace ApiIndicadores.Controllers
                 var model = _context.EncuestasUsuarios.Find(id);
                 if (model != null)
                 {
-                    model.Identificador = identificador;
+                    //model.Identificador = identificador;
                     await _context.SaveChangesAsync();
                     return Ok();
                 }

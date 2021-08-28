@@ -102,7 +102,7 @@ namespace ApiIndicadores.Models
                                 IdAgen = a.IdAgen,
                                 Asesor=a.Nombre,
                                 Tipo=a.Depto
-                            }).OrderBy(x=>x.Asesor).Distinct().ToList();
+                            }).Distinct().OrderBy(x=>x.Asesor).ToList();
                 }                
                 return Ok(item);
             }

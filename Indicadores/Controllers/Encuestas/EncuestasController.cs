@@ -1,5 +1,4 @@
 ﻿using ApiIndicadores.Classes;
-using ApiIndicadores.Classes;
 using ApiIndicadores.Context;
 using ApiIndicadores.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -228,14 +227,9 @@ namespace ApiIndicadores.Controllers
                                   OrderBy(x => x.IdPregunta).Distinct();
 
                 var res = Tuple.Create(encuestas.ToList(), usuarios.ToList(), respuestas.ToList());
-                if (res == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(res);
-                }
+
+                //var res = _context.EncuestasClass.FromSqlRaw($"sp_GetEncuestas " + id + "," + IdUsuario + "").ToList();
+                return Ok(res);                 
             }
             catch (Exception e)
             {
@@ -392,43 +386,43 @@ namespace ApiIndicadores.Controllers
         }
 
         // POST api/<EncuestasRes/EncuestasRelacion Controller>/5/pregunta
-        [HttpPost("{id}/{idpregunta}/{respuesta}")]
-        public async Task<ActionResult<EncuestasRes>> Post(int id, int idpregunta, string respuesta)
-        {
-            try
-            {
-                EncuestasRes model = new EncuestasRes();
-                EncuestasRelacion encuestasRelacion = new EncuestasRelacion();
-                int idrespuesta = 0;
+        //[HttpPost("{id}/{idpregunta}/{respuesta}")]
+        //public async Task<ActionResult<EncuestasRes>> Post(int id, int idpregunta, string respuesta)
+        //{
+        //    try
+        //    {
+        //        EncuestasRes model = new EncuestasRes();
+        //        EncuestasRelacion encuestasRelacion = new EncuestasRelacion();
+        //        int idrespuesta = 0;
 
-                var modeloExistente = _context.EncuestasRes.FirstOrDefault(m => m.Respuesta == respuesta);
-                if (modeloExistente == null)
-                {
-                    model.Respuesta = respuesta;
-                    _context.EncuestasRes.Add(model);
-                    await _context.SaveChangesAsync();
-                    idrespuesta = (int)model.Id;
-                }
-                else
-                {
-                    idrespuesta = (int)modeloExistente.Id;
-                }
-                var modeloRelacion = _context.EncuestasRelacion.Where(m => m.IdPregunta == idpregunta && m.IdRespuesta == idrespuesta).FirstOrDefault();
-                if (modeloRelacion == null)
-                {
-                    encuestasRelacion.IdPregunta = idpregunta;
-                    encuestasRelacion.IdRespuesta = idrespuesta;
-                    _context.EncuestasRelacion.Add(encuestasRelacion);
-                    await _context.SaveChangesAsync();
-                }
+        //        var modeloExistente = _context.EncuestasRes.FirstOrDefault(m => m.Respuesta == respuesta);
+        //        if (modeloExistente == null)
+        //        {
+        //            model.Respuesta = respuesta;
+        //            _context.EncuestasRes.Add(model);
+        //            await _context.SaveChangesAsync();
+        //            idrespuesta = (int)model.Id;
+        //        }
+        //        else
+        //        {
+        //            idrespuesta = (int)modeloExistente.Id;
+        //        }
+        //        var modeloRelacion = _context.EncuestasRelacion.Where(m => m.IdPregunta == idpregunta && m.IdRespuesta == idrespuesta).FirstOrDefault();
+        //        if (modeloRelacion == null)
+        //        {
+        //            encuestasRelacion.IdPregunta = idpregunta;
+        //            encuestasRelacion.IdRespuesta = idrespuesta;
+        //            _context.EncuestasRelacion.Add(encuestasRelacion);
+        //            await _context.SaveChangesAsync();
+        //        }
 
-                return CreatedAtRoute("GetIdEncuesta", new { id = id, IdUsuario = 0 }, model);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        //        return CreatedAtRoute("GetIdEncuesta", new { id = id, IdUsuario = 0 }, model);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
         // PUT api/<EncuestasResController>/5
         [HttpPut("{id}/{idpregunta}/{idrespuesta}/{respuesta}")]
@@ -509,7 +503,6 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-       
+    
     }
 }

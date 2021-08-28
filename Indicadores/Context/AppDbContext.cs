@@ -43,7 +43,8 @@ namespace ApiIndicadores.Context
 
         public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; }
         public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }
-        
+        public DbSet<EvaluacionClass> EvaluacionClass { get; set; }
+
         //Encuestas
         public DbSet<EncuestasCat> EncuestasCat { get; set; }
         public DbSet<EncuestasTipo> EncuestasTipo { get; set; }
@@ -52,6 +53,7 @@ namespace ApiIndicadores.Context
         public DbSet<EncuestasRelacion> EncuestasRelacion { get; set; }
         public DbSet<EncuestasUsuarios> EncuestasUsuarios { get; set; }
         public DbSet<EncuestasLog> EncuestasLog { get; set; }
+        public DbSet<EncuestasClass> EncuestasClass { get; set; }
 
         //Empleados
         //public DbSet<Empleado> Empleado { get; set; }
@@ -66,6 +68,8 @@ namespace ApiIndicadores.Context
             modelBuilder.Entity<RespuestasTotal>().HasNoKey();
             modelBuilder.Entity<ProdCamposCat>().HasKey(c => new { c.Cod_Empresa, c.Cod_Prod, c.Cod_Campo });
             modelBuilder.Entity<MuestreosClass>().HasNoKey();
+            modelBuilder.Entity<EncuestasClass>().HasNoKey();
+            modelBuilder.Entity<EvaluacionClass>().HasNoKey();
         }
     }
 }

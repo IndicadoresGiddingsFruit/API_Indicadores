@@ -21,7 +21,7 @@ namespace ApiIndicadores.Classes
         public string Liberacion { get; set; }
         public string Estatus { get; set; }
         public string Tarjeta { get; set; }
-        public Int16? Sector { get; set; }
+        public string Sector { get; set; }
         public DateTime? Fecha_solicitud { get; set; }
         public DateTime? Fecha_ejecucion { get; set; }
         public Int16? IdAgen { get; set; }

@@ -66,7 +66,7 @@ namespace ApiIndicadores.Controllers
                                                                Sector = x.Key.Sector,
                                                            }).Distinct();
 
-                var muestreos =  _context.MuestreosClass.FromSqlRaw($"sp_GetMuestreos " + idAgen + "," + tipo + "").ToListAsync();
+                var muestreos = _context.MuestreosClass.FromSqlRaw($"sp_GetMuestreos " + idAgen + "," + tipo + "").ToListAsync();
                 return Ok(await muestreos);
             }
             catch (Exception e)
@@ -123,7 +123,7 @@ namespace ApiIndicadores.Controllers
         }
 
         // PUT api/<MuestreoController>/5
-        //fecha_ejecucion  
+      
         [HttpPut("{id}/{idAgen}/{sector}")]
         public ActionResult Put(int id, short idAgen, short sector, [FromBody] ProdMuestreo model)
         {
@@ -135,42 +135,57 @@ namespace ApiIndicadores.Controllers
                 var item = _context.ProdMuestreo.Find(id);
                 if (item.Id == id)
                 {
-                    var model_sector = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == item.Cod_Prod && x.Cod_Campo == item.Cod_Campo && x.Sector == sector).FirstOrDefault();
-                    if (model_sector == null)
+                    //fecha_ejecucion  
+                    if (sector != 0)
                     {
-                        prodMuestreoSector.Cod_Prod = item.Cod_Prod;
-                        prodMuestreoSector.Cod_Campo = item.Cod_Campo;
-                        prodMuestreoSector.Sector = sector;
-                        _context.ProdMuestreoSector.Add(prodMuestreoSector);
-                        _context.SaveChanges();
-
-                        IdMuestreoSector = prodMuestreoSector.id;
-                    }
-                    else
-                    {
-                        IdMuestreoSector = model_sector.id;
-                    }
-
-                    if (IdMuestreoSector != 0)
-                    {
-                        item.IdSector = IdMuestreoSector;
-                        item.IdAgenI = idAgen;
-                        if (model.Fecha_ejecucion != null)
+                        var model_sector = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == item.Cod_Prod && x.Cod_Campo == item.Cod_Campo && x.Sector == sector).FirstOrDefault();
+                        if (model_sector == null)
                         {
-                            item.Fecha_ejecucion = model.Fecha_ejecucion;
+                            prodMuestreoSector.Cod_Prod = item.Cod_Prod;
+                            prodMuestreoSector.Cod_Campo = item.Cod_Campo;
+                            prodMuestreoSector.Sector = sector;
+                            _context.ProdMuestreoSector.Add(prodMuestreoSector);
+                            _context.SaveChanges();
+
+                            IdMuestreoSector = prodMuestreoSector.id;
                         }
-                        _context.SaveChanges();
+                        else
+                        {
+                            IdMuestreoSector = model_sector.id;
+                        }
 
-                        title = "Código: " + item.Cod_Prod + " campo: " + item.Cod_Campo;
-                        body = "Fecha de muestreo agregada: " + model.Fecha_ejecucion;
-                        notificaciones.SendNotificationJSON(title, body);
+                        if (IdMuestreoSector != 0)
+                        {
+                            item.IdSector = IdMuestreoSector;
+                            item.IdAgenI = idAgen;
+                            if (sector == 1)
+                            {
+                                item.Fecha_ejecucion = model.Fecha_ejecucion;
 
-                        enviar(idAgen, item.Cod_Prod, item.Cod_Campo, "fecha_ejecucion");
-                        return Ok();
+                                title = "Código: " + item.Cod_Prod + " campo: " + item.Cod_Campo;
+                                body = "Fecha de muestreo agregada: " + model.Fecha_ejecucion;
+                                notificaciones.SendNotificationJSON(title, body);
+
+                                enviar(idAgen, item.Cod_Prod, item.Cod_Campo, "fecha_ejecucion");
+                            }
+                            _context.SaveChanges();
+
+                            return Ok(model);
+                        }
+                        else
+                        {
+                            return BadRequest();
+                        }
                     }
-                    else
+
+                    //editar muestreo
+                    else 
                     {
-                        return BadRequest();
+                        item.Cod_Campo = model.Cod_Campo;
+                        item.Inicio_cosecha = model.Inicio_cosecha;
+                        item.Telefono = model.Telefono;
+                        _context.SaveChanges();
+                        return Ok(model);
                     }
                 }
                 return BadRequest();
@@ -182,8 +197,8 @@ namespace ApiIndicadores.Controllers
         }
 
         //Liberar solicitud 
-        [HttpPatch("{id}/{idAgen}")]
-        public ActionResult Patch(int id, short idAgen)
+        [HttpPatch("{id}/{idAgen}/{opcion}")]
+        public ActionResult Patch(int id, short idAgen, string opcion, [FromBody] ProdMuestreo model)
         {
             try
             {
@@ -191,15 +206,29 @@ namespace ApiIndicadores.Controllers
 
                 if (muestreo.Id == id)
                 {
-                    muestreo.Liberacion = "S";
-                    title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
-                    body = "Solicitud de muestreo liberada por producción ";
+                    if (opcion== "liberacion") {
+                        muestreo.Liberacion = "S";
+                        title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
+                        body = "Solicitud de muestreo liberada por producción";
 
-                    notificaciones.SendNotificationJSON(title, body);
-                    _context.SaveChanges();
+                        notificaciones.SendNotificationJSON(title, body);
+                        _context.SaveChanges();
 
-                    enviar(idAgen, muestreo.Cod_Prod, muestreo.Cod_Campo, "Muestreo Liberado");
+                        enviar(idAgen, muestreo.Cod_Prod, muestreo.Cod_Campo, "Mutreo Liberado");
+                    }
+                    else {
+                        muestreo.Tarjeta = "S";
+                        muestreo.IdAgen_Tarjeta = idAgen;
+                        muestreo.Liberar_Tarjeta = model.Liberar_Tarjeta;
 
+                        title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
+                        body = "Autorizacíon para entrega de tarjeta ";
+
+                        notificaciones.SendNotificationJSON(title, body);
+                        _context.SaveChanges();
+
+                        enviar(idAgen, muestreo.Cod_Prod, muestreo.Cod_Campo, "Liberar tarjeta");
+                    }
                     return Ok(muestreo);
                 }
                 else
@@ -264,7 +293,7 @@ namespace ApiIndicadores.Controllers
                         item.IdAgenC = 168;
                         correo_c = "juan.mares@giddingsfruit.mx";
                     }
-                    if (sesion.IdRegion == 1 || sesion.IdRegion==8)
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8 || sesion.IdAgen != 197 || sesion.IdAgen != 144)
                     {
                         item.IdAgenC = 167;
                         correo_c = "mayra.ramirez@giddingsfruit.mx";
@@ -278,21 +307,22 @@ namespace ApiIndicadores.Controllers
 
                 if (email_i == null)
                 {
-                    if (sesion.IdRegion == 3)
-                    {
-                        correo_c = "hector.torres@giddingsfruit.mx";
-                    }
-                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8) //Los Reyes
+                    //Los Reyes
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8 || sesion.IdAgen != 197 || sesion.IdAgen != 144) 
                     {
                         var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo && x.Cod_Empresa == 2);
                         item.IdAgenI = 205;
                         _context.SaveChanges();
                         correo_i = "jesus.palafox@giddingsfruit.mx";
                     }
-                    else
+                    else 
                     {
-                        correo_i = email_i.correo;
+                        correo_i = "hector.torres@giddingsfruit.mx";
                     }
+                }
+                else
+                {
+                    correo_i = email_i.correo;
                 }
 
                 try
@@ -304,59 +334,124 @@ namespace ApiIndicadores.Controllers
                     if (tipo_correo == "nuevo")
                     {
                         var Inicio_cosecha = String.Format("{0:d}", muestreo.Inicio_cosecha);
-                        if (cod_Prod=="99999") {
+                        if (cod_Prod == "99999")
+                        {
                             correo.To.Add("marholy.martinez@giddingsfruit.mx");
                         }
-                        else { 
-                        if (sesion.Tipo == "P")
-                        {
-                            correo.To.Add(sesion.correo);
-                            correo.CC.Add(correo_c);
-                            if (sesion.IdAgen == 158 || sesion.IdAgen == 173)
-                            {
-                                if (correo_i != "maria.lopez@giddingsfruit.mx")
+                        else
+                        {        
+                            //producción
+                            if (sesion.Tipo == "P")
+                            {   
+                                correo.To.Add(sesion.correo);
+                               
+                                //Ziracuaretiro
+                                if (sesion.IdAgen == 158 || sesion.IdAgen == 173)
                                 {
-                                    correo.CC.Add("maria.lopez@giddingsfruit.mx");
-                                }
-                                if (correo_i != "maria.jimenez@giddingsfruit.mx")
+                                    if (correo_c != "maria.lopez@giddingsfruit.mx")
+                                    {
+                                        correo.CC.Add("maria.lopez@giddingsfruit.mx");
+                                    }
+
+                                    else
+                                    {
+                                        correo.CC.Add(correo_c);
+                                    }
+
+                                    if (correo_i != "maria.jimenez@giddingsfruit.mx")
+                                    {
+                                        correo.CC.Add("maria.jimenez@giddingsfruit.mx");
+                                    }
+
+                                    else
+                                    {
+                                        correo.CC.Add(correo_i);
+                                    }
+                                }                                                             
+
+                                //Todas
+                                else
                                 {
-                                    correo.CC.Add("maria.jimenez@giddingsfruit.mx");
+                                    correo.CC.Add(correo_c);
+                                    
+                                    if (correo_c== "crystyan.torres@giddingsfruit.mx") {
+                                        correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                    }
+
+                                    correo.CC.Add(correo_i);
+                                    
+                                    //Arandas
+                                    if (sesion.IdAgen == 197)
+                                    {
+                                        correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                    }
                                 }
                             }
-                            else
+
+                            //calidad
+                            else if (sesion.Tipo == "I")
                             {
+                                correo.To.Add(sesion.correo);
+                                correo.CC.Add(correo_c);
+                                if (correo_c == "crystyan.torres@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                }
+                                correo.CC.Add(correo_p);
+
+                                //Arandas
+                                if (sesion.IdAgen == 211)
+                                {
+                                    correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                }
+                            }
+
+                            //inocuidad
+                            else if (sesion.Tipo == "C")
+                            {
+                                correo.To.Add(sesion.correo);
+                                if (sesion.correo == "crystyan.torres@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                }
                                 correo.CC.Add(correo_i);
+                                correo.CC.Add(correo_p);
                             }
-                        }
-                        else if (sesion.Tipo == "I")
-                        {
-                            correo.To.Add(sesion.correo);
-                            correo.CC.Add(correo_c);
-                            correo.CC.Add(correo_p);
-                        }
-                        else if (sesion.Tipo == "C")
-                        {
-                            correo.To.Add(sesion.correo);
-                            correo.CC.Add(correo_i);
-                            correo.CC.Add(correo_p);
 
-                            if (sesion.IdRegion == 1)
+        //------------------------------------------------------------------------------------------------------------------------------
+                           //zona Los Reyes copia a Mayra
+                            if (sesion.IdRegion == 1 || sesion.IdRegion == 8)
                             {
-                                correo.CC.Add("marco.velazquez@giddingsfruit.mx");
+                                //Arandas
+                                if (sesion.IdAgen != 197 || sesion.IdAgen != 144 || sesion.IdAgen != 211)
+                                {
+                                    correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
+                                }
                             }
 
+                            //zona Jalisco copia a Daniel
+                            if (sesion.IdRegion == 2)
+                            {
+                                correo.CC.Add("jose.partida@giddingsfruit.mx");
+                            }
+
+                            //zona Uruapan 
                             if (sesion.IdRegion == 3)
                             {
                                 if (correo_c != "juan.mares@giddingsfruit.mx")
                                 {
                                     correo.CC.Add("juan.mares@giddingsfruit.mx");
                                 }
+
+                                if (sesion.correo == "angel.hernandez@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                }
                                 correo.CC.Add("genaro.morales@giddingsfruit.mx");
                             }
-                        }
 
-                        correo.CC.Add("oscar.castillo@giddingsfruit.mx");
-                    }
+                            correo.CC.Add("oscar.castillo@giddingsfruit.mx");
+                        }
 
                         correo.Subject = "Nuevo Muestreo: " + campo.Cod_Prod;
                         correo.Body = "Solicitado por: " + sesion.Completo + " <br/>";
@@ -367,8 +462,7 @@ namespace ApiIndicadores.Controllers
                         correo.Body += " <br/>";
                         correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
                         correo.Body += " <br/>";
-                        correo.Body += "Inicio de cosecha: " + Inicio_cosecha + "<br/>";
-
+                        correo.Body += "Inicio de cosecha: " + Inicio_cosecha + "<br/>";                       
                     }
 
                     else if (tipo_correo == "Muestreo Liberado")
@@ -377,12 +471,17 @@ namespace ApiIndicadores.Controllers
                         {
                             correo.To.Add("marholy.martinez@giddingsfruit.mx");
                         }
-                        else {
+                        else
+                        {
                             correo.To.Add(sesion.correo);//correo_p
                             correo.CC.Add(correo_c);
+                            if (correo_c == "crystyan.torres@giddingsfruit.mx")
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                            }
                             correo.CC.Add(correo_i);
                         }
-                       
+
                         correo.Subject = "Muestreo Liberado: " + cod_Prod;
                         correo.Body = "Liberado por: " + sesion.Completo + " <br/>";
                         correo.Body += " <br/>";
@@ -398,15 +497,24 @@ namespace ApiIndicadores.Controllers
 
                     else if (tipo_correo == "fecha_ejecucion")
                     {
+                        var Fecha_ejecucion = String.Format("{0:d}", muestreo.Fecha_ejecucion);
                         if (cod_Prod == "99999")
                         {
                             correo.To.Add("marholy.martinez@giddingsfruit.mx");
                         }
                         else
                         {
-                            correo.To.Add(sesion.correo);//correo_p
+                            correo.To.Add(sesion.correo);//correo_i                          
                             correo.CC.Add(correo_c);
+                            if (correo_c == "crystyan.torres@giddingsfruit.mx")
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                            }
                             correo.CC.Add(correo_p);
+                            if (sesion.IdAgen == 284 || sesion.IdAgen == 209)
+                            {
+                                correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                            }
                         }
 
                         correo.Subject = "Fecha ejecucion agregada: " + cod_Prod;
@@ -420,10 +528,10 @@ namespace ApiIndicadores.Controllers
                         correo.Body += " <br/>";
                         correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
                         correo.Body += " <br/>";
-                        correo.Body += "Fecha: " + muestreo.Fecha_ejecucion + "<br/>";
+                        correo.Body += "Fecha: " + Fecha_ejecucion + "<br/>";
                     }
 
-                    else if (tipo_correo == "Liberar tarjeta ")
+                    else if (tipo_correo == "Liberar tarjeta")
                     {
                         if (cod_Prod == "99999")
                         {
@@ -434,66 +542,33 @@ namespace ApiIndicadores.Controllers
                             correo.To.Add(sesion.correo);
                             correo.CC.Add(correo_p);
                             correo.CC.Add(correo_c);
+                            if (correo_c == "crystyan.torres@giddingsfruit.mx")
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                            }
                             correo.CC.Add(correo_i);
+                            if ((sesion.IdRegion == 1 || sesion.IdRegion == 8) && correo_c!= "mayra.ramirez@giddingsfruit.mx")
+                            {
+                                if (correo_p!= "aliberth.martinez@giddingsfruit.mx") 
+                                {
+                                    correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
+                                }                                
+                            }
                         }
 
                         correo.Subject = "Entrega de tarjeta: " + cod_Prod;
-                        correo.Body = "Autorizado por: " + sesion.Nombre + " <br/>";
+                        correo.Body = "Autorizado por: " + sesion.Completo + " <br/>";
                         correo.Body += " <br/>";
-                        correo.Body += "Se ha autorizado la liberación para entrega de tarjeta del productor: " + cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += "Se ha autorizado la liberacion para entrega de tarjeta del productor: " + cod_Prod + " - " + prod.Nombre + " <br/>";
                         correo.Body += " <br/>";
-                        correo.Body += "campo: " + cod_Campo + " - " + campo.Descripcion + " ubicado en " + campo.Ubicacion + " <br/>";
-                        correo.Body += " <br/>";
-                        if (calidad_muestreo.Estatus == "1")
-                        {
-                            correo.Body += "Evaluacion de calidad: APTA <br/>";
-                        }
-                        else if (calidad_muestreo.Estatus == "2")
-                        {
-                            correo.Body += "Evaluacion de calidad: APTA CON CONDICIONES<br/>";
-                        }
-                        else if (calidad_muestreo.Estatus == "3")
-                        {
-                            correo.Body += "Evaluacion de calidad: PENDIENTE <br/>";
-                        }
-                        correo.Body += " <br/>";
-                        if (calidad_muestreo != null)
-                        {
-                            correo.Body += "Incidencias encontradas: " + calidad_muestreo.Incidencia + " <br/>";
-                            correo.Body += " <br/>";
-                            if (calidad_muestreo.Propuesta != "")
-                            {
-                                correo.Body += "Propuesta: " + calidad_muestreo.Propuesta + " <br/>";
-                                correo.Body += " <br/>";
-                            }
-                        }
-
+                        correo.Body += "campo: " + cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";                       
                         if (muestreo.Liberar_Tarjeta != "")
                         {
-                            correo.Body += "Justificación: " + muestreo.Liberar_Tarjeta + "<br/>";
+                            correo.Body += "Justificacion: " + muestreo.Liberar_Tarjeta + "<br/>";
                             correo.Body += " <br/>";
-                        }
-                        if (analisis != null)
-                        {
-                            if (analisis.Estatus == "R")
-                            {
-                                correo.Body += "Resultado del analisis: CON RESIDUOS <br/>";
-                            }
-                            else if (analisis.Estatus == "P")
-                            {
-                                correo.Body += "Resultado del analisis: EN PROCESO <br/>";
-                            }
-                            else if (analisis.Estatus == "F")
-                            {
-                                correo.Body += "Resultado del analisis: FUERA DE LIMITE <br/>";
-                            }
-                            else if (analisis.Estatus == "L")
-                            {
-                                correo.Body += "Resultado del analisis: LIBERADO <br/>";
-                            }
-                            correo.Body += " <br/>";
-                        }
-                    }                  
+                        }                       
+                    }
 
                     correo.IsBodyHtml = true;
                     correo.Priority = MailPriority.Normal;
@@ -506,20 +581,19 @@ namespace ApiIndicadores.Controllers
                     a.Port = 587;//25
                     a.EnableSsl = true;
                     a.UseDefaultCredentials = true;
-                    a.Credentials = new System.Net.NetworkCredential
-                       ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                    a.Credentials = new System.Net.NetworkCredential("indicadores.giddingsfruit@gmail.com", "indicadores2019");
                     a.Send(correo);
                 }
                 catch (Exception e)
                 {
                     e.ToString();
                 }
-
             }
             catch (Exception e)
             {
                 e.ToString();
             }
         }
+
     }
 }

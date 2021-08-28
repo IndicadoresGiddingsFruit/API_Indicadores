@@ -95,7 +95,7 @@ namespace ApiIndicadores.Controllers
                         }
                         else if (model.Estatus == "2")
                         {
-                            muestreo.Tarjeta = "N";
+                            muestreo.Tarjeta = "S";
                         }
                         else if (model.Estatus == "3")
                         {
@@ -129,7 +129,7 @@ namespace ApiIndicadores.Controllers
         {
             try
             {
-                string correo_p, correo_c, correo_i;
+                string correo_p, correo_c="", correo_i="";
                 var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo);
                 //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
                 var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Tipo == "P");
@@ -147,17 +147,21 @@ namespace ApiIndicadores.Controllers
                 if (email_c == null)
                 {
                     var item = _context.ProdCamposCat.Where(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo).First();
+                    
+                    //Uruapan
                     if (sesion.IdRegion == 3)
                     {
-                        //item.IdAgenC = 168;
+                        item.IdAgenC = 168;
                         correo_c = "juan.mares@giddingsfruit.mx";
                     }
-                    if (sesion.IdRegion == 1)
+
+                    //Los Reyes
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8)
                     {
-                        //item.IdAgenC = 167;
+                        item.IdAgenC = 167;
                         correo_c = "mayra.ramirez@giddingsfruit.mx";
                     }
-                    //_context.SaveChanges();
+                    _context.SaveChanges();
                 }
                 else
                 {
@@ -166,22 +170,22 @@ namespace ApiIndicadores.Controllers
 
                 if (email_i == null)
                 {
-                    if (sesion.IdRegion == 3)
+                    //Los Reyes
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8) 
                     {
-                        correo_c = "hector.torres@giddingsfruit.mx";
-                    }
-                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8) //Los Reyes
-                    {
-                        //var item = _context.ProdCamposCat.Where(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo).First();
-                        //item.IdAgenI = 205;
-                        //_context.SaveChanges();
-                        correo_i = "jesus.palafox@giddingsfruit.mx";
-                        //}
+                        var item = _context.ProdCamposCat.Where(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo).First();
+                        item.IdAgenI = 205;
+                        _context.SaveChanges();
+                        correo_i = "jesus.palafox@giddingsfruit.mx";                        
                     }
                     else
                     {
-                        correo_i = email_i.correo;
+                        correo_i = "hector.torres@giddingsfruit.mx";
                     }
+                }
+                else
+                {
+                    correo_i = email_i.correo;
                 }
 
                 try
@@ -191,9 +195,36 @@ namespace ApiIndicadores.Controllers
                     var prod = _context.ProdProductoresCat.FirstOrDefault(x => x.Cod_Prod == campo.Cod_Prod);
                      if (tipo_correo == "Calidad fruta")
                      {
-                        correo.To.Add("marholy.martinez@giddingsfruit.mx");// sesion.correo);//correo_c                        
-                        //correo.CC.Add(correo_p);
-                        //correo.CC.Add(correo_i);
+                        if (cod_Prod != "99999")
+                        {
+                            correo.To.Add(sesion.correo);
+                            correo.CC.Add(correo_p);
+                            correo.CC.Add(correo_i);
+
+                            if (sesion.correo == "crystyan.torres@giddingsfruit.mx")
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                            }
+
+                            //uruapan
+                            if (sesion.IdRegion == 3 && correo_c != "juan.mares@giddingsfruit.mx")
+                            {
+                                correo.CC.Add("juan.mares@giddingsfruit.mx");
+                            }
+
+                            //los reyes
+                            if (sesion.IdRegion == 1 || sesion.IdRegion == 8 && correo_c != "mayra.ramirez@giddingsfruit.mx")
+                            {
+                                //arandas
+                                if (correo_p != "aliberth.martinez@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
+                                }
+                            }
+                        }
+                        else {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
 
                         correo.Subject = "Calidad de fruta evaluada: " + cod_Prod;
                         correo.Body += "Evaluado por: " + sesion.Completo + " <br/>";
@@ -219,10 +250,13 @@ namespace ApiIndicadores.Controllers
                         {
                             correo.Body += "Estatus: APTA CON CONDICIONES<br/>";
                             correo.Body += " <br/>";
-                            if (analisis.Estatus == "L")
+                            if (analisis != null)
                             {
-                                correo.Body += "Entregar tarjeta <br/>";
-                                correo.Body += " <br/>";
+                                if (analisis.Estatus == "L")
+                                {
+                                    correo.Body += "Entregar tarjeta <br/>";
+                                    correo.Body += " <br/>";
+                                }
                             }
                         }
                         else if (calidad_muestreo.Estatus == "3")

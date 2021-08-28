@@ -51,9 +51,10 @@ namespace ApiIndicadores.Controllers
                     var item = _context.EncuestasDet.FirstOrDefault(m => m.Pregunta == model.Pregunta && m.IdEncuesta == id);
                     if (item == null)
                     {
+                        model.IdEncuesta = id;
                         _context.EncuestasDet.Add(model);
                         await _context.SaveChangesAsync();
-                        return Ok();
+                        return Ok(model);
                     }
                     else
                     {

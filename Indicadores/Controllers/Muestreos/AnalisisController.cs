@@ -24,7 +24,7 @@ namespace ApiIndicadores.Controllers
 
         Notificaciones notificaciones = new Notificaciones();
         string title = "", body = "";
-        int num_analisis;
+        int num_analisis=0;
 
         // GET: api/<AnalisisController>
         [HttpGet]
@@ -56,7 +56,7 @@ namespace ApiIndicadores.Controllers
                 }
                 else
                 {
-                    if (idAgen == 1 || idAgen == 205 || idAgen == 153 || idAgen == 281 || idAgen == 167 || idAgen == 182)
+                    if (idAgen == 205 || idAgen == 281)
                     {
                         analisis = _context.AnalisisClass.FromSqlRaw($"sp_GetAnalisis " + 205 + "," + tipo + "").ToList();
                     }
@@ -166,6 +166,11 @@ namespace ApiIndicadores.Controllers
                     {
                         model.Traza = "1";
                     }
+                    if (model.Estatus != "L")
+                    {
+                        model.Comentarios = model.Comentarios;
+                    }
+
                     _context.ProdAnalisis_Residuo.Add(model);
                     _context.SaveChanges();
 
@@ -191,8 +196,8 @@ namespace ApiIndicadores.Controllers
                     title = "Código: " + cod_Prod + " campo: " + cod_Campo;
                     body = "Resultado del análisis: " + estatus;
                     notificaciones.SendNotificationJSON(title, body);
-
-                    enviar(model.IdAgen, cod_Prod, cod_Campo, "Resultado análisis");
+                                       
+                    enviar(model.IdAgen, cod_Prod, cod_Campo);
 
                     return Ok(model);
                 }
@@ -209,7 +214,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        public void enviar(short? idAgen_Session, string cod_Prod, short? cod_Campo, string tipo_correo)
+        public void enviar(short? idAgen_Session, string cod_Prod, short? cod_Campo)
         {
             try
             {
@@ -238,11 +243,15 @@ namespace ApiIndicadores.Controllers
                 if (email_c == null)
                 {
                     var item = _context.ProdCamposCat.Where(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo).FirstOrDefault();
+
+                    //Uruapan
                     if (sesion.IdRegion == 3)
                     {
                         item.IdAgenC = 168;
                         correo_c = "juan.mares@giddingsfruit.mx";
                     }
+
+                    //Los Reyes
                     if (sesion.IdRegion == 1 || sesion.IdRegion == 8)
                     {
                         item.IdAgenC = 167;
@@ -257,11 +266,8 @@ namespace ApiIndicadores.Controllers
 
                 if (email_i == null)
                 {
-                    if (sesion.IdRegion == 3)
-                    {
-                        correo_c = "hector.torres@giddingsfruit.mx";
-                    }
-                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8) //Los Reyes
+                    //Los Reyes
+                    if (sesion.IdRegion == 1 || sesion.IdRegion == 8) 
                     {
                         var item = _context.ProdCamposCat.Where(x => x.Cod_Prod == cod_Prod && x.Cod_Campo == cod_Campo).First();
                         item.IdAgenI = 205;
@@ -270,8 +276,12 @@ namespace ApiIndicadores.Controllers
                     }
                     else
                     {
-                        correo_i = email_i.correo;
+                        correo_i = "hector.torres@giddingsfruit.mx";
                     }
+                }
+                else
+                {
+                    correo_i = email_i.correo;
                 }
 
                 try
@@ -281,7 +291,6 @@ namespace ApiIndicadores.Controllers
                     var prod = _context.ProdProductoresCat.FirstOrDefault(x => x.Cod_Prod == campo.Cod_Prod);
                     var Fecha_envio = String.Format("{0:d}", analisis.Fecha_envio);
                     var Fecha_entrega = String.Format("{0:d}", analisis.Fecha_entrega);
-
 
                     string res_analisis = "";
                     if (analisis.Estatus == "R")
@@ -310,10 +319,28 @@ namespace ApiIndicadores.Controllers
                         correo.To.Add(sesion.correo);
                         correo.CC.Add(correo_p);
                         correo.CC.Add(correo_c);
+
+                        if (correo_c == "crystyan.torres@giddingsfruit.mx")
+                        {
+                            correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                        }
+
                         if (correo_i != "jesus.palafox@giddingsfruit.mx")
                         {
                             correo.CC.Add(correo_i);
                         }
+                        correo.CC.Add("residente.inocuidad@giddingsfruit.mx");
+
+                        //los reyes
+                        if (email_p.IdRegion == 1 || email_p.IdRegion == 8 && correo_c != "mayra.ramirez@giddingsfruit.mx")
+                        {
+                            //arandas
+                            if (correo_p != "aliberth.martinez@giddingsfruit.mx")
+                            {
+                                correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
+                            }
+                        }
+                         
                     }
                     correo.Subject = "Analisis de residuos: " + campo.Cod_Prod + " - " + res_analisis;
                     correo.Body += "Productor: " + campo.Cod_Prod + " - " + prod.Nombre + " <br/>";
@@ -355,8 +382,8 @@ namespace ApiIndicadores.Controllers
                             correo.Body += " <br/>";
                         }
                     }
-                    correo.Body += "Numero de analisis: " + analisis.Num_analisis + "<br/>";
-                    correo.Body += " <br/>";
+                    //correo.Body += "Numero de analisis: " + analisis.Num_analisis + "<br/>";
+                    //correo.Body += " <br/>";
                     correo.Body += "Laboratorio: " + analisis.Laboratorio + "<br/>";
                     correo.Body += " <br/>";
                     if (analisis.Comentarios != null)
