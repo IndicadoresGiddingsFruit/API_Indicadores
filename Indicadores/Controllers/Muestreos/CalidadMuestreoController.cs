@@ -24,8 +24,7 @@ namespace ApiIndicadores.Controllers
         }
         
         Notificaciones notificaciones = new Notificaciones();
-        string title = "", body = "";
-        
+        string title = "", body = "";        
 
         // GET: api/<CalidadMuestreoController>
         [HttpGet]
@@ -41,19 +40,6 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // GET api/<CalidadMuestreoController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CalidadMuestreoController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
         // PUT api/<CalidadMuestreoController>/5
         [HttpPut("{id}/{idAgen}")]
         public ActionResult Put(int id, short idAgen, [FromBody] ProdCalidadMuestreo model)
@@ -61,6 +47,7 @@ namespace ApiIndicadores.Controllers
             try
             {
                 var muestreo = _context.ProdMuestreo.Find(id);
+                string estatus_calidad = "";
 
                 if (muestreo.Id == id)
                 {
@@ -92,20 +79,23 @@ namespace ApiIndicadores.Controllers
                         if (model.Estatus == "1")
                         {
                             muestreo.Tarjeta = "S";
+                            estatus_calidad = "APTA";
                         }
                         else if (model.Estatus == "2")
                         {
                             muestreo.Tarjeta = "S";
+                            estatus_calidad = "APTA CON CONDICIONES";
                         }
                         else if (model.Estatus == "3")
                         {
                             muestreo.Tarjeta = "N";
+                            estatus_calidad = "PENDIENTE";
                         }
 
                         _context.SaveChanges();
 
                         title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
-                        body = "Calidad evaluada: estatus " + model;
+                        body = "Calidad de fruta evaluada: " + estatus_calidad;
                     }
 
                     notificaciones.SendNotificationJSON(title, body);
@@ -132,9 +122,9 @@ namespace ApiIndicadores.Controllers
                 string correo_p, correo_c="", correo_i="";
                 var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo);
                 //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
-                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Tipo == "P");
-                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Tipo == "C");
-                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Tipo == "I");
+                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Depto == "P");
+                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Depto == "C");
+                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Depto == "I");
 
                 correo_p = email_p.correo;
 
@@ -200,28 +190,38 @@ namespace ApiIndicadores.Controllers
                             correo.To.Add(sesion.correo);
                             correo.CC.Add(correo_p);
                             correo.CC.Add(correo_i);
+                             
 
-                            if (sesion.correo == "crystyan.torres@giddingsfruit.mx")
+                            //jalisco
+                            if (sesion.IdAgen == 29)
                             {
                                 correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
+                            }
+
+                            //jalisco
+                            if (sesion.IdRegion == 5 && sesion.IdAgen == 250)
+                            {
+                                correo.CC.Add("moises.juarez@giddingsfruit.mx");
                             }
 
                             //uruapan
-                            if (sesion.IdRegion == 3 && correo_c != "juan.mares@giddingsfruit.mx")
+                            if (sesion.IdRegion == 3 && sesion.IdAgen != 168)
                             {
                                 correo.CC.Add("juan.mares@giddingsfruit.mx");
                             }
 
                             //los reyes
-                            if (sesion.IdRegion == 1 || sesion.IdRegion == 8 && correo_c != "mayra.ramirez@giddingsfruit.mx")
+                            if (sesion.IdRegion == 1 && sesion.IdAgen != 167 && sesion.IdAgen != 144)
                             {
                                 //arandas
                                 if (correo_p != "aliberth.martinez@giddingsfruit.mx")
                                 {
                                     correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
                                 }
-                            }
+                            }                           
                         }
+
                         else {
                             correo.To.Add("marholy.martinez@giddingsfruit.mx");
                         }
@@ -279,6 +279,7 @@ namespace ApiIndicadores.Controllers
                     }
 
                     correo.IsBodyHtml = true;
+                    correo.BodyEncoding = System.Text.Encoding.UTF8;
                     correo.Priority = MailPriority.Normal;
 
                     string sSmtpServer = "";

@@ -22,5 +22,6 @@ namespace ApiIndicadores.Models
         public Nullable<short> IdAgen { get; set; }
         public string AP { get; set; }
         public Nullable<System.DateTime> Fecha_Up { get; set; }
+        public string Temporada { get; set; }
     }
 }

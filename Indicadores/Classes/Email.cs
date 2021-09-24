@@ -11,47 +11,59 @@ namespace ApiIndicadores.Classes
     {
         public void sendmail(string correo_p = "", short? region = 0, List<SeguimientoClass> model=null)
         {
-            string destinatario = "", subject = "", mensaje = "", link = "";
+            string destinatario = "", subject = "", mensaje = "";
 
             subject = "IMPORTANTE:: VALIDACION DE CARTERA VIGENTE";
-            mensaje = "Se necesita tu apoyo REALIZANDO LA VALIDACION  de la cartera en EL SIGUIENTE ACCESO, gracias. <br/>";
-            link = "https://giddingsfruit.mx/Indicadores <br/>";            
+            mensaje = "Se necesita tu apoyo REALIZANDO LA VALIDACION  de la cartera, gracias. <br/>";
+             
 
             MailMessage correo = new MailMessage();
             correo.From = new MailAddress("indicadores.giddingsfruit@gmail.com", "Indicadores GiddingsFruit");
-            correo.To.Add(correo_p);// "marholy.martinez@giddingsfruit.mx");
 
-            correo.CC.Add("oscar.castillo@giddingsfruit.mx");
-            correo.CC.Add("angel.lopez@giddingsfruit.mx");
-             
-            if (correo_p != "ademir.reyes@giddingsfruit.mx")
+            foreach (var item in model)
             {
-                destinatario = "Ingeniero";
-                if (correo_p == "aliberth.martinez@giddingsfruit.mx")
+                if (item.Cod_Prod=="99999")
                 {
-                    correo.CC.Add("jose.acosta@giddingsfruit.mx");
+                    correo.To.Add("marholy.martinez@giddingsfruit.mx");
                 }
 
-                if (region == 2)
+                else
                 {
-                    correo.CC.Add("jose.acosta@giddingsfruit.mx");
-                    correo.CC.Add("jose.partida@giddingsfruit.mx");
-                }
+                    correo.To.Add(correo_p);
 
-                else if (region == 3)
-                {
-                    correo.CC.Add("genaro.morales@giddingsfruit.mx");
-                    correo.CC.Add("fernando.fierro@giddingsfruit.mx");
-                }
+                    correo.CC.Add("oscar.castillo@giddingsfruit.mx");
+                    correo.CC.Add("angel.lopez@giddingsfruit.mx");
 
-                else if (region == 4)
-                {
-                    correo.CC.Add("josefina.cervantes@giddingsfruit.mx");
-                }
+                    if (correo_p != "ademir.reyes@giddingsfruit.mx")
+                    {
+                        destinatario = "Ingeniero";
+                        if (correo_p == "aliberth.martinez@giddingsfruit.mx")
+                        {
+                            correo.CC.Add("jose.acosta@giddingsfruit.mx");
+                        }
 
-                else if (region == 5)
-                {
-                    correo.CC.Add("evelyn.caceres@giddingsfruit.mx");
+                        if (region == 2)
+                        {
+                            correo.CC.Add("jose.acosta@giddingsfruit.mx");
+                            correo.CC.Add("jose.partida@giddingsfruit.mx");
+                        }
+
+                        else if (region == 3)
+                        {
+                            correo.CC.Add("genaro.morales@giddingsfruit.mx");
+                            correo.CC.Add("fernando.fierro@giddingsfruit.mx");
+                        }
+
+                        else if (region == 4)
+                        {
+                            correo.CC.Add("josefina.cervantes@giddingsfruit.mx");
+                        }
+
+                        else if (region == 5)
+                        {
+                            correo.CC.Add("evelyn.caceres@giddingsfruit.mx");
+                        }
+                    }
                 }
             }
 
@@ -59,8 +71,6 @@ namespace ApiIndicadores.Classes
             correo.Body += "Buen dia " + destinatario + " <br/>";
             correo.Body += " <br/>";
             correo.Body += "" + mensaje + " <br/>";
-            correo.Body += " <br/>";
-            correo.Body += link;
             correo.Body += " <br/>";
             if (model != null)
             {
@@ -102,7 +112,7 @@ namespace ApiIndicadores.Classes
                ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
             a.Send(correo);
 
-            credenciales(correo_p);
+            //credenciales(correo_p);
         }
 
         public void credenciales(string correo_p)

@@ -22,6 +22,7 @@ namespace ApiIndicadores.Controllers
         {
             this._context = context;
         }
+
         Correo correo = new Correo();
         Notificaciones notificaciones = new Notificaciones();
         string title = "", body = "";
@@ -39,19 +40,7 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
-        // GET api/<CamposController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CamposController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
+  
         // PUT api/<CamposController>/5
         //Reasignar codigo
         [HttpPut("{idAgenOriginal}/{idAgen}/{tipo}")]
@@ -78,7 +67,7 @@ namespace ApiIndicadores.Controllers
                     await _context.SaveChangesAsync();
 
                     title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
-                    body = "Se le ha asignado un nuevo código";
+                    body = "Código reasignado";
                     notificaciones.SendNotificationJSON(title, body);
 
                     enviar(idAgenOriginal, model.Cod_Prod, model.Cod_Campo, tipo);
@@ -100,9 +89,9 @@ namespace ApiIndicadores.Controllers
                 string correo_p, correo_c, correo_i;
                 var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo);
                 //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
-                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Tipo == "P");
-                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Tipo == "C");
-                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Tipo == "I");
+                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Depto == "P");
+                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Depto == "C");
+                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Depto == "I");
 
                 correo_p = email_p.correo;
 
@@ -182,12 +171,13 @@ namespace ApiIndicadores.Controllers
                         correo.CC.Add(agente.correo);
                         correo.CC.Add("oscar.castillo@giddingsfruit.mx");
                     }
+
                     correo.Subject = "Reasignación de código: " + cod_Prod;
                     correo.Body += "El productor: " + cod_Prod + " - " + prod.Nombre + " con campo: " + cod_Campo + " - " + campo.Descripcion +
                         " ha sido reasignado a " + agente.Completo + " por " + sesion.Completo + " <br/>";
 
-
                     correo.IsBodyHtml = true;
+                    correo.BodyEncoding = System.Text.Encoding.UTF8;
                     correo.Priority = MailPriority.Normal;
 
                     string sSmtpServer = "";

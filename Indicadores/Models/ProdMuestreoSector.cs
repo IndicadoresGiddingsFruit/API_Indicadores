@@ -14,5 +14,6 @@ namespace ApiIndicadores.Models
         public string Cod_Prod { get; set; }
         public short Cod_Campo { get; set; }
         public Nullable<short> Sector { get; set; }
+        public Nullable<int> IdMuestreo { get; set; }
     }
 }

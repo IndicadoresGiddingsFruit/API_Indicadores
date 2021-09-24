@@ -27,5 +27,7 @@ namespace ApiIndicadores.Models
         public Nullable<short> IdAgen_Tarjeta { get; set; }
         public string Liberar_Tarjeta { get; set; }
         public string Temporada { get; set; }
+        public string ImageAutoriza { get; set; }
+        public double? CajasEstimadas { get; set; }
     }
 }

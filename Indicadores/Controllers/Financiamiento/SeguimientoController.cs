@@ -51,36 +51,48 @@ namespace ApiIndicadores.Controllers
         }
 
         // GET api/<SeguimientoController>/5 
-        [HttpGet("{id}/{idAgen}", Name = "GetSeguimiento")]
-        public Tuple<List<SeguimientoClass>, List<SeguimientoClass>> Get(int id, short idAgen)
+        [HttpGet("{id}/{idAgen}")]
+        public ActionResult<SeguimientoClass> Get(int id, short idAgen)
         {
-            var item = (dynamic)null;
-            var item2 = (dynamic)null;
-            if (id == 391)
+            try
             {
-                item = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento null, -1").ToList();
-                item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', -1").ToList();
+                var item = (dynamic)null;
+                var item2 = (dynamic)null;
+                if (id == 352)
+                {
+                    item = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento null, -1, null").ToList();
+                    item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', -1, null").ToList();
+                }
+
+                else if (id == 394)
+                {
+                    item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', -1, 'S'").ToList();
+                }
+
+                //zona LOS REYES - URUAPAN - ZAMORA - IRAPUATO - ARANDAS
+                else if (id == 188)
+                {
+                    item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', " + idAgen + ", null").ToList();
+                }
+
+                //zona JALISCO
+                else if (id == 44)
+                {
+                    item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', " + idAgen + ", null").ToList();
+                }
+
+                else
+                {
+                    item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', " + idAgen + ", null").ToList();
+                }
+
+                var tuple = Tuple.Create((List<SeguimientoClass>)item, (List<SeguimientoClass>)item2);
+                return Ok(tuple);
             }
-            else if (id == 394)
+            catch (Exception e)
             {
-                item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', -1, 'S'").ToList();
+                return BadRequest(e.Message);
             }
-            //zona LR-UR-ZM-IR
-            else if (id == 188)
-            {
-                item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', " + idAgen + "").ToList();
-            }
-            //zona JL
-            else if (id == 44)
-            {
-                item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', " + idAgen + "").ToList();
-            }
-            else
-            {
-                item2 = _context.SeguimientoClass.FromSqlRaw($"sp_Seguimiento_Financiamiento 'S', " + idAgen + "").ToList();
-            }
-            var tuple = Tuple.Create<List<SeguimientoClass>, List<SeguimientoClass>>(item, item2);
-            return tuple;
         }
 
         // POST api/<SeguimientoController>
@@ -89,8 +101,11 @@ namespace ApiIndicadores.Controllers
         {
             try
             {
+                var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now.Date >= m.Inicio && DateTime.Now.Date <= m.Fin);
                 model.Cod_Empresa = 2;
                 model.Fecha = DateTime.Now;
+                model.Temporada = catSemanas.Temporada;
+
                 _context.Seguimiento_financ.Add(model);
                 await _context.SaveChangesAsync();
                 return Ok(model);
@@ -132,7 +147,7 @@ namespace ApiIndicadores.Controllers
         public async Task<ActionResult<Seguimiento_financ>> Patch([FromBody] List<SeguimientoClass> model, string recipient = "")
         {
             try
-            {               
+            {
 
                 foreach (var x in model)
                 {
@@ -196,7 +211,7 @@ namespace ApiIndicadores.Controllers
                                          }).ToList();
 
 
-                            //email.sendmail(agente.correo, agente.IdRegion, lista);
+                            email.sendmail(agente.correo, agente.IdRegion, lista);
 
                             title = "Asignar estatus de financiamientos";
                             body = "Usted tiene nuevos códigos a revisar";

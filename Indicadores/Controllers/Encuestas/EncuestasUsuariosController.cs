@@ -73,7 +73,7 @@ namespace ApiIndicadores.Controllers
 
         // POST api/<EncuestasUsuariosController>
         [HttpPost("{id}/{idUsuario}")]
-        public async Task<IActionResult> Post(int id, [FromBody] List<EncuestasLog> model)
+        public async Task<IActionResult> Post(int id, int idUsuario, [FromBody] List<EncuestasLog> model)
         {
             try
             {

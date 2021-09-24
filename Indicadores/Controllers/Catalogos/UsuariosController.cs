@@ -1,5 +1,4 @@
-﻿using ApiIndicadores.Context;
-using ApiIndicadores.Context;
+﻿using ApiIndicadores.Context; 
 using ApiIndicadores.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace ApiIndicadores.Controllers
@@ -15,12 +15,10 @@ namespace ApiIndicadores.Controllers
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly AppDBContextRH _contextRH;
+        private readonly AppDbContext _context; 
 
-        public UsuariosController(AppDbContext context, AppDBContextRH contextRH) {
-            _context = context;
-            _contextRH = contextRH;
+        public UsuariosController(AppDbContext context) {
+            _context = context; 
         }
 
         [HttpGet]
@@ -29,37 +27,68 @@ namespace ApiIndicadores.Controllers
             return await _context.SIPGUsuarios.OrderBy(u=>u.Completo).ToListAsync();    
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<SIPGUsuarios>> GetUsuarios(int id) {
-            var usuarios = await _context.SIPGUsuarios.FindAsync(id);
-            if (usuarios == null) {
-                return NotFound();
-            }
-            return usuarios;
-        }
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<SIPGUsuarios>> GetUsuarios(int id)
+        //{
+        //    var usuarios = await _context.SIPGUsuarios.FindAsync(id);
+        //    if (usuarios == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return usuarios;
+        //}
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuarios(int id, SIPGUsuarios usuarios) {
-            if (id != usuarios.Id) {
-                return BadRequest();
-            }
-            _context.Entry(usuarios).State = EntityState.Modified;
+        //Cambiar contraseña
+        [HttpPut]
+        public async Task<ActionResult<SIPGUsuarios>> Put(SIPGUsuarios usuarios) 
+        {           
 
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException) {
-                if (!UsuariosExist(id))
+                var model = _context.SIPGUsuarios.Find(usuarios.Id);
+                if (model != null)
                 {
-                    return NotFound();
+                    model.Clave = usuarios.Clave;
+                    await _context.SaveChangesAsync();
+                    enviar(usuarios.Id);
+                    return Ok(model);
                 }
-                else {
-                    throw;
+                else
+                {
+                    return BadRequest();
                 }
             }
-            return NoContent();
+            catch (Exception e) 
+            {
+               return BadRequest(e.ToString());              
+            }
         }
+
+        //Guardar token movil
+        [HttpPatch]
+        public async Task<ActionResult<SIPGUsuarios>> Patch(SIPGUsuarios usuarios)
+        {
+
+            try
+            {
+                var model = _context.SIPGUsuarios.Find(usuarios.Id);
+                if (model != null)
+                {
+                    model.token_movil = usuarios.token_movil;
+                    await _context.SaveChangesAsync();
+                    return Ok(model);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
 
         [HttpPost]
         public async Task<ActionResult<SIPGUsuarios>> Post(SIPGUsuarios usuarios) 
@@ -114,17 +143,65 @@ namespace ApiIndicadores.Controllers
         }
 
         [HttpGet("{username}/{password}")]
-        public ActionResult<List<SIPGUsuarios>> GetIniciasSesion(string username, string password)
+        public async Task<ActionResult<SIPGUsuarios>> Get(string username, string password)
         {
-            var usuarios =  _context.SIPGUsuarios.Where(u=>u.Nombre.Equals(username) && u.Clave.Equals(password)).ToList();
-            if (usuarios == null)
+            try
             {
-                return NotFound();
+                var usuarios = _context.SIPGUsuarios.Where(u => u.Nombre.Equals(username) && u.Clave.Equals(password)).Distinct();
+                if (usuarios == null)
+                {
+                    return NotFound();
+                }
+                return Ok(await usuarios.ToListAsync());
             }
-            return usuarios;
+            catch (Exception e) {
+                return BadRequest(e.ToString());
+            }
         }
         private bool UsuariosExist(int id) {
             return _context.SIPGUsuarios.Any(e=>e.Id==id);
+        }
+
+        public void enviar(int idUser)
+        {
+            try
+            {  
+                var sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.Id == idUser); 
+                try
+                {
+                    MailMessage correo = new MailMessage();
+                    correo.From = new MailAddress("indicadores.giddingsfruit@gmail.com", "Indicadores GiddingsFruit");
+                  
+                    correo.To.Add(sesion.correo);
+                    correo.Subject = "Cambio de contraseña";
+                    correo.Body += "Su contraseña nueva es: " + sesion.Clave + " <br/>";
+                    correo.IsBodyHtml = true;
+                    correo.BodyEncoding = System.Text.Encoding.UTF8;
+                    correo.Priority = MailPriority.Normal;
+
+                    string sSmtpServer = "";
+                    sSmtpServer = "smtp.gmail.com";
+
+                    SmtpClient a = new SmtpClient();
+                    a.Host = sSmtpServer;
+                    a.Port = 587;//25
+                    a.EnableSsl = true;
+                    a.UseDefaultCredentials = true;
+                    a.Credentials = new System.Net.NetworkCredential
+                       ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                    a.Send(correo);
+                }
+                catch (Exception e)
+                {
+                    e.ToString();
+                }
+
+            }
+            catch (Exception e)
+            {
+                e.ToString();
+
+            }
         }
     }
 

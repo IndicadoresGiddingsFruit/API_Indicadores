@@ -31,5 +31,7 @@ namespace ApiIndicadores.Models
         public string Folio { get; set; }
         public string Temporada { get; set; }
         public string Traza { get; set; }
+        public string Organico { get; set; }
+        public string ParteMuestreada { get; set; }
     }
 }

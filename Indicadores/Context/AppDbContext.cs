@@ -70,6 +70,7 @@ namespace ApiIndicadores.Context
             modelBuilder.Entity<MuestreosClass>().HasNoKey();
             modelBuilder.Entity<EncuestasClass>().HasNoKey();
             modelBuilder.Entity<EvaluacionClass>().HasNoKey();
+            modelBuilder.Entity<SeguimientoClass>().HasNoKey();
         }
     }
 }

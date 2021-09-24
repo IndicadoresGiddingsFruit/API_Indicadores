@@ -30,7 +30,6 @@ namespace ApiIndicadores
             services.AddCors();
             services.AddControllers();
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("conexion")));
-            services.AddDbContext<AppDBContextRH>(options => options.UseSqlServer(Configuration.GetConnectionString("conexionRH")));
             services.AddControllers().AddNewtonsoftJson();
         }
 

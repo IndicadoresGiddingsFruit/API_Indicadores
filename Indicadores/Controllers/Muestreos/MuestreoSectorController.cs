@@ -68,9 +68,32 @@ namespace ApiIndicadores.Controllers.Muestreos
         }
 
         // POST api/<MuestreoSectorController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{idMuestreo}")]
+        public async Task<ActionResult<ProdMuestreoSector>> Post(int idMuestreo, [FromBody] ProdMuestreoSector model)
         {
+            try
+            {
+                var muestreo = _context.ProdMuestreo.Find(idMuestreo);
+                if (muestreo != null) 
+                {
+                   
+                        ProdMuestreoSector prodMuestreoSector = new ProdMuestreoSector();                       
+                        prodMuestreoSector.Cod_Prod = model.Cod_Prod;
+                        prodMuestreoSector.Cod_Campo = model.Cod_Campo;
+                        prodMuestreoSector.Sector = model.Sector;
+                        prodMuestreoSector.IdMuestreo = idMuestreo;
+                        _context.ProdMuestreoSector.Add(prodMuestreoSector);
+                        _context.SaveChanges();                         
+                   
+                    var item = _context.ProdMuestreoSector.Where(x => x.IdMuestreo == idMuestreo).Distinct();
+                    return Ok(await item.ToListAsync());
+                }
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT api/<MuestreoSectorController>/5

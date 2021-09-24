@@ -11,13 +11,6 @@ namespace ApiIndicadores.Controllers
     [ApiController]
     public class ImagenVisitaController : ControllerBase
     {
-        // GET: api/<ImagenVisitaController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
         // GET api/<ImagenVisitaController>/5
         [HttpGet("{IdVisita}")]
         //imagen
@@ -56,6 +49,6 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-      
+
     }
 }

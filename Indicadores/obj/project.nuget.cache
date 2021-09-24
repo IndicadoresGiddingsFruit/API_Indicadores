@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "5UpxLyGRJD3fGN2YfwC+qTFG+NSW3UhTYjFo0yH97hNZ6jS25K1+FaduPfKQBfsmmr1oDFp+fKV/0ekq8TVyZA==",
+  "dgSpecHash": "6Gv8IdZWB2UOYnZe3M7Hmkgp79tQB44i+bxlc3WwdSqZK9C2um+5ArkVyAspUaNXExqCNgwCI5Uy8Vfij7ZtIA==",
   "success": true,
   "projectFilePath": "E:\\Programas\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
   "expectedPackageFiles": [
@@ -20,8 +20,8 @@
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.entityframeworkcore\\3.1.8\\microsoft.entityframeworkcore.3.1.8.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\3.1.8\\microsoft.entityframeworkcore.abstractions.3.1.8.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\3.1.8\\microsoft.entityframeworkcore.analyzers.3.1.8.nupkg.sha512",
-    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\3.1.8\\microsoft.entityframeworkcore.relational.3.1.8.nupkg.sha512",
-    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\3.1.8\\microsoft.entityframeworkcore.sqlserver.3.1.8.nupkg.sha512",
+    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\3.1.7\\microsoft.entityframeworkcore.relational.3.1.7.nupkg.sha512",
+    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\3.1.7\\microsoft.entityframeworkcore.sqlserver.3.1.7.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\3.1.8\\microsoft.extensions.caching.abstractions.3.1.8.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.extensions.caching.memory\\3.1.8\\microsoft.extensions.caching.memory.3.1.8.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.extensions.configuration\\3.1.10\\microsoft.extensions.configuration.3.1.10.nupkg.sha512",

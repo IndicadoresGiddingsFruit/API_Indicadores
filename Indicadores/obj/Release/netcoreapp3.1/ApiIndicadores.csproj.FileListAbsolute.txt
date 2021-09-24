@@ -157,7 +157,6 @@ E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\unix\lib
 E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll
 E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Text.Encoding.CodePages.dll
-E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.csprojAssemblyReference.cache
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.AssemblyInfoInputs.cache
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.AssemblyInfo.cs
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.csproj.CoreCompileInputs.cache
@@ -170,3 +169,4 @@ E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.cs
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.dll
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.pdb
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.genruntimeconfig.cache
+E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.csprojAssemblyReference.cache
