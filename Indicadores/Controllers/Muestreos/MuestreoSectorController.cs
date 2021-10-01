@@ -29,12 +29,12 @@ namespace ApiIndicadores.Controllers.Muestreos
         }
 
         // GET api/<MuestreoSectorController>/5
-        [HttpGet("{cod_prod}/{cod_campo}")]
-        public async Task<ActionResult<ProdMuestreoSector>> Get(string cod_prod, short cod_campo)
+        [HttpGet("{idMuestreo}")]
+        public async Task<ActionResult<ProdMuestreoSector>> Get(int idMuestreo)
         {
             try
             {
-                var muestreo = _context.ProdMuestreo.Where(x => x.Cod_Prod == cod_prod && x.Cod_Campo == cod_campo).FirstOrDefault();
+                var muestreo = _context.ProdMuestreo.Where(x => x.Id == idMuestreo).FirstOrDefault();
                 if (muestreo != null)
                 {
                     if (muestreo.IdSector != null)
@@ -48,7 +48,7 @@ namespace ApiIndicadores.Controllers.Muestreos
                             }
                             else
                             {
-                                var sectores = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == cod_prod && x.Cod_Campo == cod_campo).Distinct();
+                                var sectores = _context.ProdMuestreoSector.Where(x => x.IdMuestreo == idMuestreo).Distinct();
                                 return Ok(await sectores.ToListAsync());
                             }
                     }

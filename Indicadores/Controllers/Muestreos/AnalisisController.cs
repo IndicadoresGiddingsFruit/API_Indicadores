@@ -42,18 +42,18 @@ namespace ApiIndicadores.Controllers
         }
 
         // GET api/<AnalisisController>/5
-        [HttpGet("{id}/{tipo}/{depto}/{cod_Prod}/{cod_Campo}/{estatus}")]
+        [HttpGet("{id}/{tipo}/{depto}/{idMuestreo}/{estatus}")]
         //id es idagen o idusuario
-        public ActionResult Get(short id = 0, string tipo = null, string depto = null, string cod_Prod = "", short cod_Campo = 0, string estatus = null)
+        public ActionResult Get(short id = 0, string tipo = null, string depto = null, int idMuestreo=0, string estatus = null)
         {
             try
             {
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
-                var analisis = (dynamic)null;
+                var analisis = (dynamic) null;
 
-                if (cod_Prod != "" && cod_Campo != 0)
+                if (idMuestreo != 0)
                 {
-                    buscarnum_analisis(cod_Prod, cod_Campo);
+                    buscarnum_analisis(idMuestreo);
                     return Ok(num_analisis);
                 }
                 else
@@ -69,12 +69,13 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        public void buscarnum_analisis(string cod_Prod, short? cod_Campo)
+        public void buscarnum_analisis(int idMuestreo)
         {
             try
             {
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
-                var item = _context.ProdAnalisis_Residuo.FirstOrDefault(a => a.Temporada == catSemanas.Temporada && a.Cod_Prod == cod_Prod && a.Cod_Campo == cod_Campo && a.Fecha == (from c in _context.ProdAnalisis_Residuo where c.Cod_Prod == a.Cod_Prod select c).Max(c => c.Fecha));
+                //var item = _context.ProdAnalisis_Residuo.FirstOrDefault(a => a.Temporada == catSemanas.Temporada && a.Cod_Prod == cod_Prod && a.Cod_Campo == cod_Campo && a.Fecha == (from c in _context.ProdAnalisis_Residuo where c.Cod_Prod == a.Cod_Prod select c).Max(c => c.Fecha));
+                var item = _context.ProdAnalisis_Residuo.FirstOrDefault(a => a.Id_Muestreo == idMuestreo);
                 num_analisis = (int)((item == null ? 0 : item.Num_analisis) + 1);
             }
             catch (Exception e)
@@ -116,7 +117,7 @@ namespace ApiIndicadores.Controllers
 
                 var muestreo = _context.ProdMuestreo.Where(m => m.Id == idMuestreo).FirstOrDefault();
 
-                buscarnum_analisis(muestreo.Cod_Prod, muestreo.Cod_Campo);
+                buscarnum_analisis(idMuestreo);
                 
 
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
@@ -178,8 +179,11 @@ namespace ApiIndicadores.Controllers
                     {
                         model.Organico = "1";
                     }
-                    if (model.Estatus != "L")
+                    if (model.Estatus == "L")
                     {
+                        model.Comentarios = null;
+                    }
+                    else { 
                         model.Comentarios = model.Comentarios;
                     }
 
@@ -227,7 +231,6 @@ namespace ApiIndicadores.Controllers
         }
 
         //Editar análisis
-        // PUT api/<AnalisisController>
         [HttpPut("{id}/{liberacion_USA}/{liberacion_EU}")]
         public async Task<ActionResult<ProdAnalisis_Residuo>> Put(int id, int liberacion_USA, int liberacion_EU, [FromBody] ProdAnalisis_Residuo model)
         {
@@ -326,7 +329,6 @@ namespace ApiIndicadores.Controllers
         }
 
         //Liberar Fuera de Limite
-        // PUT api/<AnalisisController>
         [HttpPatch("{id}/{idAgen}")]
         public async Task<ActionResult<ProdAnalisis_Residuo>> Patch(int id, short idAgen)
         {
@@ -353,7 +355,6 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
-
 
         //Delete  
         [HttpDelete("{id}")]
