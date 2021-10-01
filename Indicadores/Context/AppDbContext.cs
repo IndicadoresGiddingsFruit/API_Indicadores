@@ -40,6 +40,7 @@ namespace ApiIndicadores.Context
 
         public DbSet<Seguimiento_financ> Seguimiento_financ { get; set; }
         public DbSet<SeguimientoClass> SeguimientoClass { get; set; }
+        public DbSet<EstatusFinanciamiento> EstatusFinanciamiento { get; set; }
 
         public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; }
         public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }

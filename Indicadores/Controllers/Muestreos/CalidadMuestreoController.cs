@@ -95,7 +95,7 @@ namespace ApiIndicadores.Controllers
                         _context.SaveChanges();
 
                         title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
-                        body = "Calidad de fruta evaluada: " + estatus_calidad;
+                        body = "Estatus de calidad: " + estatus_calidad;
                     }
 
                     notificaciones.SendNotificationJSON(title, body);

@@ -17,7 +17,7 @@ namespace ApiIndicadores.Models
         public string Comentarios { get; set; }
         public Nullable<System.DateTime> Fecha { get; set; }
         public short? Cod_Empresa { get; set; }
-        public string Estatus { get; set; }
+        public int Estatus { get; set; }
         public string Enviado { get; set; }
         public Nullable<short> IdAgen { get; set; }
         public string AP { get; set; }

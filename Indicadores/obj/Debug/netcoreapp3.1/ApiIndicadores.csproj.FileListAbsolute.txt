@@ -94,6 +94,8 @@ E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\ApiIndicadores.pdb
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\BouncyCastle.Crypto.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\CsvHelper.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\EPPlus.dll
+E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\ImageProcessor.dll
+E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\ImageProcessor.Plugins.WebP.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\itextsharp.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Web.Mvc.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Web.Razor.dll
@@ -134,12 +136,14 @@ E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\Microsoft.IdentityM
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Tokens.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\Microsoft.IO.RecyclableMemoryStream.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\Microsoft.Web.Infrastructure.dll
+E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\Microsoft.Win32.SystemEvents.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Collections.Immutable.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.ComponentModel.Annotations.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Configuration.ConfigurationManager.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Diagnostics.DiagnosticSource.dll
+E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Drawing.Common.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.IdentityModel.Tokens.Jwt.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Runtime.Caching.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Security.Cryptography.ProtectedData.dll
@@ -147,6 +151,7 @@ E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Text.Encodin
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\System.Xml.XPath.XmlDocument.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\Microsoft.Data.SqlClient.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\Microsoft.Data.SqlClient.dll
+E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win-arm64\native\sni.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\sni.dll
 E:\Programas\Indicadores\Indicadores\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\sni.dll

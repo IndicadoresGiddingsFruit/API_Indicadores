@@ -37,11 +37,11 @@ namespace ApiIndicadores.Controllers
 
         // GET: api/<SeguimientoController>
         [HttpGet]
-        public async Task<ActionResult<Seguimiento_financ>> Get()
+        public async Task<ActionResult<EstatusFinanciamiento>> Get()
         {
             try
             {
-                return Ok(await _context.Seguimiento_financ.ToListAsync());
+                return Ok(await _context.EstatusFinanciamiento.ToListAsync());
             }
             catch (Exception e)
             {
@@ -88,6 +88,7 @@ namespace ApiIndicadores.Controllers
 
                 var tuple = Tuple.Create((List<SeguimientoClass>)item, (List<SeguimientoClass>)item2);
                 return Ok(tuple);
+
             }
             catch (Exception e)
             {
@@ -123,7 +124,7 @@ namespace ApiIndicadores.Controllers
             try
             {
                 var item = _context.Seguimiento_financ.Where(x => x.Id == id).First();
-                if (model.Estatus.Length == 1)
+                if (model.Estatus > 0)
                 {
                     item.Estatus = model.Estatus;
                 }
@@ -132,10 +133,10 @@ namespace ApiIndicadores.Controllers
                 await _context.SaveChangesAsync();
 
                 title = "Código: " + item.Cod_Prod;
-                body = "Estatus modificado";
+                body = "Estatus: " + model.Estatus;
 
                 notificaciones.SendNotificationJSON(title, body);
-                return Ok();
+                return Ok(item);
             }
             catch (Exception e)
             {
@@ -214,13 +215,13 @@ namespace ApiIndicadores.Controllers
                             email.sendmail(agente.correo, agente.IdRegion, lista);
 
                             title = "Asignar estatus de financiamientos";
-                            body = "Usted tiene nuevos códigos a revisar";
+                            body = "Tiene nuevos códigos a revisar";
 
                             notificaciones.SendNotificationJSON(title, body);
                         }
                     }
                 }
-                return Ok();
+                return Ok(model);
             }
             catch (Exception e)
             {

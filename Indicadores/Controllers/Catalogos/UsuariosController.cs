@@ -68,7 +68,6 @@ namespace ApiIndicadores.Controllers
         [HttpPatch]
         public async Task<ActionResult<SIPGUsuarios>> Patch(SIPGUsuarios usuarios)
         {
-
             try
             {
                 var model = _context.SIPGUsuarios.Find(usuarios.Id);
@@ -88,7 +87,6 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.ToString());
             }
         }
-
 
         [HttpPost]
         public async Task<ActionResult<SIPGUsuarios>> Post(SIPGUsuarios usuarios) 
@@ -195,7 +193,6 @@ namespace ApiIndicadores.Controllers
                 {
                     e.ToString();
                 }
-
             }
             catch (Exception e)
             {

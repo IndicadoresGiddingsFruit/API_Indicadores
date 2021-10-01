@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -135,36 +137,36 @@ namespace ApiIndicadores.Controllers
                 var agente = _context.SIPGUsuarios.FirstOrDefault(s => s.IdAgen == model.IdAgen);
                 var campos = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo);
 
-                var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada == catSemanas.Temporada);
-                if (modeloExistente == null)
+                //var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada == catSemanas.Temporada);
+                //if (modeloExistente == null)
+                //{
+                var usuario = _context.SIPGUsuarios.Where(x => x.IdAgen == model.IdAgen).First();
+
+                if (usuario.Depto == "P" || model.IdAgen == 216)
                 {
-                    var usuario = _context.SIPGUsuarios.Where(x => x.IdAgen == model.IdAgen).First();
-
-                    if (usuario.Depto == "P" || model.IdAgen == 216)
-                    {
-                        model.Liberacion = "S";
-                    }
-                    model.Fecha_solicitud = DateTime.Now;
-                    model.Temporada = catSemanas.Temporada;
-                    if (agente.Depto != "P")
-                    {
-                        model.IdAgen = campos.IdAgen;
-                    }
-                    _context.ProdMuestreo.Add(model);
-                    _context.SaveChanges();
-
-                    title = "Nuevo muestreo solicitado";
-                    body = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
-                    notificaciones.SendNotificationJSON(title, body);
-
-                    enviar(agente.IdAgen, model.Cod_Prod, model.Cod_Campo, "nuevo");
-
-                    return Ok(model);
+                    model.Liberacion = "S";
                 }
-                else
+                model.Fecha_solicitud = DateTime.Now;
+                model.Temporada = catSemanas.Temporada;
+                if (agente.Depto != "P")
                 {
-                    return BadRequest("La solicitud ya existe");
+                    model.IdAgen = campos.IdAgen;
                 }
+                _context.ProdMuestreo.Add(model);
+                _context.SaveChanges();
+
+                title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
+                body = "Nuevo muestreo";
+                notificaciones.SendNotificationJSON(title, body);
+
+                enviar(agente.IdAgen, model.Cod_Prod, model.Cod_Campo, "nuevo");
+
+                return Ok(model);
+                //}
+                //else
+                //{
+                //    return BadRequest("La solicitud ya existe");
+                //}
             }
             catch (Exception e)
             {
@@ -179,7 +181,7 @@ namespace ApiIndicadores.Controllers
             try
             {
                 ProdMuestreoSector prodMuestreoSector = new ProdMuestreoSector();
-                int IdMuestreoSector = 0;
+                //int IdMuestreoSector = 0;
 
                 var item = _context.ProdMuestreo.Find(id);
                 if (item.Id == id)
@@ -190,41 +192,49 @@ namespace ApiIndicadores.Controllers
                         var model_sector = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == item.Cod_Prod && x.Cod_Campo == item.Cod_Campo && x.Sector == sector).FirstOrDefault();
                         if (model_sector == null)
                         {
-                            prodMuestreoSector.Cod_Prod = item.Cod_Prod;
-                            prodMuestreoSector.Cod_Campo = item.Cod_Campo;
-                            prodMuestreoSector.Sector = sector;
-                            _context.ProdMuestreoSector.Add(prodMuestreoSector);
-                            _context.SaveChanges();
-
-                            IdMuestreoSector = prodMuestreoSector.id;
-                        }
-                        else
-                        {
-                            IdMuestreoSector = model_sector.id;
-                        }
-
-                        if (IdMuestreoSector != 0)
-                        {
-                            item.IdSector = IdMuestreoSector;
-                            item.IdAgenI = idAgen;
-                            if (item.Fecha_ejecucion == null)
+                            var model_sectorMuestreo = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == item.Cod_Prod && x.Cod_Campo == item.Cod_Campo && x.IdMuestreo == id && x.Sector == sector).FirstOrDefault();
+                            if (model_sectorMuestreo == null)
                             {
-                                item.Fecha_ejecucion = model.Fecha_ejecucion;
+                                prodMuestreoSector.Cod_Prod = item.Cod_Prod;
+                                prodMuestreoSector.Cod_Campo = item.Cod_Campo;
+                                prodMuestreoSector.Sector = sector;
+                                prodMuestreoSector.IdMuestreo = id;
+                                _context.ProdMuestreoSector.Add(prodMuestreoSector);
+                                _context.SaveChanges();
 
-                                title = "Código: " + item.Cod_Prod + " campo: " + item.Cod_Campo;
-                                body = "Fecha de ejecución agregada: " + model.Fecha_ejecucion;
-                                notificaciones.SendNotificationJSON(title, body);
+                                item.IdAgenI = idAgen;
+                                if (item.Fecha_ejecucion == null)
+                                {
+                                    item.Fecha_ejecucion = model.Fecha_ejecucion;
 
-                                enviar(idAgen, item.Cod_Prod, item.Cod_Campo, "fecha_ejecucion");
+                                    var Fecha_ejecucion = String.Format("{0:d}", model.Fecha_ejecucion);
+
+                                    title = "Código: " + item.Cod_Prod + " campo: " + item.Cod_Campo;
+                                    body = "Fecha de ejecución: " + Fecha_ejecucion;
+                                    notificaciones.SendNotificationJSON(title, body);
+
+                                    enviar(idAgen, item.Cod_Prod, item.Cod_Campo, "fecha_ejecucion");
+                                }
+                                _context.SaveChanges();
+
+                                return Ok(model);
                             }
-                            _context.SaveChanges();
-
-                            return Ok(model);
+                            //IdMuestreoSector = prodMuestreoSector.id;
                         }
                         else
                         {
-                            return BadRequest();
+                            return BadRequest("El sector ya fue muestreado"); //IdMuestreoSector = model_sector.id;
                         }
+
+                        //if (IdMuestreoSector != 0)
+                        //{
+                        //item.IdSector = IdMuestreoSector;
+
+                        //}
+                        //else
+                        //{
+                        //    return BadRequest();
+                        //}
                     }
 
                     //editar muestreo
@@ -300,7 +310,7 @@ namespace ApiIndicadores.Controllers
 
                         enviar(idAgen, muestreo.Cod_Prod, muestreo.Cod_Campo, "bloqueo");
                     }
-                   
+
                     return Ok(muestreo);
                 }
                 else
@@ -324,12 +334,17 @@ namespace ApiIndicadores.Controllers
                 {
                     if (imagen != null)
                     {
-                        //var extension = Path.GetExtension(imagen.FileName).Substring(1);
+                        var extension = Path.GetExtension(imagen.FileName).Substring(1);
                         var imagePath = "//192.168.0.21/recursos season/AutorizaTarjeta/" + id + ".jpg";
+
+                    
                         using (var stream = System.IO.File.Create(imagePath))
                         {
+                            //imagePath = Path.ChangeExtension(imagePath, ".jpg");
+
                             imagen.CopyToAsync(stream);
                         }
+
                         muestreo.ImageAutoriza = imagePath;
                     }
                     _context.SaveChanges();
@@ -551,7 +566,7 @@ namespace ApiIndicadores.Controllers
                         if (sesion.IdRegion == 1)
                         {
                             //Arandas
-                            if (sesion.IdAgen != 197 || sesion.IdAgen != 144 || sesion.IdAgen != 211)
+                            if (email_p.IdAgen != 197)
                             {
                                 correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
                             }

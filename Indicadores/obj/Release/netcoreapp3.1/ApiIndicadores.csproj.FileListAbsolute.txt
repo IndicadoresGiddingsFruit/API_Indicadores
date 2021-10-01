@@ -170,3 +170,8 @@ E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.dl
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.pdb
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.genruntimeconfig.cache
 E:\Programas\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.csprojAssemblyReference.cache
+E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\ImageProcessor.dll
+E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\ImageProcessor.Plugins.WebP.dll
+E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Microsoft.Win32.SystemEvents.dll
+E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\System.Drawing.Common.dll
+E:\Programas\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll

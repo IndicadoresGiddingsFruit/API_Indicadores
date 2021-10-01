@@ -62,18 +62,5 @@ namespace ApiIndicadores.Classes
         public string Laboratorio { get; set; }
         public string Traza { get; set; }
         public string Temporada { get; set; }
-
-
-        //public List<SectoresClass> listaSectores { get; set; }
-    }
-
-    public class SectoresClass
-    {
-        [Key]
-        public int? IdMuestreo { get; set; }       
-        public string Cod_Prod { get; set; }
-        public Int16? Cod_Campo { get; set; }
-        public int? IdSector { get; set; }
-        public Int16? Sector { get; set; }
     }
 }
