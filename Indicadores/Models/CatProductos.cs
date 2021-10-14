@@ -29,5 +29,6 @@ namespace ApiIndicadores.Models
         public bool Propia { get; set; }
         public Nullable<short> Contrato { get; set; }
         public string Grupo { get; set; }
+        public string NombreInterno { get; set; }
     }
 }

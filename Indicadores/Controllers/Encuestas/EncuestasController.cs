@@ -33,7 +33,7 @@ namespace ApiIndicadores.Controllers
                                          IdEncuestasUsuarios = e.Id,
                                          IdEncuesta = e.IdEncuesta,
                                          IdUsuario = e.IdUsuario,
-                                         Fecha = e.Fecha,
+                                         Fecha = e.Fecha_respuesta,
                                          //IdRelacion=e.IdRelacion,
 
                                          IdSIPGUsuarios = r.Id,
@@ -146,26 +146,26 @@ namespace ApiIndicadores.Controllers
                                 }).Distinct();
 
                 //lista encuestas, preguntas y sus respuestas
-           
-                     var encuestas = (from e in _context.EncuestasCat
-                                     join p in _context.EncuestasDet on e.Id equals p.IdEncuesta
-                                     where e.Id == id
-                                     group e by new
-                                     {
-                                         IdEncuesta = e.Id,
-                                         Encuesta = e.Nombre,
-                                         IdPregunta = p.Id,
-                                         Pregunta = p.Pregunta
-                                     } into x
-                                     select new
-                                     {
-                                         IdEncuesta = x.Key.IdEncuesta,
-                                         Encuesta = x.Key.Encuesta,
-                                         IdPregunta = x.Key.IdPregunta == null ? null : x.Key.IdPregunta,
-                                         Pregunta = x.Key.Pregunta== null ? null : x.Key.Pregunta,
-                                         ListaRes = listaRes == null ? null : listaRes.Where(r => r.IdPregunta == x.Key.IdPregunta).ToList()  
-                                     }).Distinct();
-                
+
+                var encuestas = (from e in _context.EncuestasCat
+                                 join p in _context.EncuestasDet on e.Id equals p.IdEncuesta
+                                 where e.Id == id
+                                 group e by new
+                                 {
+                                     IdEncuesta = e.Id,
+                                     Encuesta = e.Nombre,
+                                     IdPregunta = p.Id,
+                                     Pregunta = p.Pregunta
+                                 } into x
+                                 select new
+                                 {
+                                     IdEncuesta = x.Key.IdEncuesta,
+                                     Encuesta = x.Key.Encuesta,
+                                     IdPregunta = x.Key.IdPregunta == null ? null : x.Key.IdPregunta,
+                                     Pregunta = x.Key.Pregunta == null ? null : x.Key.Pregunta,
+                                     ListaRes = listaRes == null ? null : listaRes.Where(r => r.IdPregunta == x.Key.IdPregunta).ToList()
+                                 }).Distinct();
+
                 var usuarios = (from u in _context.EncuestasUsuarios
                                 join e in _context.EncuestasCat on u.IdEncuesta equals e.Id
                                 join s in _context.SIPGUsuarios on u.IdUsuario equals s.Id
@@ -177,7 +177,7 @@ namespace ApiIndicadores.Controllers
                                     Descripcion = e.Descripcion,
                                     Fecha = e.Fecha,
                                     Estatus = e.Estatus,
-                                    Fecha_Respuesta = u.Fecha,
+                                    Fecha_Respuesta = u.Fecha_respuesta,
                                     Completo = s.Completo
                                 } into x
                                 select new
@@ -228,7 +228,7 @@ namespace ApiIndicadores.Controllers
 
                 var res = Tuple.Create(encuestas.ToList(), usuarios.ToList(), respuestas.ToList());
 
-                //var res = _context.EncuestasClass.FromSqlRaw($"sp_GetEncuestas " + id + "," + IdUsuario + "").ToList();
+                //var data = _context.EncuestasClass.FromSqlRaw($"sp_GetEncuestas " + id + "," + IdUsuario + "").ToList();
                 return Ok(res);                 
             }
             catch (Exception e)

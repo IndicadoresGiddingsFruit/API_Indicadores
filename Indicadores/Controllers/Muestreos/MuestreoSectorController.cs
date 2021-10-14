@@ -7,8 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace ApiIndicadores.Controllers.Muestreos
 {
     [Route("api/[controller]")]
@@ -20,6 +18,7 @@ namespace ApiIndicadores.Controllers.Muestreos
         {
             this._context = context;
         }
+
         // GET: api/<MuestreoSectorController>
         [HttpGet]
         public async Task<ActionResult<ProdMuestreoSector>> Get()
@@ -30,41 +29,37 @@ namespace ApiIndicadores.Controllers.Muestreos
 
         // GET api/<MuestreoSectorController>/5
         [HttpGet("{idMuestreo}")]
-        public async Task<ActionResult<ProdMuestreoSector>> Get(int idMuestreo)
+        public ActionResult<ProdMuestreoSector> Get(int idMuestreo)
         {
             try
             {
-                var muestreo = _context.ProdMuestreo.Where(x => x.Id == idMuestreo).FirstOrDefault();
-                if (muestreo != null)
+                var model_sector = (from y in _context.ProdMuestreoSector
+                                    where y.IdMuestreo == idMuestreo
+                                    group y by new
+                                    {
+                                        y.id,
+                                        y.Sector
+                                    } into g
+                                    select new
+                                    {
+                                        Id = g.Key.id,
+                                        Sector = g.Key.Sector
+                                    }).ToList();
+
+                if (model_sector != null)
                 {
-                    if (muestreo.IdSector != null)
-                    {
-                        var model_sector = _context.ProdMuestreoSector.Where(x => x.id == muestreo.IdSector).FirstOrDefault();
-                     
-                            if (model_sector.Sector == 1)
-                            {
-                                var s = _context.ProdMuestreoSector.Where(x => x.id == muestreo.IdSector).Distinct();
-                                return Ok(await s.ToListAsync());
-                            }
-                            else
-                            {
-                                var sectores = _context.ProdMuestreoSector.Where(x => x.IdMuestreo == idMuestreo).Distinct();
-                                return Ok(await sectores.ToListAsync());
-                            }
-                    }
-                    else
-                    {
-                        return Ok();
-                    }
+
+                    return Ok(model_sector);
                 }
                 else
                 {
                     return Ok();
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 return BadRequest(e.ToString());
-            }           
+            }
         }
 
         // POST api/<MuestreoSectorController>
@@ -74,17 +69,16 @@ namespace ApiIndicadores.Controllers.Muestreos
             try
             {
                 var muestreo = _context.ProdMuestreo.Find(idMuestreo);
-                if (muestreo != null) 
+                if (muestreo != null)
                 {
-                   
-                        ProdMuestreoSector prodMuestreoSector = new ProdMuestreoSector();                       
-                        prodMuestreoSector.Cod_Prod = model.Cod_Prod;
-                        prodMuestreoSector.Cod_Campo = model.Cod_Campo;
-                        prodMuestreoSector.Sector = model.Sector;
-                        prodMuestreoSector.IdMuestreo = idMuestreo;
-                        _context.ProdMuestreoSector.Add(prodMuestreoSector);
-                        _context.SaveChanges();                         
-                   
+                    ProdMuestreoSector prodMuestreoSector = new ProdMuestreoSector();
+                    prodMuestreoSector.Cod_Prod = muestreo.Cod_Prod;
+                    prodMuestreoSector.Cod_Campo = muestreo.Cod_Campo;
+                    prodMuestreoSector.Sector = model.Sector;
+                    prodMuestreoSector.IdMuestreo = idMuestreo;
+                    _context.ProdMuestreoSector.Add(prodMuestreoSector);
+                    _context.SaveChanges();
+
                     var item = _context.ProdMuestreoSector.Where(x => x.IdMuestreo == idMuestreo).Distinct();
                     return Ok(await item.ToListAsync());
                 }
@@ -96,46 +90,23 @@ namespace ApiIndicadores.Controllers.Muestreos
             }
         }
 
-        // PUT api/<MuestreoSectorController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<MuestreoSectorController>/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<ProdMuestreoSector>> Delete(int id)
+        [HttpDelete("{idMuestreo}")]
+        public async Task<ActionResult<ProdMuestreoSector>> Delete(int idMuestreo)
         {
             try
             {
-                var model = _context.ProdMuestreoSector.Find(id);
+                var model = _context.ProdMuestreoSector.Find(idMuestreo);
                 if (model != null)
                 {
-                    var muestreo = _context.ProdMuestreo.FirstOrDefault(x => x.IdSector == id);
-                    if (muestreo != null)
-                    {
-                        muestreo.IdSector = null;
-                        await _context.SaveChangesAsync();
-
-                        _context.ProdMuestreoSector.Remove(model);
-                        await _context.SaveChangesAsync();
-
-                        var busca_sector = _context.ProdMuestreoSector.Where(x => x.Cod_Prod == muestreo.Cod_Prod && x.Cod_Campo == muestreo.Cod_Campo).OrderByDescending(x => x.Sector).FirstOrDefault();
-                        if (busca_sector != null)
-                        {
-                            muestreo.IdSector = busca_sector.id;
-                            _context.SaveChanges();
-                        }
-                    }
+                    _context.ProdMuestreoSector.Remove(model);
+                    await _context.SaveChangesAsync();
                     return Ok();
                 }
-
                 else
                 {
                     return NotFound();
                 }
             }
-
             catch (Exception e)
             {
                 return BadRequest(e.ToString());

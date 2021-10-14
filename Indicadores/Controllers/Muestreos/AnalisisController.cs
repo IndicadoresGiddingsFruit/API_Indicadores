@@ -114,113 +114,119 @@ namespace ApiIndicadores.Controllers
                 //    cod_Prod = model.Cod_Prod;
                 //    cod_Campo = (short)model.Cod_Campo;
                 //}
-
-                var muestreo = _context.ProdMuestreo.Where(m => m.Id == idMuestreo).FirstOrDefault();
-
-                buscarnum_analisis(idMuestreo);
-                
-
-                var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
-                
-                DateTime fechaLiberacionUSA = DateTime.Now, fechaLiberacionEU = DateTime.Now;
-
-                var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(m => 
-                m.Cod_Prod == muestreo.Cod_Prod && 
-                m.Cod_Campo == muestreo.Cod_Campo && 
-                m.Fecha_entrega == model.Fecha_entrega && 
-                m.Fecha_envio == model.Fecha_envio && 
-                m.Estatus == model.Estatus && 
-                m.Num_analisis == model.Num_analisis && 
-                m.Temporada == catSemanas.Temporada);
-
-                if (analisis == null)
+                if (model.IdAgen != 0)
                 {
-                    //var model_sector = _context.ProdMuestreoSector.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo && m.Sector == sector);
-                    //if (model_sector == null)
-                    //{
-                    //    prodMuestreoSector.Cod_Prod = cod_Prod;
-                    //    prodMuestreoSector.Cod_Campo = cod_Campo;
-                    //    prodMuestreoSector.Sector = sector;
-                    //    _context.ProdMuestreoSector.Add(prodMuestreoSector);
-                    //    _context.SaveChanges();
+                    var muestreo = _context.ProdMuestreo.Where(m => m.Id == idMuestreo).FirstOrDefault();
 
-                    //    IdSector = prodMuestreoSector.id;
-                    //}
-                    //else
-                    //{
-                    //    IdSector = model_sector.id;
-                    //}
+                    buscarnum_analisis(idMuestreo);
 
-                    model.Cod_Empresa = 2;
-                    model.Cod_Prod = muestreo.Cod_Prod;
-                    model.Cod_Campo = muestreo.Cod_Campo;
-                    model.Fecha = DateTime.Now;
-                    model.Temporada = catSemanas.Temporada;
-                    model.IdSector = muestreo.IdSector;
-                    model.Num_analisis = num_analisis;
-                    if (idMuestreo != 0)
+
+                    var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
+
+                    DateTime fechaLiberacionUSA = DateTime.Now, fechaLiberacionEU = DateTime.Now;
+
+                    var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(m =>
+                    m.Cod_Prod == muestreo.Cod_Prod &&
+                    m.Cod_Campo == muestreo.Cod_Campo &&
+                    m.Fecha_entrega == model.Fecha_entrega &&
+                    m.Fecha_envio == model.Fecha_envio &&
+                    m.Estatus == model.Estatus &&
+                    m.Num_analisis == model.Num_analisis &&
+                    m.Temporada == catSemanas.Temporada);
+
+                    if (analisis == null)
                     {
-                        model.Id_Muestreo = idMuestreo;
+                        //var model_sector = _context.ProdMuestreoSector.FirstOrDefault(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo && m.Sector == sector);
+                        //if (model_sector == null)
+                        //{
+                        //    prodMuestreoSector.Cod_Prod = cod_Prod;
+                        //    prodMuestreoSector.Cod_Campo = cod_Campo;
+                        //    prodMuestreoSector.Sector = sector;
+                        //    _context.ProdMuestreoSector.Add(prodMuestreoSector);
+                        //    _context.SaveChanges();
+
+                        //    IdSector = prodMuestreoSector.id;
+                        //}
+                        //else
+                        //{
+                        //    IdSector = model_sector.id;
+                        //}
+
+                        model.Cod_Empresa = 2;
+                        model.Cod_Prod = muestreo.Cod_Prod;
+                        model.Cod_Campo = muestreo.Cod_Campo;
+                        model.Fecha = DateTime.Now;
+                        model.Temporada = catSemanas.Temporada;
+                        model.Num_analisis = num_analisis;
+                        if (idMuestreo != 0)
+                        {
+                            model.Id_Muestreo = idMuestreo;
+                        }
+
+                        if (model.Estatus == "F")
+                        {
+                            fechaLiberacionUSA = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_USA);
+                            fechaLiberacionEU = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_EU);
+
+                            model.LiberacionUSA = fechaLiberacionUSA;
+                            model.LiberacionEU = fechaLiberacionEU;
+                        }
+                        if (model.Traza == "on")
+                        {
+                            model.Traza = "1";
+                        }
+                        if (model.Organico == "on")
+                        {
+                            model.Organico = "1";
+                        }
+                        if (model.Estatus == "L")
+                        {
+                            model.Comentarios = null;
+                        }
+                        else
+                        {
+                            model.Comentarios = model.Comentarios;
+                        }
+
+                        _context.ProdAnalisis_Residuo.Add(model);
+                        _context.SaveChanges();
+
+                        string estatus = "";
+
+                        if (model.Estatus == "R")
+                        {
+                            estatus = "CON RESIDUOS";
+                        }
+                        else if (model.Estatus == "P")
+                        {
+                            estatus = "EN PROCESO";
+                        }
+                        else if (model.Estatus == "F")
+                        {
+                            estatus = "FUERA DEL LIMITE";
+                        }
+                        else if (model.Estatus == "L")
+                        {
+                            estatus = "LIBERADO";
+                        }
+
+                        title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
+                        body = "Resultado del análisis: " + estatus;
+                        notificaciones.SendNotificationJSON(title, body);
+
+                        enviar(model.IdAgen, model.Id, "nuevo");
+
+                        return Ok(model);
                     }
 
-                    if (model.Estatus == "F")
+                    else
                     {
-                        fechaLiberacionUSA = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_USA);
-                        fechaLiberacionEU = Convert.ToDateTime(model.Fecha_envio).AddDays(liberacion_EU);
-
-                        model.LiberacionUSA = fechaLiberacionUSA;
-                        model.LiberacionEU = fechaLiberacionEU;
+                        return BadRequest();//información duplicada
                     }
-                    if (model.Traza == "on")
-                    {
-                        model.Traza = "1";
-                    }
-                    if (model.Organico == "on")
-                    {
-                        model.Organico = "1";
-                    }
-                    if (model.Estatus == "L")
-                    {
-                        model.Comentarios = null;
-                    }
-                    else { 
-                        model.Comentarios = model.Comentarios;
-                    }
-
-                    _context.ProdAnalisis_Residuo.Add(model);
-                    _context.SaveChanges();
-
-                    string estatus = "";
-
-                    if (model.Estatus == "R")
-                    {
-                        estatus = "CON RESIDUOS";
-                    }
-                    else if (model.Estatus == "P")
-                    {
-                        estatus = "EN PROCESO";
-                    }
-                    else if (model.Estatus == "F")
-                    {
-                        estatus = "FUERA DEL LIMITE";
-                    }
-                    else if (model.Estatus == "L")
-                    {
-                        estatus = "LIBERADO";
-                    }
-
-                    title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
-                    body = "Resultado del análisis: " + estatus;
-                    notificaciones.SendNotificationJSON(title, body);
-
-                    enviar(model.IdAgen, model.Id, "nuevo");
-
-                    return Ok(model);
                 }
-
                 else
                 {
-                    return BadRequest();//información duplicada
+                    return BadRequest("Usuario incorrecto");//información duplicada
                 }
             }
 
@@ -381,7 +387,7 @@ namespace ApiIndicadores.Controllers
         }
 
         //correo
-        public void enviar(short? idAgen_Session, int idAnalisis, string tipo_correo)
+        public void enviar(short idAgen_Session, int idAnalisis, string tipo_correo)
         {
             try
             {

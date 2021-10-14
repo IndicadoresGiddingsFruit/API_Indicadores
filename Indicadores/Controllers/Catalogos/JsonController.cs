@@ -89,22 +89,37 @@ namespace ApiIndicadores.Models
         }
 
         //Asesores
-        [HttpGet("{tipo}", Name = "GetAsesor")]
-        public ActionResult GetAsesor(string tipo)
+        [HttpGet("{depto}", Name = "GetAsesor")]
+        public ActionResult GetAsesor(string depto)
         {
             try
             {
                 var item = (dynamic)null;
-                if (tipo != "")
+                if (depto != "")
                 {
-                    item = (from a in _context.ProdAgenteCat
-                            where a.Depto==tipo && a.Activo==true && a.Codigo!=null
-                            select new
-                            {
-                                IdAgen = a.IdAgen,
-                                Asesor=a.Nombre,
-                                Tipo=a.Depto
-                            }).Distinct().OrderBy(x=>x.Asesor).ToList();
+                    if (depto == "C")
+                    {
+                        item = (from a in _context.ProdAgenteCat
+                                where a.Depto == depto && a.Activo == true && a.Codigo != null || a.IdAgen== 304
+                                select new
+                                {
+                                    IdAgen = a.IdAgen,
+                                    Asesor = a.Nombre,
+                                    Tipo = a.Depto
+                                }).Distinct().OrderBy(x => x.Asesor).ToList();
+                    }
+                    else
+                    {
+                        item = (from a in _context.ProdAgenteCat
+                                where a.Depto == depto && a.Activo == true && a.Codigo != null
+                                select new
+                                {
+                                    IdAgen = a.IdAgen,
+                                    Asesor = a.Nombre,
+                                    Tipo = a.Depto
+                                }).Distinct().OrderBy(x => x.Asesor).ToList();
+                    }
+
                 }                
                 return Ok(item);
             }

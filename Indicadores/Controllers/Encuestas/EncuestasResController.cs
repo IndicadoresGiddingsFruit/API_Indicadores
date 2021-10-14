@@ -34,33 +34,41 @@ namespace ApiIndicadores.Controllers
         }
 
         // GET api/<EncuestasResController>/5
-        [HttpGet("{id}", Name = "GetIdEncuestaRes")]
-        public async Task<ActionResult<EncuestasRes>> Get(int id)
+        [HttpGet("{id}/{idUsuario}")]
+        public async Task<ActionResult<EncuestasRes>> Get(int id, int idUsuario)
         {
             try
             {
-                var item = (from e in _context.EncuestasRelacion
-                            join r in _context.EncuestasRes on e.IdRespuesta equals r.Id
-
-                            where e.IdPregunta == id
-                            group e by new
-                            {
-                                IdPregunta = e.IdPregunta,
-                                IdRespuesta = r.Id,
-                                Respuesta = r.Respuesta
-                            } into x
-                            select new
-                            {
-                                IdPregunta = x.Key.IdPregunta,
-                                IdRespuesta = x.Key.IdRespuesta,
-                                Respuesta = x.Key.Respuesta
-                            }).Distinct();
-
-                if (item == null)
+                if (idUsuario != 0)
                 {
-                    return NotFound();
+                    var data = _context.EncuestasClass.FromSqlRaw($"sp_GetRespuestas " + id + "," + idUsuario + "").ToList();
+                    return Ok(data);
                 }
-                return Ok(await item.ToListAsync());
+                else
+                {
+                    var item = (from e in _context.EncuestasRelacion
+                                join r in _context.EncuestasRes on e.IdRespuesta equals r.Id
+
+                                where e.IdPregunta == id
+                                group e by new
+                                {
+                                    IdPregunta = e.IdPregunta,
+                                    IdRespuesta = r.Id,
+                                    Respuesta = r.Respuesta
+                                } into x
+                                select new
+                                {
+                                    IdPregunta = x.Key.IdPregunta,
+                                    IdRespuesta = x.Key.IdRespuesta,
+                                    Respuesta = x.Key.Respuesta
+                                }).Distinct();
+
+                    if (item == null)
+                    {
+                        return NotFound();
+                    }
+                    return Ok(await item.ToListAsync());
+                }
             }
             catch (Exception e)
             {

@@ -157,70 +157,75 @@ namespace ApiIndicadores.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                if (recipient != "Enviar sin correo")
+                if (recipient == "AP")
                 {
-                    if (recipient == "AP")
+                    foreach (var x in model)
                     {
-                        foreach (var x in model)
-                        {
-                            var item = _context.Seguimiento_financ.Where(i => i.Id == x.Id).First();
-                            item.AP = "S";
-                            await _context.SaveChangesAsync();
-                        }
-
-                        email.sendmail("ademir.reyes@giddingsfruit.mx", 0, null);
+                        var item = _context.Seguimiento_financ.Where(i => i.Id == x.Id).First();
+                        item.AP = "S";
+                        await _context.SaveChangesAsync();
                     }
 
-                    else
+                    email.sendmail("ademir.reyes@giddingsfruit.mx", 0, null);
+                }
+
+                else if(recipient== "Enviar a ingenieros")
+                {
+                    foreach (var x in model)
                     {
-                        var result = (from y in model
-                                      group y by new { y.IdAgen } into g
-                                      select new
-                                      {
-                                          IdAgen = g.Key.IdAgen
-                                      }).ToList();
+                        var item = _context.Seguimiento_financ.Where(i => i.Id == x.Id).First();
+                        item.AP = "S";
+                        await _context.SaveChangesAsync();
+                    }
 
-                        var q = result.AsQueryable();
+                    var result = (from y in model
+                                  group y by new { y.IdAgen } into g
+                                  select new
+                                  {
+                                      IdAgen = g.Key.IdAgen
+                                  }).ToList();
 
-                        foreach (var x in q)
-                        {
-                            var agente = _context.SIPGUsuarios.FirstOrDefault(a => a.IdAgen == x.IdAgen);
+                    var q = result.AsQueryable();
 
-                            var lista = (from y in model
-                                         where y.IdAgen == x.IdAgen
-                                         group y by new
-                                         {
-                                             y.Cod_Prod,
-                                             y.Productor,
-                                             y.Estatus,
-                                             y.DescEstatus,
-                                             y.Comentarios,
-                                             y.SaldoFinal,
-                                             y.caja1,
-                                             y.caja2
-                                         } into g
-                                         select new SeguimientoClass()
-                                         {
-                                             Cod_Prod = g.Key.Cod_Prod,
-                                             Productor = g.Key.Productor,
-                                             Estatus = g.Key.Estatus,
-                                             DescEstatus = g.Key.DescEstatus,
-                                             Comentarios = g.Key.Comentarios,
-                                             SaldoFinal = g.Key.SaldoFinal,
-                                             caja1 = g.Key.caja1,
-                                             caja2 = g.Key.caja2
-                                         }).ToList();
+                    foreach (var x in q)
+                    {
+                        var agente = _context.SIPGUsuarios.FirstOrDefault(a => a.IdAgen == x.IdAgen);
+
+                        var lista = (from y in model
+                                     where y.IdAgen == x.IdAgen
+                                     group y by new
+                                     {
+                                         y.Cod_Prod,
+                                         y.Productor,
+                                         y.Estatus,
+                                         y.DescEstatus,
+                                         y.Comentarios,
+                                         y.SaldoFinal,
+                                         y.caja1,
+                                         y.caja2
+                                     } into g
+                                     select new SeguimientoClass()
+                                     {
+                                         Cod_Prod = g.Key.Cod_Prod,
+                                         Productor = g.Key.Productor,
+                                         Estatus = g.Key.Estatus,
+                                         DescEstatus = g.Key.DescEstatus,
+                                         Comentarios = g.Key.Comentarios,
+                                         SaldoFinal = g.Key.SaldoFinal,
+                                         caja1 = g.Key.caja1,
+                                         caja2 = g.Key.caja2
+                                     }).ToList();
 
 
-                            email.sendmail(agente.correo, agente.IdRegion, lista);
+                        email.sendmail(agente.correo, agente.IdRegion, lista);
 
-                            title = "Asignar estatus de financiamientos";
-                            body = "Tiene nuevos códigos a revisar";
+                        title = "Asignar estatus de financiamientos";
+                        body = "Tiene nuevos códigos a revisar";
 
-                            notificaciones.SendNotificationJSON(title, body);
-                        }
+                        notificaciones.SendNotificationJSON(title, body);
                     }
                 }
+
                 return Ok(model);
             }
             catch (Exception e)

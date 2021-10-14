@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ApiIndicadores.Controllers
 {
@@ -18,7 +15,7 @@ namespace ApiIndicadores.Controllers
         {
             this._context = context;
         }
-        
+
         // GET api/<AgentesController>/5
         [HttpGet("{Cod_Prod}", Name = "GetAsesores")]
         public ActionResult GetAsesores(string Cod_Prod)
@@ -31,19 +28,16 @@ namespace ApiIndicadores.Controllers
                             where c.Cod_Prod == Cod_Prod
                             select new
                             {
-                                Productor=p.Nombre,
-                                IdAgen=a.IdAgen,
-                                Asesor=a.Nombre
+                                Productor = p.Nombre,
+                                IdAgen = a.IdAgen,
+                                Asesor = a.Nombre
                             }).Distinct().ToList();
-               
                 return Ok(item);
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
-            }          
+            }
         }
-
-       
     }
 }

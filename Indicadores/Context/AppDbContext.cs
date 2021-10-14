@@ -24,11 +24,13 @@ namespace ApiIndicadores.Context
       
         public DbSet<ProdProductoresCat> ProdProductoresCat { get; set; }
         public DbSet<ProdAgenteCat> ProdAgenteCat { get; set; }
+        public DbSet<InfoCampoClass> InfoCampoClass { get; set; }
 
         public DbSet<MuestreosClass> MuestreosClass { get; set; }
         public DbSet<ProdMuestreo> ProdMuestreo { get; set; }
         public DbSet<ProdCalidadMuestreo> ProdCalidadMuestreo { get; set; }
         public DbSet<ProdMuestreoSector> ProdMuestreoSector { get; set; }
+        public DbSet<ProdBloqueoTarjeta> ProdBloqueoTarjeta { get; set; }
 
         public DbSet<ProdAnalisis_Residuo> ProdAnalisis_Residuo { get; set; }
         public DbSet<AnalisisClass> AnalisisClass { get; set; }
@@ -56,6 +58,9 @@ namespace ApiIndicadores.Context
         public DbSet<EncuestasLog> EncuestasLog { get; set; }
         public DbSet<EncuestasClass> EncuestasClass { get; set; }
 
+        //Inventario
+        public DbSet<MovimientosInventarioClass> MovimientosInventarioClass { get; set; }
+
         //Empleados
         //public DbSet<Empleado> Empleado { get; set; }
         //public DbSet<Puesto> Puesto { get; set; }
@@ -72,6 +77,8 @@ namespace ApiIndicadores.Context
             modelBuilder.Entity<EncuestasClass>().HasNoKey();
             modelBuilder.Entity<EvaluacionClass>().HasNoKey();
             modelBuilder.Entity<SeguimientoClass>().HasNoKey();
+            modelBuilder.Entity<MovimientosInventarioClass>().HasNoKey();
+            modelBuilder.Entity<InfoCampoClass>().HasNoKey();
         }
     }
 }

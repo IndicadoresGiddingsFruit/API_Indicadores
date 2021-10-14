@@ -21,12 +21,11 @@ namespace ApiIndicadores.Models
         public Nullable<int> Num_analisis { get; set; }
         public string Laboratorio { get; set; }
         public string Comentarios { get; set; }
-        public Nullable<short> IdAgen { get; set; }
+        public short IdAgen { get; set; }
         public Nullable<System.DateTime> Fecha { get; set; }
         public Nullable<int> Id_Muestreo { get; set; }
         public Nullable<System.DateTime> LiberacionUSA { get; set; }
         public Nullable<System.DateTime> LiberacionEU { get; set; }
-        public Nullable<int> IdSector { get; set; }
         public short? Cod_Empresa { get; set; }
         public string Folio { get; set; }
         public string Temporada { get; set; }

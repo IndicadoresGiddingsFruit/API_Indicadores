@@ -18,7 +18,7 @@ namespace ApiIndicadores.Models
         public Nullable<System.DateTime> Fecha_solicitud { get; set; }
         public string Telefono { get; set; }
         public Nullable<System.DateTime> Inicio_cosecha { get; set; }
-        public Nullable<short> IdAgen { get; set; }
+        public short IdAgen { get; set; }
         public string Liberacion { get; set; }
         public string Tarjeta { get; set; }
         public Nullable<System.DateTime> Fecha_ejecucion { get; set; }
@@ -28,6 +28,6 @@ namespace ApiIndicadores.Models
         public string Liberar_Tarjeta { get; set; }
         public string Temporada { get; set; }
         public string ImageAutoriza { get; set; }
-        public double? CajasEstimadas { get; set; }
+        public int? CajasEstimadas { get; set; }
     }
 }

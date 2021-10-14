@@ -77,38 +77,23 @@ namespace ApiIndicadores.Controllers
         {
             try
             {
+                
                 foreach (var item in model)
                 {
-                    var EncuestasUsuarios = _context.EncuestasUsuarios.FirstOrDefault(m => m.IdEncuesta == id && m.IdUsuario == item.IdAsingUsuario);
-                    if (EncuestasUsuarios != null)
-                    {
-                        EncuestasUsuarios.Fecha = DateTime.Now;
-                        await _context.SaveChangesAsync();
+                    var EncuestasUsuarios = _context.EncuestasUsuarios.FirstOrDefault(m => m.IdEncuesta == id && m.IdUsuario == idUsuario);
 
-                        EncuestasLog EncuestasLog = new EncuestasLog();
-
-                        EncuestasLog.IdAsingUsuario = item.IdAsingUsuario;
-                        if (item.Id != null)
-                        {
-                            EncuestasLog.IdRelacion = item.Id;
-                        }
-                        else
-                        {
-                            var idRespuesta = _context.EncuestasRes.FirstOrDefault(m => m.Respuesta == "Texto libre");
-                            var idRelacion = _context.EncuestasRelacion.FirstOrDefault(m => m.IdRespuesta == idRespuesta.Id);
-                            EncuestasLog.IdRelacion = idRelacion.Id;
-
-                        }
-                        _context.EncuestasLog.Add(EncuestasLog);
-                        await _context.SaveChangesAsync();
-                        return Ok(item);
-                    }
-                    else
-                    {
-                        return BadRequest("Algo salió mal");
-                    }                   
+                    EncuestasUsuarios.Fecha_respuesta = DateTime.Now;
+                    await _context.SaveChangesAsync();
+                     
+                    EncuestasLog EncuestasLog = new EncuestasLog();
+                    EncuestasLog.IdAsingUsuario = EncuestasUsuarios.Id;
+                    EncuestasLog.IdRelacion = item.IdRelacion;
+                    EncuestasLog.RespuestaLibre = item.RespuestaLibre;
+                    _context.EncuestasLog.Add(EncuestasLog);
+                    await _context.SaveChangesAsync();
                 }
-                return Ok();
+
+                return Ok(model);
             }
             catch (Exception e)
             {

@@ -13,7 +13,7 @@ namespace ApiIndicadores.Classes
         public string Productor { get; set; }
         public short? IdAgen { get; set; }
         public string Asesor { get; set; }
-        public int Estatus { get; set; }
+        public int? Estatus { get; set; }
         public string DescEstatus { get; set; }
         public string Comentarios { get; set; }
         public DateTime? Fecha { get; set; }
