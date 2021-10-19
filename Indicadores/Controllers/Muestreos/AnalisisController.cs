@@ -7,6 +7,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,6 +20,7 @@ namespace ApiIndicadores.Controllers
     {
         Correo correo = new Correo();
         private readonly AppDbContext _context;
+        GetMimeTypes getMimeTypes = new GetMimeTypes();
         public AnalisisController(AppDbContext context)
         {
             this._context = context;
@@ -66,6 +69,27 @@ namespace ApiIndicadores.Controllers
             catch (Exception e)
             {
                 return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("{idAnalisis}")]
+        //imagen
+        public ActionResult Get(int idAnalisis)
+        {
+            try
+            {
+                string path = "//192.168.0.21/recursos season/AnalisisResiduosPDF/" + idAnalisis + ".pdf";
+                 
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+                    stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;               
+                return File(memory, "application/pdf", Path.GetFileName(path));
+            }
+            catch (Exception e) {
+                return BadRequest(e.ToString());
             }
         }
 
@@ -125,14 +149,14 @@ namespace ApiIndicadores.Controllers
 
                     DateTime fechaLiberacionUSA = DateTime.Now, fechaLiberacionEU = DateTime.Now;
 
-                    var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(m =>
+                    var analisis = _context.ProdAnalisis_Residuo.Where(m =>
                     m.Cod_Prod == muestreo.Cod_Prod &&
                     m.Cod_Campo == muestreo.Cod_Campo &&
                     m.Fecha_entrega == model.Fecha_entrega &&
                     m.Fecha_envio == model.Fecha_envio &&
                     m.Estatus == model.Estatus &&
-                    m.Num_analisis == model.Num_analisis &&
-                    m.Temporada == catSemanas.Temporada);
+                    m.Num_analisis == num_analisis &&
+                    m.Temporada == "2122").FirstOrDefault(); //catSemanas.Temporada
 
                     if (analisis == null)
                     {
@@ -156,7 +180,7 @@ namespace ApiIndicadores.Controllers
                         model.Cod_Prod = muestreo.Cod_Prod;
                         model.Cod_Campo = muestreo.Cod_Campo;
                         model.Fecha = DateTime.Now;
-                        model.Temporada = catSemanas.Temporada;
+                        model.Temporada = "2122";// catSemanas.Temporada;
                         model.Num_analisis = num_analisis;
                         if (idMuestreo != 0)
                         {
@@ -334,7 +358,42 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        //Liberar Fuera de Limite
+        //Subir PDF del Laboratorio 
+        [HttpPatch("{idAnalisis}")]
+        public async Task<ActionResult<ProdAnalisis_Residuo>> Patch(int idAnalisis, [FromForm] IFormFile file)
+        {
+            try
+            {
+                var analisis = _context.ProdAnalisis_Residuo.Find(idAnalisis);
+                if (analisis != null)
+                {
+                    if (file != null)
+                    {
+                        var extension = Path.GetExtension(file.FileName).Substring(1);
+                        var path = "//192.168.0.21/recursos season/AnalisisResiduosPDF/" + idAnalisis + "."+ extension;
+                        
+                        using (var stream = System.IO.File.Create(path))
+                        {
+                           await file.CopyToAsync(stream);
+                        }
+
+                        analisis.PDFLaboratorio = path;
+                    }
+                    _context.SaveChanges();
+                    return Ok(analisis);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+       // Liberar Fuera de Limite
         [HttpPatch("{id}/{idAgen}")]
         public async Task<ActionResult<ProdAnalisis_Residuo>> Patch(int id, short idAgen)
         {
@@ -362,7 +421,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        //Delete  
+        ////Delete  
         [HttpDelete("{id}")]
         public async Task<ActionResult<ProdAnalisis_Residuo>> Delete(int id)
         {

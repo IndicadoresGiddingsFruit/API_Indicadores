@@ -21,8 +21,7 @@ namespace ApiIndicadores.Models
         public short IdAgen { get; set; }
         public string Liberacion { get; set; }
         public string Tarjeta { get; set; }
-        public Nullable<System.DateTime> Fecha_ejecucion { get; set; }
-        public Nullable<int> IdSector { get; set; }
+        public Nullable<System.DateTime> Fecha_ejecucion { get; set; } 
         public Nullable<short> IdAgenI { get; set; }
         public Nullable<short> IdAgen_Tarjeta { get; set; }
         public string Liberar_Tarjeta { get; set; }

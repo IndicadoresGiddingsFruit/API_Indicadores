@@ -42,8 +42,24 @@ namespace ApiIndicadores.Controllers
             }
         }
 
+        //// GET api/<MuestreoController>/5
+        //[HttpGet("{idMuestreo}")]       
+        //public ActionResult Get(int idMuestreo)
+        //{
+        //    try
+        //    {
+        //        var muestreos = _context.MuestreosClass.FromSqlRaw($"sp_GetMuestreos,NULL,NULL,NULL, " + idMuestreo + "").Distinct();
+        //        return Ok(muestreos);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+
+        //    }
+        //}
+
         // GET api/<MuestreoController>/5
-        [HttpGet("{id}/{tipo}/{depto}", Name = "GetMuestreo")]
+        [HttpGet("{id}/{tipo}/{depto}")]
         //id es IdAgen o id de usuario        
         public async Task<ActionResult<MuestreosClass>> Get(short id, string tipo = null, string depto = null)
         {
@@ -312,11 +328,8 @@ namespace ApiIndicadores.Controllers
                         var extension = Path.GetExtension(file.FileName).Substring(1);
                         var path = "//192.168.0.21/recursos season/AutorizaTarjeta/" + id + ".jpg";
 
-
                         using (var stream = System.IO.File.Create(path))
                         {
-                            //imagePath = Path.ChangeExtension(imagePath, ".jpg");
-
                             file.CopyToAsync(stream);
                         }
 

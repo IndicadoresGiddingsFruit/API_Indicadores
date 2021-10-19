@@ -32,5 +32,6 @@ namespace ApiIndicadores.Models
         public string Traza { get; set; }
         public string Organico { get; set; }
         public string ParteMuestreada { get; set; }
+        public string PDFLaboratorio { get; set; }
     }
 }
