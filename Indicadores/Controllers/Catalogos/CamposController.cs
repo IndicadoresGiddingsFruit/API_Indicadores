@@ -28,21 +28,62 @@ namespace ApiIndicadores.Controllers
         Notificaciones notificaciones = new Notificaciones();
         string title = "", body = "";
 
-        // GET: api/<MuestreoController>
-        [HttpGet("{Cod_Prod}/{Cod_Campo}")]
-        public async Task<ActionResult<MovimientosInventarioClass>> Get(string cod_Prod, short cod_Campo)
+        //Campos
+        [HttpGet("{Cod_Prod}")]
+        public ActionResult GetData(string Cod_Prod)
         {
             try
             {
-                var data = _context.InfoCampoClass.FromSqlRaw($"sp_GetInfoCampos '" + cod_Prod + "' , " + cod_Campo + "").ToListAsync();
-                return Ok(await data); 
+                //var item = (dynamic)null;
+                //if (Cod_Campo != 0)
+                //{
+                //    item =(from p in _context.ProdProductoresCat
+                //            join c in _context.ProdCamposCat on p.Cod_Prod equals c.Cod_Prod
+
+                //           join t in _context.CatTiposProd on c.Tipo equals t.Tipo
+
+                //            join pr in _context.CatProductos on new { c.Tipo, c.Producto } equals new { pr.Tipo, pr.Producto } into CatPr
+                //            from pr in CatPr.DefaultIfEmpty()
+
+                //            join l in _context.CatLocalidades on new { c.CodLocalidad } equals new { l.CodLocalidad } into Loc
+                //            from l in Loc.DefaultIfEmpty()                            
+
+                //            where c.Cod_Prod == Cod_Prod && c.Cod_Campo==Cod_Campo
+                //            select new
+                //            {
+                //                Cod_Prod = c.Cod_Prod,
+                //                Productor = p.Nombre,
+                //                Cod_Campo = c.Cod_Campo,
+                //                Campo = c.Descripcion,
+                //                Compras_oportunidad = c.Compras_Oportunidad,
+                //                Ubicacion = c.Ubicacion,
+                //                Localidad=l.Descripcion,
+                //                Tipo = t.Descripcion,
+                //                Producto = pr.Descripcion
+                //            }).Distinct();                    
+                //}
+                //else
+                //{
+                //item = (from p in _context.ProdProductoresCat
+                //        join c in _context.ProdCamposCat on p.Cod_Prod equals c.Cod_Prod
+                //        where c.Cod_Prod == Cod_Prod
+                //        select new
+                //        {
+                //            Cod_Prod = c.Cod_Prod,
+                //            Productor = p.Nombre,
+                //            Cod_Campo = c.Cod_Campo
+                //        }).ToList();
+
+                var item = _context.InfoCampoClass.FromSqlRaw($"sp_GetInfoCampos '" + Cod_Prod + "' ").ToList();
+                return Ok(item);
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
+
         }
-  
+
         // PUT api/<CamposController>/5
         //Reasignar codigo
         [HttpPut("{idAgenOriginal}/{idAgen}/{tipo}")]
@@ -57,7 +98,7 @@ namespace ApiIndicadores.Controllers
                     {
                         model_campo.IdAgen = idAgen;
                     }
-                    else if (tipo == "C" || idAgen==304)
+                    else if (tipo == "C" || idAgen == 304)
                     {
                         model_campo.IdAgenC = idAgen;
                     }

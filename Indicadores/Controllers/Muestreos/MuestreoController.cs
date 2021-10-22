@@ -29,7 +29,7 @@ namespace ApiIndicadores.Controllers
         string correo_p, correo_c, correo_i;
 
         // GET: api/<MuestreoController>
-        [HttpGet]
+        [HttpGet("{cod_Prod}/{cod_Campo}")]
         public ActionResult Get()
         {
             try
@@ -41,22 +41,6 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-        //// GET api/<MuestreoController>/5
-        //[HttpGet("{idMuestreo}")]       
-        //public ActionResult Get(int idMuestreo)
-        //{
-        //    try
-        //    {
-        //        var muestreos = _context.MuestreosClass.FromSqlRaw($"sp_GetMuestreos,NULL,NULL,NULL, " + idMuestreo + "").Distinct();
-        //        return Ok(muestreos);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e.Message);
-
-        //    }
-        //}
 
         // GET api/<MuestreoController>/5
         [HttpGet("{id}/{tipo}/{depto}")]
@@ -115,45 +99,75 @@ namespace ApiIndicadores.Controllers
         }
 
         // Nuevo  
-        [HttpPost]
-        public ActionResult Post([FromBody] ProdMuestreo model)
+        [HttpPost("{param}")]
+        public ActionResult Post([FromBody] ProdMuestreo model, string param="")
         {
             try
             {
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now.Date >= m.Inicio && DateTime.Now.Date <= m.Fin);
                 var agente = _context.SIPGUsuarios.FirstOrDefault(s => s.IdAgen == model.IdAgen);
                 var campos = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo);
-
-                //var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada == catSemanas.Temporada);
-                //if (modeloExistente == null)
-                //{
-                var usuario = _context.SIPGUsuarios.Where(x => x.IdAgen == model.IdAgen).First();
-
-                if (usuario.Depto == "P" || model.IdAgen == 216)
+                
+                if (param == "revisar") 
                 {
-                    model.Liberacion = "S";
+                    var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada == catSemanas.Temporada);
+                   
+                    if (modeloExistente != null)
+                    {
+                        return BadRequest("La solicitud ya existe");
+                    }
+                    else
+                    {
+                        var usuario = _context.SIPGUsuarios.Where(x => x.IdAgen == model.IdAgen).First();
+
+                        if (usuario.Depto == "P" || model.IdAgen == 216)
+                        {
+                            model.Liberacion = "S";
+                        }
+                        model.Fecha_solicitud = DateTime.Now;
+                        model.Temporada = catSemanas.Temporada;
+                        if (agente.Depto != "P")
+                        {
+                            model.IdAgen = (short)campos.IdAgen;
+                        }
+                        _context.ProdMuestreo.Add(model);
+                        _context.SaveChanges();
+
+                        title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
+                        body = "Nuevo muestreo";
+                        notificaciones.SendNotificationJSON(title, body);
+
+                        enviar(model.IdAgen, model.Id, "nuevo");
+
+                        return Ok(model);
+                    }
                 }
-                model.Fecha_solicitud = DateTime.Now;
-                model.Temporada = catSemanas.Temporada;
-                if (agente.Depto != "P")
+                else
                 {
-                    model.IdAgen = (short)campos.IdAgen;
+                    var usuario = _context.SIPGUsuarios.Where(x => x.IdAgen == model.IdAgen).First();
+
+                    if (usuario.Depto == "P" || model.IdAgen == 216)
+                    {
+                        model.Liberacion = "S";
+                    }
+                    model.Fecha_solicitud = DateTime.Now;
+                    model.Temporada = catSemanas.Temporada;
+                    if (agente.Depto != "P")
+                    {
+                        model.IdAgen = (short)campos.IdAgen;
+                    }
+                    _context.ProdMuestreo.Add(model);
+                    _context.SaveChanges();
+
+                    title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
+                    body = "Nuevo muestreo";
+                    notificaciones.SendNotificationJSON(title, body);
+
+                    enviar(model.IdAgen, model.Id, "nuevo");
+
+                    return Ok(model);
                 }
-                _context.ProdMuestreo.Add(model);
-                _context.SaveChanges();
-
-                title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
-                body = "Nuevo muestreo";
-                notificaciones.SendNotificationJSON(title, body);
-
-                enviar(model.IdAgen, model.Id, "nuevo");
-
-                return Ok(model);
-                //}
-                //else
-                //{
-                //    return BadRequest("La solicitud ya existe");
-                //}
+                
             }
             catch (Exception e)
             {
@@ -291,8 +305,6 @@ namespace ApiIndicadores.Controllers
                             muestreo.IdAgen_Tarjeta = idAgen;
                         }
                         muestreo.Liberar_Tarjeta = model.Liberar_Tarjeta;
-
-                        //guardar fecha de liberacion
                         _context.SaveChanges();
 
                         title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;

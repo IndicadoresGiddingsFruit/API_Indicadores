@@ -74,16 +74,16 @@ namespace ApiIndicadores.Controllers
 
         [HttpGet("{idAnalisis}")]
         //imagen
-        public ActionResult Get(int idAnalisis)
+        public async Task<ActionResult<ProdAnalisis_Residuo>> Get(int idAnalisis)
         {
             try
             {
-                string path = "//192.168.0.21/recursos season/AnalisisResiduosPDF/" + idAnalisis + ".pdf";
-                 
+                string path = "//192.168.0.21/recursos season/AnalisisResiduosPDF/" + idAnalisis+".pdf";
+                
                 var memory = new MemoryStream();
                 using (var stream = new FileStream(path, FileMode.Open))
                 {
-                    stream.CopyToAsync(memory);
+                    await stream.CopyToAsync(memory);
                 }
                 memory.Position = 0;               
                 return File(memory, "application/pdf", Path.GetFileName(path));

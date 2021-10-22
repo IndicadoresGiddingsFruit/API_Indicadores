@@ -27,17 +27,6 @@ namespace ApiIndicadores.Controllers
             return await _context.SIPGUsuarios.OrderBy(u=>u.Completo).ToListAsync();    
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<SIPGUsuarios>> GetUsuarios(int id)
-        //{
-        //    var usuarios = await _context.SIPGUsuarios.FindAsync(id);
-        //    if (usuarios == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return usuarios;
-        //}
-
         //Cambiar contraseña
         [HttpPut]
         public async Task<ActionResult<SIPGUsuarios>> Put(SIPGUsuarios usuarios) 
