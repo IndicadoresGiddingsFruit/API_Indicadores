@@ -212,6 +212,11 @@ namespace ApiIndicadores.Controllers
                             model.Comentarios = model.Comentarios;
                         }
 
+                        if (model.LiberaDocumento == "on")
+                        {
+                            model.LiberaDocumento = "S";
+                        }                         
+
                         _context.ProdAnalisis_Residuo.Add(model);
                         _context.SaveChanges();
 

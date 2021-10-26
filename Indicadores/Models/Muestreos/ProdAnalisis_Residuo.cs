@@ -33,5 +33,6 @@ namespace ApiIndicadores.Models
         public string Organico { get; set; }
         public string ParteMuestreada { get; set; }
         public string PDFLaboratorio { get; set; }
+        public string LiberaDocumento { get; set; }
     }
 }

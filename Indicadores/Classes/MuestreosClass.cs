@@ -42,7 +42,8 @@ namespace ApiIndicadores.Classes
         public string AsesorCS { get; set; }
 
         public Int16? IdAgenI { get; set; }
-        public string AsesorI { get; set; }        
+        public string AsesorI { get; set; }
+        public Int16? IdAgenIS { get; set; }
 
         public string Estatus { get; set; }
         public string Incidencia { get; set; }

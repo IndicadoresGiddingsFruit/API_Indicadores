@@ -47,6 +47,7 @@ namespace ApiIndicadores.Context
         public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; }
         public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }
         public DbSet<EvaluacionClass> EvaluacionClass { get; set; }
+        public DbSet<RecepcionClass> RecepcionClass { get; set; }
 
         //Encuestas
         public DbSet<EncuestasCat> EncuestasCat { get; set; }
@@ -79,6 +80,7 @@ namespace ApiIndicadores.Context
             modelBuilder.Entity<SeguimientoClass>().HasNoKey();
             modelBuilder.Entity<MovimientosInventarioClass>().HasNoKey();
             modelBuilder.Entity<InfoCampoClass>().HasNoKey();
+            modelBuilder.Entity<RecepcionClass>().HasNoKey();
         }
     }
 }
