@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApiIndicadores.Models.Inventario;
 
 namespace ApiIndicadores.Context
 {
@@ -61,6 +62,11 @@ namespace ApiIndicadores.Context
 
         //Inventario
         public DbSet<MovimientosInventarioClass> MovimientosInventarioClass { get; set; }
+        public DbSet<CatMovtosAlm> CatMovtosAlm { get; set; }
+        public DbSet<CatArticulos> CatArticulos { get; set; }
+        public DbSet<MovtosAlmIndicadores> MovtosAlmIndicadores { get; set; }
+        public DbSet<CatUniMed> CatUniMed { get; set; }
+        public DbSet<EntradasAlm> EntradasAlm { get; set; }
 
         //Empleados
         //public DbSet<Empleado> Empleado { get; set; }

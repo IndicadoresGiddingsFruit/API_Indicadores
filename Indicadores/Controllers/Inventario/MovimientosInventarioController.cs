@@ -22,18 +22,26 @@ namespace ApiIndicadores.Controllers.Inventario
         }
 
         // GET api/<MuestreoController>/5
-        [HttpGet]
+        [HttpGet("{fechaInicio}/{fechaFinal}")]
         //id es IdAgen o id de usuario        
-        public async Task<ActionResult<MovimientosInventarioClass>> Get()
+        public async Task<ActionResult<MovimientosInventarioClass>> Get(DateTime fechaInicio, DateTime fechaFinal)
         {
             try
             {
-                var data = _context.MovimientosInventarioClass.FromSqlRaw($"sp_GetMovimientosInventario").ToListAsync();
+                var fecha_Inicio =fechaInicio.ToString("yyyy-MM-dd");
+                var fecha_Final = fechaFinal.ToString("yyyy-MM-dd");
+
+                var tem_actual = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
+
+                var Fini_temp = (from x in _context.CatSemanas
+                               where x.Temporada == tem_actual.Temporada
+                               select new { Inicio = x.Inicio }).OrderBy(x=>x.Inicio).FirstOrDefault();
+
+                var inicio_Temp = Fini_temp.Inicio.ToString("yyyy-MM-dd");
+
+                var data = _context.MovimientosInventarioClass.FromSqlRaw($"sp_GetMovimientosInventario '" + inicio_Temp + "', '" + fecha_Inicio + "', '" + fecha_Final+"'").ToListAsync();
+                
                 return Ok(await data);
-            }
-            catch (ArgumentNullException e)
-            {
-                return BadRequest(e);
             }
             catch (Exception e)
             {

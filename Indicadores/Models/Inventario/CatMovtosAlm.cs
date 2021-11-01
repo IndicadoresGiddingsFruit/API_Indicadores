@@ -16,10 +16,10 @@ namespace ApiIndicadores.Models.Inventario
         public string Tipo { get; set; }
         public string Origen { get; set; }
         public string Destino { get; set; }
-        public byte ModifUsuario { get; set; }
-        public byte AfeCenCosto { get; set; }
-        public byte AfeCostoProm { get; set; }
-        public Int16 Orden { get; set; }
-        public byte EsConsignacion { get; set; }
+        public bool ModifUsuario { get; set; }
+        public bool AfeCenCosto { get; set; }
+        public bool AfeCostoProm { get; set; }
+        public byte Orden { get; set; }
+        public bool EsConsignacion { get; set; }
     }
 }
