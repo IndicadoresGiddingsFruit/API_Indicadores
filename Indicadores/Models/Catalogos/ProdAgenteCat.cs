@@ -18,5 +18,6 @@ namespace ApiIndicadores.Models
         public Nullable<bool> Activo { get; set; }
         public short IdRegion { get; set; }
         public string Codigo { get; set; }
+        public int IdZona { get; set; }
     }
 }

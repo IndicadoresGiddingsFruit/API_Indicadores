@@ -88,4 +88,3 @@ E:\Programas\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.cspr
 E:\Programas\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.dll
 E:\Programas\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.pdb
 E:\Programas\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.genruntimeconfig.cache
-E:\Programas\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.csprojAssemblyReference.cache

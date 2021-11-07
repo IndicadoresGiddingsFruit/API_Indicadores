@@ -57,7 +57,6 @@ namespace ApiIndicadores.Controllers
             catch (Exception e)
             {
                 return BadRequest(e.Message);
-
             }
         }
 
@@ -506,9 +505,9 @@ namespace ApiIndicadores.Controllers
                                     correo.CC.Add(correo_c);
                                 }
 
-                                if (correo_i != "maria.jimenez@giddingsfruit.mx")
+                                if (correo_i == "hector.torres@giddingsfruit.mx")
                                 {
-                                    correo.CC.Add("maria.jimenez@giddingsfruit.mx");
+                                    correo.CC.Add("godo.garcia@giddingsfruit.mx");
                                 }
 
                                 else

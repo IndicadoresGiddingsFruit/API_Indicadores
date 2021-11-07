@@ -9,7 +9,9 @@ namespace ApiIndicadores.Classes
     {
         public string Cod_Prod { get; set; }
         public string Productor { get; set; }
-        public string SaldoFinal { get; set; }
+        public double? SaldoFinal { get; set; }
+        public double? Financiamiento_otorgado { get; set; }
+        public double? Financiamiento_recuperado { get; set; }
         public double? Pronostico { get; set; }
         public double? Entregado { get; set; }
         public double? Diferencia { get; set; }

@@ -16,7 +16,8 @@ namespace ApiIndicadores.Classes
         public string Eficiencia { get; set; }
         public string Efectividad { get; set; }       
         public Double? Promedio { get; set; }
-        
+        public int? VisitasDiarias { get; set; }
+
         public string _1 { get; set; }
         public string _2 { get; set; }
         public string _3 { get; set; }

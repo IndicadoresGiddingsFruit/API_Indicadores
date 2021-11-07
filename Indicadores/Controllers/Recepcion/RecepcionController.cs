@@ -39,7 +39,7 @@ namespace ApiIndicadores.Controllers.Recepcion
         {
             try
             {
-                var data = _context.RecepcionClass.FromSqlRaw($"sp_GetRecepcion '" + idAgen + "' ").ToList();
+                var data = _context.RecepcionClass.FromSqlRaw($"sp_GetRecepcion " + idAgen + " ").ToList();
                 return Ok(data);
             }
             catch (Exception e)

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApiIndicadores.Models.Inventario;
+using ApiIndicadores.Models.Catalogos;
+using ApiIndicadores.Classes.Visitas;
 
 namespace ApiIndicadores.Context
 {
@@ -14,7 +16,16 @@ namespace ApiIndicadores.Context
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             Database.SetCommandTimeout(150000);
-        }        
+        }
+
+        //regiones
+        public DbSet<tbZonasAgricolas> tbZonasAgricolas { get; set; }
+
+        //zonas
+        public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }
+
+
+
         public DbSet<SIPGUsuarios> SIPGUsuarios { get; set; }
         public DbSet<CatUsuariosA> CatUsuariosA { get; set; }
         public DbSet<CatSemanas> CatSemanas { get; set; }
@@ -36,17 +47,20 @@ namespace ApiIndicadores.Context
         public DbSet<ProdAnalisis_Residuo> ProdAnalisis_Residuo { get; set; }
         public DbSet<AnalisisClass> AnalisisClass { get; set; }
 
+        //Visitas
         public DbSet<ProdVisitasCab> ProdVisitasCab { get; set; }
         public DbSet<VisitasGraph> VisitasGraph { get; set; }
         public DbSet<VisitasTable> VisitasTable { get; set; }
         public DbSet<VisitasReport> VisitasReport { get; set; }
+        public DbSet<VisitasTotal> VisitasTotal { get; set; }
+
+        //Validación Cartera
 
         public DbSet<Seguimiento_financ> Seguimiento_financ { get; set; }
         public DbSet<SeguimientoClass> SeguimientoClass { get; set; }
         public DbSet<EstatusFinanciamiento> EstatusFinanciamiento { get; set; }
 
-        public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; }
-        public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }
+        public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; } 
         public DbSet<EvaluacionClass> EvaluacionClass { get; set; }
         public DbSet<RecepcionClass> RecepcionClass { get; set; }
 
@@ -67,6 +81,7 @@ namespace ApiIndicadores.Context
         public DbSet<MovtosAlmIndicadores> MovtosAlmIndicadores { get; set; }
         public DbSet<CatUniMed> CatUniMed { get; set; }
         public DbSet<EntradasAlm> EntradasAlm { get; set; }
+        public DbSet<SalidasAlm> SalidasAlm { get; set; }
 
         //Empleados
         //public DbSet<Empleado> Empleado { get; set; }

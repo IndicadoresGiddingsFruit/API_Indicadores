@@ -52,29 +52,7 @@ namespace ApiIndicadores.Controllers.Inventario
         }
         // GET api/<MovimientosInventarioController>/5
 
-        [HttpPost]
-        public async Task<ActionResult<EntradasAlm>> Post([FromBody] EntradasAlm model)
-        {
-            try
-            {
-                //var articuloExistente = _context.EntradasAlm.FirstOrDefault(m => m.Cod_Artic == model.Cod_Artic);
-                //if (articuloExistente == null)
-                //{
-                    model.Fecha = DateTime.Now; 
-                    _context.EntradasAlm.Add(model);
-                    await _context.SaveChangesAsync();
-                    return Ok(model);
-                //}
-                //else
-                //{
-                //    return BadRequest("La encuesta ya existe");
-                //}
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+       
 
         // PUT api/<MovimientosInventarioController>/5
         [HttpPut("{id}")]
