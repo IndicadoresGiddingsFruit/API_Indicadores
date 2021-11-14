@@ -459,9 +459,9 @@ namespace ApiIndicadores.Controllers
                 var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(x => x.Id == idAnalisis);
                 var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == analisis.Cod_Prod && m.Cod_Campo == analisis.Cod_Campo);
                 //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
-                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Depto == "P");
-                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Depto == "C");
-                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Depto == "I");
+                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Depto == "P" && m.Depto != null);
+                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Depto == "C" && m.Depto != null);
+                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Depto == "I" && m.Depto != null);
 
                 correo_p = email_p.correo;
                 var LiberacionUSA = String.Format("{0:d}", analisis.LiberacionUSA);
@@ -670,7 +670,7 @@ namespace ApiIndicadores.Controllers
                 a.Host = sSmtpServer;
                 a.Port = 587;//25
                 a.EnableSsl = true;
-                a.UseDefaultCredentials = true;
+                a.UseDefaultCredentials = false;
                 a.Credentials = new System.Net.NetworkCredential
                    ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
                 a.Send(correo);

@@ -34,12 +34,12 @@ namespace ApiIndicadores.Controllers.Recepcion
             }
         }
 
-        [HttpGet("{idAgen}")]
-        public ActionResult Get(int idAgen)
+        [HttpGet("{idAgen}/{temporada}/{idRegion}/{idZona}")]
+        public ActionResult Get(int idAgen, string temporada, int idRegion, int idZona)
         {
             try
             {
-                var data = _context.RecepcionClass.FromSqlRaw($"sp_GetRecepcion " + idAgen + " ").ToList();
+                var data = _context.RecepcionClass.FromSqlRaw($"sp_GetRecepcion " + idAgen + ", "+ temporada + ", " + idRegion + ", " + idZona + " ").ToList();
                 return Ok(data);
             }
             catch (Exception e)

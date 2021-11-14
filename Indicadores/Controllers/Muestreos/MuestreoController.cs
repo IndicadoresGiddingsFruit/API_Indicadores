@@ -389,137 +389,335 @@ namespace ApiIndicadores.Controllers
         {
             try
             {
-
-                var muestreo = _context.ProdMuestreo.Where(m => m.Id == idMuestreo).FirstOrDefault();
-                var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == muestreo.Cod_Prod && m.Cod_Campo == muestreo.Cod_Campo);
-                var localidad = _context.CatLocalidades.FirstOrDefault(m => m.CodLocalidad == campo.CodLocalidad);
-                //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
-                var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen);
-                var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC);
-                var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI);
-
-                var sesion = _context.SIPGUsuarios.FirstOrDefault();
-
-                correo_p = email_p.correo;
-
-                //Administrador
-                if (idAgen_Session == 352)
+                if (idAgen_Session != 0)
                 {
-                    sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.Id == idAgen_Session);
-                }
-                //Agentes
-                else
-                {
-                    sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == idAgen_Session);
-                }
+                    var muestreo = _context.ProdMuestreo.Where(m => m.Id == idMuestreo).FirstOrDefault();
+                    var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == muestreo.Cod_Prod && m.Cod_Campo == muestreo.Cod_Campo);
+                    var localidad = _context.CatLocalidades.FirstOrDefault(m => m.CodLocalidad == campo.CodLocalidad);
+                    //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
+                    var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Depto!=null);
+                    var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Depto != null);
+                    var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Depto != null);
 
-                var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
-                var calidad_muestreo = _context.ProdCalidadMuestreo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
+                    var sesion = _context.SIPGUsuarios.FirstOrDefault();
 
-                //Si agente de calidad es null
-                if (email_c == null)
-                {
-                    var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == muestreo.Cod_Prod && x.Cod_Campo == muestreo.Cod_Campo && x.Cod_Empresa == 2);
+                    correo_p = email_p.correo;
 
-                    //uruapan
-                    if (email_p.IdRegion == 3)
+                    //Administrador
+                    if (idAgen_Session == 352)
                     {
-                        item.IdAgenC = 168;
-                        correo_c = "juan.mares@giddingsfruit.mx";
+                        sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.Id == idAgen_Session);
+                    }
+                    //Agentes
+                    else
+                    {
+                        sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == idAgen_Session);
                     }
 
-                    //los reyes 
-                    if (email_p.IdRegion == 1 && email_p.IdAgen != 197)
-                    {
-                        item.IdAgenC = 167;
-                        correo_c = "mayra.ramirez@giddingsfruit.mx";
-                    }
-                    _context.SaveChanges();
-                }
-                else
-                {
-                    correo_c = email_c.correo;
-                }
+                    var analisis = _context.ProdAnalisis_Residuo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
+                    var calidad_muestreo = _context.ProdCalidadMuestreo.FirstOrDefault(x => x.Id_Muestreo == muestreo.Id);
 
-                //si agente de inocuidad es null
-                if (email_i == null)
-                {
-                    //Los Reyes
-                    if (sesion.IdRegion == 1 && email_p.IdAgen != 197)
+                    //Si agente de calidad es null
+                    if (email_c == null)
                     {
                         var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == muestreo.Cod_Prod && x.Cod_Campo == muestreo.Cod_Campo && x.Cod_Empresa == 2);
 
-                        if (sesion.IdAgen == 216)
+                        //uruapan
+                        if (email_p.IdRegion == 3)
                         {
-                            item.IdAgenI = 216;
-                            correo_i = "angel.heredia@giddingsfruit.mx";
+                            item.IdAgenC = 168;
+                            correo_c = "juan.mares@giddingsfruit.mx";
                         }
 
-                        else
+                        //los reyes 
+                        if (email_p.IdRegion == 1 && email_p.IdAgen != 197)
                         {
-                            item.IdAgenI = 205;
-                            correo_i = "jesus.palafox@giddingsfruit.mx";
+                            item.IdAgenC = 167;
+                            correo_c = "mayra.ramirez@giddingsfruit.mx";
                         }
                         _context.SaveChanges();
                     }
                     else
                     {
-                        correo_i = "hector.torres@giddingsfruit.mx";
+                        correo_c = email_c.correo;
                     }
-                }
-                else
-                {
-                    correo_i = email_i.correo;
-                }
 
-
-                MailMessage correo = new MailMessage();
-                correo.From = new MailAddress("indicadores.giddingsfruit@gmail.com", "Indicadores GiddingsFruit");
-                var prod = _context.ProdProductoresCat.FirstOrDefault(x => x.Cod_Prod == campo.Cod_Prod);
-
-                if (tipo_correo == "nuevo")
-                {
-                    var Inicio_cosecha = String.Format("{0:d}", muestreo.Inicio_cosecha);
-                    if (muestreo.Cod_Prod == "99999")
+                    //si agente de inocuidad es null
+                    if (email_i == null)
                     {
-                        correo.To.Add("marholy.martinez@giddingsfruit.mx");
-                    }
+                        //Los Reyes
+                        if (sesion.IdRegion == 1 && email_p.IdAgen != 197)
+                        {
+                            var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == muestreo.Cod_Prod && x.Cod_Campo == muestreo.Cod_Campo && x.Cod_Empresa == 2);
 
+                            if (sesion.IdAgen == 216)
+                            {
+                                item.IdAgenI = 216;
+                                correo_i = "angel.heredia@giddingsfruit.mx";
+                            }
+
+                            else
+                            {
+                                item.IdAgenI = 205;
+                                correo_i = "jesus.palafox@giddingsfruit.mx";
+                            }
+                            _context.SaveChanges();
+                        }
+                        else
+                        {
+                            correo_i = "hector.torres@giddingsfruit.mx";
+                        }
+                    }
                     else
                     {
-                        //producción
-                        if (sesion.Depto == "P")
-                        {
-                            correo.To.Add(sesion.correo);
+                        correo_i = email_i.correo;
+                    }
 
-                            //Ziracuaretiro
-                            if (sesion.IdAgen == 158 || sesion.IdAgen == 173)
+
+                    MailMessage correo = new MailMessage();
+                    correo.From = new MailAddress("indicadores.giddingsfruit@gmail.com", "Indicadores GiddingsFruit");
+                    var prod = _context.ProdProductoresCat.FirstOrDefault(x => x.Cod_Prod == campo.Cod_Prod);
+
+                    if (tipo_correo == "nuevo")
+                    {
+                        var Inicio_cosecha = String.Format("{0:d}", muestreo.Inicio_cosecha);
+                        if (muestreo.Cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+
+                        else
+                        {
+                            //producción
+                            if (sesion.Depto == "P")
                             {
-                                if (correo_c != "maria.lopez@giddingsfruit.mx")
+                                correo.To.Add(sesion.correo);
+
+                                //Ziracuaretiro
+                                if (sesion.IdAgen == 158 || sesion.IdAgen == 173)
                                 {
-                                    correo.CC.Add("maria.lopez@giddingsfruit.mx");
+                                    if (correo_c != "maria.lopez@giddingsfruit.mx")
+                                    {
+                                        correo.CC.Add("maria.lopez@giddingsfruit.mx");
+                                    }
+
+                                    else
+                                    {
+                                        correo.CC.Add(correo_c);
+                                    }
+
+                                    if (correo_i == "hector.torres@giddingsfruit.mx")
+                                    {
+                                        correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                                    }
+
+                                    else
+                                    {
+                                        correo.CC.Add(correo_i);
+                                    }
                                 }
 
+                                //Todas
                                 else
                                 {
                                     correo.CC.Add(correo_c);
-                                }
 
-                                if (correo_i == "hector.torres@giddingsfruit.mx")
-                                {
-                                    correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                                }
+                                    if (email_c.IdAgen == 29)
+                                    {
+                                        correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                        correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
+                                    }
 
-                                else
-                                {
                                     correo.CC.Add(correo_i);
+
+                                    //Arandas
+                                    if (sesion.IdAgen == 197)
+                                    {
+                                        correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                    }
                                 }
                             }
 
-                            //Todas
+                            //inocuidad 
+                            else if (sesion.Depto == "I")
+                            {
+                                correo.To.Add(sesion.correo);
+                                correo.CC.Add(correo_c);
+                                if (email_c.IdAgen == 29)
+                                {
+                                    correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                    correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
+                                }
+                                correo.CC.Add(correo_p);
+
+                                //Arandas
+                                //if (sesion.IdAgen == 211)
+                                //{
+                                //    correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                //}
+                            }
+
+                            //calidad
+                            else if (sesion.Depto == "C")
+                            {
+                                correo.To.Add(sesion.correo);
+                                if (email_c.IdAgen == 29)
+                                {
+                                    correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                    correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
+                                }
+                                correo.CC.Add(correo_i);
+                                correo.CC.Add(correo_p);
+                            }
+
+                            //------------------------------------------------------------------------------------------------------------------------------
+                            //zona Los Reyes copia a Mayra
+                            if (email_p.IdRegion == 1 && email_p.IdAgen != 197)
+                            {
+                                correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
+                            }
+
+                            //zona Jalisco copia a Daniel
+                            if (email_p.IdRegion == 2)
+                            {
+                                correo.CC.Add("jose.partida@giddingsfruit.mx");
+                            }
+
+                            //zona Uruapan 
+                            if (email_p.IdRegion == 3)
+                            {
+                                if (email_c.IdAgen != 168)
+                                {
+                                    correo.CC.Add("juan.mares@giddingsfruit.mx");
+                                }
+
+                                if (sesion.correo == "angel.hernandez@giddingsfruit.mx")
+                                {
+                                    correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                }
+                                correo.CC.Add("genaro.morales@giddingsfruit.mx");
+                            }
+
+                            //zona Zamora 
+                            if (email_p.IdRegion == 4)
+                            {
+                                correo.CC.Add("josefina.cervantes@giddingsfruit.mx");
+                            }
+
+                            correo.CC.Add("oscar.castillo@giddingsfruit.mx");
+                        }
+
+                        correo.Subject = "Nuevo Muestreo: " + campo.Cod_Prod;
+                        correo.Body = "Solicitado por: " + sesion.Completo + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Productor: " + campo.Cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Campo: " + campo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Inicio de cosecha: " + Inicio_cosecha + "<br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Cajas estimadas: " + muestreo.CajasEstimadas + "<br/>";
+                    }
+
+                    else if (tipo_correo == "Muestreo Liberado")
+                    {
+                        if (muestreo.Cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+                        else
+                        {
+                            correo.To.Add(sesion.correo);//correo_p
+                            correo.CC.Add(correo_c);
+                            if (email_c.IdAgen == 29)
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
+                            }
+                            correo.CC.Add(correo_i);
+                        }
+
+                        correo.Subject = "Muestreo Liberado: " + muestreo.Cod_Prod;
+                        correo.Body = "Liberado por: " + sesion.Completo + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Ubicacion: " + campo.Ubicacion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
+                        correo.Body += " <br/>";
+                    }
+
+                    else if (tipo_correo == "fecha_ejecucion")
+                    {
+                        var Fecha_ejecucion = String.Format("{0:d}", muestreo.Fecha_ejecucion);
+                        if (muestreo.Cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+
+                        else
+                        {
+                            correo.To.Add(sesion.correo);//correo_i                          
+                            correo.CC.Add(correo_c);
+                            if (email_c.IdAgen == 29)
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
+                            }
+                            correo.CC.Add(correo_p);
+
+                            if (sesion.correo != correo_i)
+                            {
+                                correo.CC.Add(correo_i);
+                            }
+                        }
+
+                        correo.Subject = "Fecha ejecucion agregada: " + muestreo.Cod_Prod;
+                        correo.Body = "Agregada por: " + sesion.Completo + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Ubicacion: " + campo.Ubicacion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Fecha de ejecución: " + Fecha_ejecucion + "<br/>";
+                    }
+
+                    else if (tipo_correo == "Tarjeta")
+                    {
+                        if (muestreo.Cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
+                        else
+                        {
+
+                            if (sesion.Id == 352)
+                            {
+                                correo.To.Add(correo_p);
+                                correo.CC.Add(correo_c);
+                                correo.CC.Add(correo_i);
+                                correo.CC.Add("daniel.cervantes@giddingsfruit.mx");
+                                correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                correo.CC.Add("brenda.garibay@giddingsfruit.mx");
+                                correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                                correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                            }
+
                             else
                             {
+                                correo.To.Add(sesion.correo);
+                                correo.CC.Add(correo_p);
                                 correo.CC.Add(correo_c);
+                                correo.CC.Add(correo_i);
 
                                 if (email_c.IdAgen == 29)
                                 {
@@ -527,196 +725,96 @@ namespace ApiIndicadores.Controllers
                                     correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
                                 }
 
-                                correo.CC.Add(correo_i);
+                                //if (sesion.IdRegion == 1 && email_c.IdAgen != 167)
+                                //{
+                                //    if (correo_p != "aliberth.martinez@giddingsfruit.mx")
+                                //    {
+                                //        correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
+                                //    }
+                                //}
 
-                                //Arandas
-                                if (sesion.IdAgen == 197)
+                                if (sesion.IdAgen == 1)
                                 {
+                                    correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
+                                    correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                                }
+
+                                if (sesion.IdAgen == 153)
+                                {
+                                    correo.CC.Add("hector.torres@giddingsfruit.mx");
+                                    correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                                    correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                                }
+
+                                if (sesion.IdAgen == 281)
+                                {
+                                    correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                                    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
+                                    correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                                }
+
+                                if (sesion.IdAgen == 204)
+                                {
+                                    correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                                    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
                                     correo.CC.Add("hector.torres@giddingsfruit.mx");
                                 }
                             }
                         }
 
-                        //inocuidad 
-                        else if (sesion.Depto == "I")
-                        {
-                            correo.To.Add(sesion.correo);
-                            correo.CC.Add(correo_c);
-                            if (email_c.IdAgen == 29)
-                            {
-                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                            }
-                            correo.CC.Add(correo_p);
+                        correo.Subject = "Entrega de tarjeta: " + muestreo.Cod_Prod;
 
-                            //Arandas
-                            //if (sesion.IdAgen == 211)
-                            //{
-                            //    correo.CC.Add("hector.torres@giddingsfruit.mx");
-                            //}
+                        if (sesion.Id != 352)
+                        {
+                            correo.Body = "Autorizado por: " + sesion.Completo + " <br/>";
+                            correo.Body += " <br/>";
                         }
 
-                        //calidad
-                        else if (sesion.Depto == "C")
+                        correo.Body += "Se ha autorizado la liberacion para entrega de tarjeta del productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Ubicación: " + localidad.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+
+                        if (muestreo.Liberar_Tarjeta != "")
                         {
-                            correo.To.Add(sesion.correo);
-                            if (email_c.IdAgen == 29)
-                            {
-                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                            }
-                            correo.CC.Add(correo_i);
-                            correo.CC.Add(correo_p);
+                            correo.Body += "Justificacion: " + muestreo.Liberar_Tarjeta + "<br/>";
+                            correo.Body += " <br/>";
                         }
-
-                        //------------------------------------------------------------------------------------------------------------------------------
-                        //zona Los Reyes copia a Mayra
-                        if (email_p.IdRegion == 1 && email_p.IdAgen != 197)
-                        {
-                            correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
-                        }
-
-                        //zona Jalisco copia a Daniel
-                        if (email_p.IdRegion == 2)
-                        {
-                            correo.CC.Add("jose.partida@giddingsfruit.mx");
-                        }
-
-                        //zona Uruapan 
-                        if (email_p.IdRegion == 3)
-                        {
-                            if (email_c.IdAgen != 168)
-                            {
-                                correo.CC.Add("juan.mares@giddingsfruit.mx");
-                            }
-
-                            if (sesion.correo == "angel.hernandez@giddingsfruit.mx")
-                            {
-                                correo.CC.Add("hector.torres@giddingsfruit.mx");
-                            }
-                            correo.CC.Add("genaro.morales@giddingsfruit.mx");
-                        }
-
-                        //zona Zamora 
-                        if (email_p.IdRegion == 4)
-                        {
-                            correo.CC.Add("josefina.cervantes@giddingsfruit.mx");
-                        }
-
-                        correo.CC.Add("oscar.castillo@giddingsfruit.mx");
-                    }
-
-                    correo.Subject = "Nuevo Muestreo: " + campo.Cod_Prod;
-                    correo.Body = "Solicitado por: " + sesion.Completo + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Productor: " + campo.Cod_Prod + " - " + prod.Nombre + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Campo: " + campo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Inicio de cosecha: " + Inicio_cosecha + "<br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Cajas estimadas: " + muestreo.CajasEstimadas + "<br/>";
-                }
-
-                else if (tipo_correo == "Muestreo Liberado")
-                {
-                    if (muestreo.Cod_Prod == "99999")
-                    {
-                        correo.To.Add("marholy.martinez@giddingsfruit.mx");
-                    }
-                    else
-                    {
-                        correo.To.Add(sesion.correo);//correo_p
-                        correo.CC.Add(correo_c);
-                        if (email_c.IdAgen == 29)
-                        {
-                            correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                            correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                        }
-                        correo.CC.Add(correo_i);
-                    }
-
-                    correo.Subject = "Muestreo Liberado: " + muestreo.Cod_Prod;
-                    correo.Body = "Liberado por: " + sesion.Completo + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Ubicacion: " + campo.Ubicacion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
-                    correo.Body += " <br/>";
-                }
-
-                else if (tipo_correo == "fecha_ejecucion")
-                {
-                    var Fecha_ejecucion = String.Format("{0:d}", muestreo.Fecha_ejecucion);
-                    if (muestreo.Cod_Prod == "99999")
-                    {
-                        correo.To.Add("marholy.martinez@giddingsfruit.mx");
-                    }
-
-                    else
-                    {
-                        correo.To.Add(sesion.correo);//correo_i                          
-                        correo.CC.Add(correo_c);
-                        if (email_c.IdAgen == 29)
-                        {
-                            correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                            correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                        }
-                        correo.CC.Add(correo_p);
-
-                        if (sesion.correo != correo_i)
-                        {
-                            correo.CC.Add(correo_i);
-                        }
-                    }
-
-                    correo.Subject = "Fecha ejecucion agregada: " + muestreo.Cod_Prod;
-                    correo.Body = "Agregada por: " + sesion.Completo + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Ubicacion: " + campo.Ubicacion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Telefono: " + muestreo.Telefono + "<br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Fecha de ejecución: " + Fecha_ejecucion + "<br/>";
-                }
-
-                else if (tipo_correo == "Tarjeta")
-                {
-                    if (muestreo.Cod_Prod == "99999")
-                    {
-                        correo.To.Add("marholy.martinez@giddingsfruit.mx");
-                    }
-                    else
-                    {
 
                         if (sesion.Id == 352)
                         {
-                            correo.To.Add(correo_p);
-                            correo.CC.Add(correo_c);
-                            correo.CC.Add(correo_i);
-                            correo.CC.Add("daniel.cervantes@giddingsfruit.mx");
-                            correo.CC.Add("hector.torres@giddingsfruit.mx");
-                            correo.CC.Add("brenda.garibay@giddingsfruit.mx");
-                            correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                            correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                            correo.Body += "Considerar este productor como de trato delicado en su manejo <br/>";
+                            correo.Body += " <br/>";
                         }
 
+
+                        //if (sesion.IdAgen == 1)
+                        //{
+                        //    correo.Body += "Gerencia de Inocuidad y Calidad favor de proceder con la autorización <br/>";
+                        //    correo.Body += " <br/>";
+                        //}
+
+                    }
+
+                    else if (tipo_correo == "bloqueo")
+                    {
+                        if (muestreo.Cod_Prod == "99999")
+                        {
+                            correo.To.Add("marholy.martinez@giddingsfruit.mx");
+                        }
                         else
                         {
                             correo.To.Add(sesion.correo);
                             correo.CC.Add(correo_p);
                             correo.CC.Add(correo_c);
-                            correo.CC.Add(correo_i);
+
+                            if (sesion.correo != correo_i)
+                            {
+                                correo.CC.Add(correo_i);
+                            }
 
                             if (email_c.IdAgen == 29)
                             {
@@ -732,159 +830,63 @@ namespace ApiIndicadores.Controllers
                             //    }
                             //}
 
-                            if (sesion.IdAgen == 1)
-                            {
-                                correo.CC.Add("hector.torres@giddingsfruit.mx");
-                                correo.CC.Add("brenda.garibay@giddingsfruit.mx");
-                                correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                            }
+                            //if (sesion.IdAgen == 1)
+                            //{
+                            //    correo.CC.Add("hector.rodriguez@giddingsfruit.mx");
+                            //    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
+                            //    correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                            //}
 
-                            if (sesion.IdAgen == 153)
-                            {
-                                correo.CC.Add("hector.torres@giddingsfruit.mx");
-                                correo.CC.Add("angel.lopez@giddingsfruit.mx");
-                                correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                            }
+                            //if (sesion.IdAgen == 153)
+                            //{
+                            //    correo.CC.Add("hector.rodriguez@giddingsfruit.mx");
+                            //    correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                            //    correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                            //}
 
-                            if (sesion.IdAgen == 281)
-                            {
-                                correo.CC.Add("angel.lopez@giddingsfruit.mx");
-                                correo.CC.Add("brenda.garibay@giddingsfruit.mx");
-                                correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                            }
+                            //if (sesion.IdAgen == 281)
+                            //{
+                            //    correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                            //    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
+                            //    correo.CC.Add("godo.garcia@giddingsfruit.mx");
+                            //}
 
-                            if (sesion.IdAgen == 204)
-                            {
-                                correo.CC.Add("angel.lopez@giddingsfruit.mx");
-                                correo.CC.Add("brenda.garibay@giddingsfruit.mx");
-                                correo.CC.Add("hector.torres@giddingsfruit.mx");
-                            }
+                            //if (sesion.IdAgen == 204)
+                            //{
+                            //    correo.CC.Add("angel.lopez@giddingsfruit.mx");
+                            //    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
+                            //    correo.CC.Add("hector.rodriguez@giddingsfruit.mx");
+                            //}
                         }
-                    }
 
-                    correo.Subject = "Entrega de tarjeta: " + muestreo.Cod_Prod;
-
-                    if (sesion.Id != 352)
-                    {
-                        correo.Body = "Autorizado por: " + sesion.Completo + " <br/>";
+                        correo.Subject = "Bloqueo de entrega de tarjeta: " + muestreo.Cod_Prod;
+                        correo.Body = "Bloqueado por: " + sesion.Completo + " <br/>";
                         correo.Body += " <br/>";
-                    }
-
-                    correo.Body += "Se ha autorizado la liberacion para entrega de tarjeta del productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Ubicación: " + localidad.Descripcion + " <br/>";
-                    correo.Body += " <br/>";
-
-                    if (muestreo.Liberar_Tarjeta != "")
-                    {
+                        correo.Body += "Se ha denegado la liberación para entrega de tarjeta del productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
+                        correo.Body += "Ubicación: " + localidad.Descripcion + " <br/>";
+                        correo.Body += " <br/>";
                         correo.Body += "Justificacion: " + muestreo.Liberar_Tarjeta + "<br/>";
                         correo.Body += " <br/>";
                     }
 
-                    if (sesion.Id == 352)
-                    {
-                        correo.Body += "Considerar este productor como de trato delicado en su manejo <br/>";
-                        correo.Body += " <br/>";
-                    }
+                    correo.IsBodyHtml = true;
+                    correo.BodyEncoding = System.Text.Encoding.UTF8;
+                    correo.Priority = MailPriority.Normal;
 
+                    string sSmtpServer = "";
+                    sSmtpServer = "smtp.gmail.com";
 
-                    //if (sesion.IdAgen == 1)
-                    //{
-                    //    correo.Body += "Gerencia de Inocuidad y Calidad favor de proceder con la autorización <br/>";
-                    //    correo.Body += " <br/>";
-                    //}
-
+                    SmtpClient a = new SmtpClient();
+                    a.Host = sSmtpServer;
+                    a.Port = 587;//25
+                    a.EnableSsl = true;
+                    a.UseDefaultCredentials = true;
+                    a.Credentials = new System.Net.NetworkCredential("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                    a.Send(correo);
                 }
-
-                else if (tipo_correo == "bloqueo")
-                {
-                    if (muestreo.Cod_Prod == "99999")
-                    {
-                        correo.To.Add("marholy.martinez@giddingsfruit.mx");
-                    }
-                    else
-                    {
-                        correo.To.Add(sesion.correo);
-                        correo.CC.Add(correo_p);
-                        correo.CC.Add(correo_c);
-
-                        if (sesion.correo != correo_i)
-                        {
-                            correo.CC.Add(correo_i);
-                        }
-
-                        if (email_c.IdAgen == 29)
-                        {
-                            correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                            correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                        }
-
-                        //if (sesion.IdRegion == 1 && email_c.IdAgen != 167)
-                        //{
-                        //    if (correo_p != "aliberth.martinez@giddingsfruit.mx")
-                        //    {
-                        //        correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
-                        //    }
-                        //}
-
-                        //if (sesion.IdAgen == 1)
-                        //{
-                        //    correo.CC.Add("hector.rodriguez@giddingsfruit.mx");
-                        //    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
-                        //    correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                        //}
-
-                        //if (sesion.IdAgen == 153)
-                        //{
-                        //    correo.CC.Add("hector.rodriguez@giddingsfruit.mx");
-                        //    correo.CC.Add("angel.lopez@giddingsfruit.mx");
-                        //    correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                        //}
-
-                        //if (sesion.IdAgen == 281)
-                        //{
-                        //    correo.CC.Add("angel.lopez@giddingsfruit.mx");
-                        //    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
-                        //    correo.CC.Add("godo.garcia@giddingsfruit.mx");
-                        //}
-
-                        //if (sesion.IdAgen == 204)
-                        //{
-                        //    correo.CC.Add("angel.lopez@giddingsfruit.mx");
-                        //    correo.CC.Add("brenda.garibay@giddingsfruit.mx");
-                        //    correo.CC.Add("hector.rodriguez@giddingsfruit.mx");
-                        //}
-                    }
-
-                    correo.Subject = "Bloqueo de entrega de tarjeta: " + muestreo.Cod_Prod;
-                    correo.Body = "Bloqueado por: " + sesion.Completo + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Se ha denegado la liberación para entrega de tarjeta del productor: " + muestreo.Cod_Prod + " - " + prod.Nombre + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "campo: " + muestreo.Cod_Campo + " - " + campo.Descripcion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Ubicación: " + localidad.Descripcion + " <br/>";
-                    correo.Body += " <br/>";
-                    correo.Body += "Justificacion: " + muestreo.Liberar_Tarjeta + "<br/>";
-                    correo.Body += " <br/>";
-                }
-
-                correo.IsBodyHtml = true;
-                correo.BodyEncoding = System.Text.Encoding.UTF8;
-                correo.Priority = MailPriority.Normal;
-
-                string sSmtpServer = "";
-                sSmtpServer = "smtp.gmail.com";
-
-                SmtpClient a = new SmtpClient();
-                a.Host = sSmtpServer;
-                a.Port = 587;//25
-                a.EnableSsl = true;
-                a.UseDefaultCredentials = true;
-                a.Credentials = new System.Net.NetworkCredential("indicadores.giddingsfruit@gmail.com", "indicadores2019");
-                a.Send(correo);
             }
             catch (Exception e)
             {

@@ -24,7 +24,6 @@ namespace ApiIndicadores.Controllers.Inventario
 
         // GET api/<MuestreoController>/5
         [HttpGet("{fechaInicio}/{fechaFinal}")]
-        //id es IdAgen o id de usuario        
         public async Task<ActionResult<MovimientosInventarioClass>> Get(DateTime fechaInicio, DateTime fechaFinal)
         {
             try

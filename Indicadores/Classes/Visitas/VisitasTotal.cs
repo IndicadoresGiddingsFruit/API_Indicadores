@@ -12,7 +12,7 @@ namespace ApiIndicadores.Classes.Visitas
         public Int16 IdAgen { get; set; }
         public string Asesor { get; set; }
         public int? TotalCampos { get; set; }
-
+        public Double? Promedio { get; set; }
         public Int16? IdRegion { get; set; }
         public string Region { get; set; }
         public int? IdZona { get; set; }

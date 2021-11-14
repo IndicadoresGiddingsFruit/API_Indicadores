@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ApiIndicadores.Models.Inventario;
 using ApiIndicadores.Models.Catalogos;
 using ApiIndicadores.Classes.Visitas;
+using ApiIndicadores.Models.Auditoria;
 
 namespace ApiIndicadores.Context
 {
@@ -17,6 +18,13 @@ namespace ApiIndicadores.Context
         {
             Database.SetCommandTimeout(150000);
         }
+
+        //auditoria
+        public DbSet<AuditoriaCat> AuditoriaCat { get; set; }
+        public DbSet<ProdAudInoc> ProdAudInoc { get; set; }
+        public DbSet<ProdLogAuditoria> ProdLogAuditoria { get; set; }
+        public DbSet<ProdAudInocCat> ProdAudInocCat { get; set; }
+
 
         //regiones
         public DbSet<tbZonasAgricolas> tbZonasAgricolas { get; set; }

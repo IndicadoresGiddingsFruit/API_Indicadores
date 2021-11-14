@@ -26,15 +26,15 @@ namespace ApiIndicadores.Controllers.Inventario
         {
             try
             {
-                var listEntradas = (from x in _context.EntradasAlm
-                                    join a in _context.CatArticulos on x.Cod_Artic equals a.Cod_Artic
+                var listEntradas = (from e in _context.EntradasAlm
+                                    join a in _context.CatArticulos on e.Cod_Artic equals a.Cod_Artic
                                     select new
                                     {
-                                        IdEntrada=x.Id,
-                                        Cod_Artic = x.Cod_Artic,
+                                        IdEntrada=e.Id,
+                                        Cod_Artic = e.Cod_Artic,
                                         Descripcion = a.Descripcion,
-                                        Fecha = x.Fecha,
-                                        Cantidad = x.Cantidad
+                                        Fecha = e.Fecha,
+                                        Cantidad = e.Cantidad
                                     }).OrderByDescending(x => x.Fecha).ToList();
 
                 return Ok(listEntradas);
@@ -61,7 +61,7 @@ namespace ApiIndicadores.Controllers.Inventario
                 //}
                 //else
                 //{
-                //    return BadRequest("La encuesta ya existe");
+                //    return BadRequest("El articulo ya existe");
                 //}
             }
             catch (Exception e)
