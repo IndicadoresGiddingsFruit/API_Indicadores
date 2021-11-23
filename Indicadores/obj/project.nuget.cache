@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "gol6aCfktpYrirYG7tGYUER1BkMdgl0olNsqCzoa1/WMFGDujL1m1uzpS7zq+kowTXM1J6f7SJfgMSaKfPYqiA==",
+  "dgSpecHash": "Ag/e1T0Z9TqXzJhLccffGz5vynRL8OtH1Kh1YnQbzwW6Q9RxsSIuaJE52vAsoRSP5nlnQS9aC4oB6tBt8cJF5w==",
   "success": true,
   "projectFilePath": "C:\\Users\\marholym\\Documents\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
   "expectedPackageFiles": [
@@ -144,11 +144,7 @@
     "C:\\Users\\marholym\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\system.xml.xpath\\4.3.0\\system.xml.xpath.4.3.0.nupkg.sha512",
-    "C:\\Users\\marholym\\.nuget\\packages\\system.xml.xpath.xmldocument\\4.3.0\\system.xml.xpath.xmldocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.21\\microsoft.netcore.app.host.win-x64.3.1.21.nupkg.sha512",
-    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.10\\microsoft.aspnetcore.app.ref.3.1.10.nupkg.sha512",
-    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.1.0\\microsoft.windowsdesktop.app.ref.3.1.0.nupkg.sha512",
-    "C:\\Users\\marholym\\.nuget\\packages\\microsoft.netcore.app.ref\\3.1.0\\microsoft.netcore.app.ref.3.1.0.nupkg.sha512"
+    "C:\\Users\\marholym\\.nuget\\packages\\system.xml.xpath.xmldocument\\4.3.0\\system.xml.xpath.xmldocument.4.3.0.nupkg.sha512"
   ],
   "logs": [
     {

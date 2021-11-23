@@ -189,15 +189,7 @@ namespace ApiIndicadores.Controllers
                         {
                             correo.To.Add(sesion.correo);
                             correo.CC.Add(correo_p);
-                            correo.CC.Add(correo_i);
-                             
-
-                            //jalisco
-                            if (sesion.IdAgen == 29)
-                            {
-                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                            }
+                            correo.CC.Add(correo_i);                             
 
                             //jalisco
                             if (sesion.IdRegion == 5 && sesion.IdAgen == 250)
@@ -291,7 +283,7 @@ namespace ApiIndicadores.Controllers
                     a.EnableSsl = true;
                     a.UseDefaultCredentials = true;
                     a.Credentials = new System.Net.NetworkCredential
-                       ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                       ("indicadores.giddingsfruit@gmail.com", "kwfgnrflueomsrok");
                     a.Send(correo);
                 }
                 catch (Exception e)

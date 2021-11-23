@@ -9,6 +9,8 @@ using ApiIndicadores.Models.Inventario;
 using ApiIndicadores.Models.Catalogos;
 using ApiIndicadores.Classes.Visitas;
 using ApiIndicadores.Models.Auditoria;
+using ApiIndicadores.Classes.Proyeccion;
+using ApiIndicadores.Classes.Auditoria;
 
 namespace ApiIndicadores.Context
 {
@@ -24,6 +26,7 @@ namespace ApiIndicadores.Context
         public DbSet<ProdAudInoc> ProdAudInoc { get; set; }
         public DbSet<ProdLogAuditoria> ProdLogAuditoria { get; set; }
         public DbSet<ProdAudInocCat> ProdAudInocCat { get; set; }
+        public DbSet<LogClass> LogClass { get; set; }
 
 
         //regiones
@@ -61,6 +64,8 @@ namespace ApiIndicadores.Context
         public DbSet<VisitasTable> VisitasTable { get; set; }
         public DbSet<VisitasReport> VisitasReport { get; set; }
         public DbSet<VisitasTotal> VisitasTotal { get; set; }
+        public DbSet<VisitasMes> VisitasMes { get; set; }
+
 
         //Validación Cartera
 
@@ -91,6 +96,13 @@ namespace ApiIndicadores.Context
         public DbSet<EntradasAlm> EntradasAlm { get; set; }
         public DbSet<SalidasAlm> SalidasAlm { get; set; }
 
+        //Proyeccion ProyeccionClass
+        public DbSet<ProyeccionClass> ProyeccionClass { get; set; }
+        public DbSet<ProyeccionMesClass> ProyeccionMesClass { get; set; }
+        public DbSet<ProyeccionTotalClass> ProyeccionTotalClass { get; set; }
+        public DbSet<ProyeccionMesSemanaClass> ProyeccionMesSemanaClass { get; set; }
+
+
         //Empleados
         //public DbSet<Empleado> Empleado { get; set; }
         //public DbSet<Puesto> Puesto { get; set; }
@@ -106,10 +118,22 @@ namespace ApiIndicadores.Context
             modelBuilder.Entity<MuestreosClass>().HasNoKey();
             modelBuilder.Entity<EncuestasClass>().HasNoKey();
             modelBuilder.Entity<EvaluacionClass>().HasNoKey();
+
             modelBuilder.Entity<SeguimientoClass>().HasNoKey();
+
             modelBuilder.Entity<MovimientosInventarioClass>().HasNoKey();
+
             modelBuilder.Entity<InfoCampoClass>().HasNoKey();
+
             modelBuilder.Entity<RecepcionClass>().HasNoKey();
+
+            modelBuilder.Entity<ProyeccionClass>().HasNoKey();
+            modelBuilder.Entity<ProyeccionMesClass>().HasNoKey();
+            modelBuilder.Entity<ProyeccionTotalClass>().HasNoKey();
+            modelBuilder.Entity<ProyeccionMesSemanaClass>().HasNoKey();
+
+            modelBuilder.Entity<VisitasMes>().HasNoKey();            
+
         }
     }
 }

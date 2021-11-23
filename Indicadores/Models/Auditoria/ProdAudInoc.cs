@@ -18,6 +18,6 @@ namespace ApiIndicadores.Models.Auditoria
         public Int16 Cod_Campo { get; set; }
         public int IdZona { get; set; }
         public string Temporada { get; set; }
-        public DateTime? Fecha_termino { get;  set; }
+        public int IdNorma { get; set; }
     }
 }

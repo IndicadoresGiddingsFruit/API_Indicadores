@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApiIndicadores.Context;
+using ApiIndicadores.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,36 +15,28 @@ namespace ApiIndicadores.Controllers.Catalogos
     [ApiController]
     public class CatSemanasController : ControllerBase
     {
+        private readonly AppDbContext _context;
+
+        public CatSemanasController(AppDbContext context)
+        {
+            _context = context;
+        }
+
         // GET: api/<CatSemanasController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public ActionResult Get()
         {
-            return new string[] { "value1", "value2" };
-        }
+            var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now >= m.Inicio && DateTime.Now <= m.Fin);
+            var semanas = (from a in _context.CatSemanas
+                           where a.Temporada == catSemanas.Temporada
+                    select new
+                    {
+                        Temporada = a.Temporada,
+                        Semana = a.Semana,
+                        Inicio = a.Inicio
+                    }).Distinct().OrderBy(x => x.Inicio).ToList();
 
-        // GET api/<CatSemanasController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CatSemanasController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<CatSemanasController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<CatSemanasController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Ok(semanas);
         }
     }
 }

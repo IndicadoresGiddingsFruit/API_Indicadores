@@ -29,7 +29,7 @@ namespace ApiIndicadores.Controllers
         string correo_p, correo_c, correo_i;
 
         // GET: api/<MuestreoController>
-        [HttpGet("{cod_Prod}/{cod_Campo}")]
+        [HttpGet]
         public ActionResult Get()
         {
             try
@@ -521,13 +521,6 @@ namespace ApiIndicadores.Controllers
                                 else
                                 {
                                     correo.CC.Add(correo_c);
-
-                                    if (email_c.IdAgen == 29)
-                                    {
-                                        correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                        correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                                    }
-
                                     correo.CC.Add(correo_i);
 
                                     //Arandas
@@ -542,12 +535,7 @@ namespace ApiIndicadores.Controllers
                             else if (sesion.Depto == "I")
                             {
                                 correo.To.Add(sesion.correo);
-                                correo.CC.Add(correo_c);
-                                if (email_c.IdAgen == 29)
-                                {
-                                    correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                    correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                                }
+                                correo.CC.Add(correo_c);                               
                                 correo.CC.Add(correo_p);
 
                                 //Arandas
@@ -561,11 +549,6 @@ namespace ApiIndicadores.Controllers
                             else if (sesion.Depto == "C")
                             {
                                 correo.To.Add(sesion.correo);
-                                if (email_c.IdAgen == 29)
-                                {
-                                    correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                    correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                                }
                                 correo.CC.Add(correo_i);
                                 correo.CC.Add(correo_p);
                             }
@@ -631,11 +614,6 @@ namespace ApiIndicadores.Controllers
                         {
                             correo.To.Add(sesion.correo);//correo_p
                             correo.CC.Add(correo_c);
-                            if (email_c.IdAgen == 29)
-                            {
-                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                            }
                             correo.CC.Add(correo_i);
                         }
 
@@ -664,11 +642,6 @@ namespace ApiIndicadores.Controllers
                         {
                             correo.To.Add(sesion.correo);//correo_i                          
                             correo.CC.Add(correo_c);
-                            if (email_c.IdAgen == 29)
-                            {
-                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                            }
                             correo.CC.Add(correo_p);
 
                             if (sesion.correo != correo_i)
@@ -718,12 +691,6 @@ namespace ApiIndicadores.Controllers
                                 correo.CC.Add(correo_p);
                                 correo.CC.Add(correo_c);
                                 correo.CC.Add(correo_i);
-
-                                if (email_c.IdAgen == 29)
-                                {
-                                    correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                    correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                                }
 
                                 //if (sesion.IdRegion == 1 && email_c.IdAgen != 167)
                                 //{
@@ -816,12 +783,6 @@ namespace ApiIndicadores.Controllers
                                 correo.CC.Add(correo_i);
                             }
 
-                            if (email_c.IdAgen == 29)
-                            {
-                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                                correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                            }
-
                             //if (sesion.IdRegion == 1 && email_c.IdAgen != 167)
                             //{
                             //    if (correo_p != "aliberth.martinez@giddingsfruit.mx")
@@ -884,7 +845,7 @@ namespace ApiIndicadores.Controllers
                     a.Port = 587;//25
                     a.EnableSsl = true;
                     a.UseDefaultCredentials = true;
-                    a.Credentials = new System.Net.NetworkCredential("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                    a.Credentials = new System.Net.NetworkCredential("indicadores.giddingsfruit@gmail.com", "kwfgnrflueomsrok");
                     a.Send(correo);
                 }
             }

@@ -192,12 +192,6 @@ namespace ApiIndicadores.Controllers.Muestreos
                     {
                         correo.CC.Add(correo_i);
                     }
-
-                    if (email_c.IdAgen == 29)
-                    {
-                        correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                        correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                    }
                 }
 
                 correo.Subject = "Bloqueo de entrega de tarjeta: " + cod_Prod;
@@ -225,7 +219,7 @@ namespace ApiIndicadores.Controllers.Muestreos
                 a.Port = 587;//25
                 a.EnableSsl = true;
                 a.UseDefaultCredentials = true;
-                a.Credentials = new System.Net.NetworkCredential("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                a.Credentials = new System.Net.NetworkCredential("indicadores.giddingsfruit@gmail.com", "kwfgnrflueomsrok");
                 a.Send(correo);
             }
             catch (Exception e)

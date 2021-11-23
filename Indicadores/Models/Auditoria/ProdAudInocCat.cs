@@ -20,6 +20,6 @@ namespace ApiIndicadores.Models.Auditoria
         public string Criterio { get; set; }
         public string Nivel { get; set; }
         public string Justificacion { get; set; }
-        public int IdAuditoriaCat { get; set; }
+        public int IdNorma { get; set; }
     }
 }

@@ -382,7 +382,7 @@ namespace ApiIndicadores.Classes
                 a.EnableSsl = true;
                 a.UseDefaultCredentials = true;
                 a.Credentials = new System.Net.NetworkCredential
-                   ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                   ("indicadores.giddingsfruit@gmail.com", "kwfgnrflueomsrok");
                 a.Send(correo);
             }
             catch (Exception e)

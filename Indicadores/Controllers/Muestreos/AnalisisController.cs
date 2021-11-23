@@ -556,13 +556,7 @@ namespace ApiIndicadores.Controllers
                         correo.CC.Add(correo_p);
                     }
                      
-                    correo.CC.Add(correo_c);                    
-
-                    if (email_c.IdAgen == 29)
-                    {
-                        correo.CC.Add("judith.santiago@giddingsfruit.mx");
-                        correo.CC.Add("nelida.inocencio@giddingsfruit.mx");
-                    }
+                    correo.CC.Add(correo_c);   
 
                     if (correo_i != "jesus.palafox@giddingsfruit.mx")
                     {
@@ -656,7 +650,6 @@ namespace ApiIndicadores.Controllers
                     correo.Body += " <br/>";
                     correo.Body += analisis.Comentarios + "<br/>";
                     correo.Body += " <br/>";
-
                 }
 
                 correo.IsBodyHtml = true;
@@ -672,7 +665,7 @@ namespace ApiIndicadores.Controllers
                 a.EnableSsl = true;
                 a.UseDefaultCredentials = false;
                 a.Credentials = new System.Net.NetworkCredential
-                   ("indicadores.giddingsfruit@gmail.com", "indicadores2019");
+                   ("indicadores.giddingsfruit@gmail.com", "kwfgnrflueomsrok");
                 a.Send(correo);
             }
             catch (Exception e)

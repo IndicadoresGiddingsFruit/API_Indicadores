@@ -12,9 +12,10 @@ namespace ApiIndicadores.Models.Auditoria
     {
         [Key]
         public int  Id { get; set; }
-        public int IdAuditoria { get; set; }
-        public int IdAuditoriaCat { get; set; } 
+        public int? IdProdAuditoria { get; set; }
+        public int? IdCatAuditoria { get; set; } 
         public string Opcion { get; set; } 
         public string Justificacion { get; set; }
+        public DateTime Fecha { get; set; }
     }
 }

@@ -79,8 +79,8 @@ namespace ApiIndicadores.Controllers
         }
 
 
-        [HttpGet("{idAgen}/{mes}/{idRegion}/{idZona}")]
-        public ActionResult Get(short idAgen = 0, int mes = 0, int idRegion = 0, int idZona = 0)
+        [HttpGet("{idAgen}")]
+        public ActionResult Get(short idAgen = 0)
         {
             try
             {
@@ -93,14 +93,17 @@ namespace ApiIndicadores.Controllers
                 //    "order by(case when C.Mes = 'Julio' then 1 when C.Mes = 'Agosto' then 2 when C.Mes = 'Septiembre' then 3 when C.Mes = 'Octubre' then 4 when C.Mes = 'Noviembre' then 5 when C.Mes = 'Diciembre' then 6 when C.Mes = 'Enero' then 7 when C.Mes = 'Febrero' then 8 when C.Mes = 'Marzo' then 9 when C.Mes = 'Abril' then 10 when C.Mes = 'Mayo' then 11 when C.Mes = 'Junio' then 12 else '0' end) ").ToList();
 
 
-                if (idAgen == 1 || idAgen == 5)
-                {
-                    List<VisitasTotal> visitas = _context.VisitasTotal.FromSqlRaw($"sp_GetVisitas " + idAgen + ", " + mes + ", " + idRegion + ", " + idZona + "").ToList();
-                    return Ok(visitas);
+                if (idAgen == 1 || idAgen == 5 || idAgen == 50)
+                { 
+                    var visitas = _context.VisitasTotal.FromSqlRaw($"sp_GetVisitas " + idAgen + "").ToList();
+                    var visitasMes = _context.VisitasMes.FromSqlRaw($"sp_GetVisitasMes").ToList();
+
+                    var res = Tuple.Create(visitas.ToList(), visitasMes.ToList());
+                    return Ok(res); 
                 }
                 else
                 {
-                    List<VisitasTable> visitas = _context.VisitasTable.FromSqlRaw($"sp_GetVisitas " + idAgen + ", " + mes + ", " + idRegion + ", " + idZona + "").ToList();
+                   var visitas = _context.VisitasTable.FromSqlRaw($"sp_GetVisitas " + idAgen + "").ToList();
                     return Ok(visitas);
                 }
             
