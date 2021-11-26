@@ -13,5 +13,6 @@ namespace ApiIndicadores.Classes.Auditoria
         public string PuntoControlDesc { get; set; }
         public int? Respondida { get; set; }
         public string Opcion { get; set; }
+        public string Justificacion { get; set; }
     }
 }

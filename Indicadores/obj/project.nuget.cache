@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Ag/e1T0Z9TqXzJhLccffGz5vynRL8OtH1Kh1YnQbzwW6Q9RxsSIuaJE52vAsoRSP5nlnQS9aC4oB6tBt8cJF5w==",
+  "dgSpecHash": "LI8XoD40eiek6dgxWa2o0/FT+l0xA/FHhSx7eRxsvb3118nnEl6j72oLg6wbStR6+c6NJlOt40Uk3v3pQNXMJg==",
   "success": true,
   "projectFilePath": "C:\\Users\\marholym\\Documents\\Indicadores\\Indicadores\\ApiIndicadores.csproj",
   "expectedPackageFiles": [
@@ -52,6 +52,7 @@
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.web.infrastructure\\1.0.0\\microsoft.web.infrastructure.1.0.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.win32.registry\\4.5.0\\microsoft.win32.registry.4.5.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0-preview.1.21102.12\\microsoft.win32.systemevents.6.0.0-preview.1.21102.12.nupkg.sha512",
+    "C:\\Users\\marholym\\.nuget\\packages\\netstandard.library\\2.0.0\\netstandard.library.2.0.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
@@ -73,6 +74,9 @@
     "C:\\Users\\marholym\\.nuget\\packages\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\runtime.win-x64.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-x64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\runtime.win-x86.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-x86.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
+    "C:\\Users\\marholym\\.nuget\\packages\\syncfusion.compression.net.core\\19.3.0.55\\syncfusion.compression.net.core.19.3.0.55.nupkg.sha512",
+    "C:\\Users\\marholym\\.nuget\\packages\\syncfusion.licensing\\19.3.0.55\\syncfusion.licensing.19.3.0.55.nupkg.sha512",
+    "C:\\Users\\marholym\\.nuget\\packages\\syncfusion.xlsio.net.core\\19.3.0.55\\syncfusion.xlsio.net.core.19.3.0.55.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\system.collections.concurrent\\4.3.0\\system.collections.concurrent.4.3.0.nupkg.sha512",
     "C:\\Users\\marholym\\.nuget\\packages\\system.collections.immutable\\1.7.1\\system.collections.immutable.1.7.1.nupkg.sha512",

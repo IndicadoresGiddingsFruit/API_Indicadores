@@ -24,8 +24,12 @@ namespace ApiIndicadores.Context
         //auditoria
         public DbSet<AuditoriaCat> AuditoriaCat { get; set; }
         public DbSet<ProdAudInoc> ProdAudInoc { get; set; }
+        public DbSet<ProdAudInocCampos> ProdAudInocCampos { get; set; }
         public DbSet<ProdLogAuditoria> ProdLogAuditoria { get; set; }
         public DbSet<ProdAudInocCat> ProdAudInocCat { get; set; }
+        public DbSet<ProdLogAuditoriaFoto> ProdLogAuditoriaFoto { get; set; }
+        
+        public DbSet<AuditoriaClass> AuditoriaClass { get; set; }
         public DbSet<LogClass> LogClass { get; set; }
 
 

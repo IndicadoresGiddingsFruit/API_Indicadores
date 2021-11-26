@@ -266,3 +266,6 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\Ap
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.pdb
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\ApiIndicadores.genruntimeconfig.cache
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Syncfusion.Compression.Portable.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Syncfusion.Licensing.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Syncfusion.XlsIO.Portable.dll

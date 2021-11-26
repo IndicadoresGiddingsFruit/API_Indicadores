@@ -26,35 +26,6 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                //var item = _context.ProdAudInocCat.Where(x=>x.IdAuditoriaCat == idAuditoriaCat).Distinct();
-
-                //var item = (from c in _context.ProdAudInocCat
-                //            join p in _context.ProdAudInoc on c.IdAuditoriaCat equals p.IdNorma
-                //            join l in _context.ProdLogAuditoria on c.Id equals l.IdCatAuditoria                              
-                //            where p.Id == idAuditoriaProd
-                //            group l by new
-                //            {
-                //                Id = c.Id,
-                //                Consecutivo = c.Consecutivo,
-                //                NoPunto = c.NoPunto,
-                //                NoPuntoDesc = c.NoPuntoDesc,
-                //                PuntoControl = c.PuntoControl,
-                //                PuntoControlDesc = c.PuntoControlDesc,
-                //                Respondida = l.IdCatAuditoria,
-                //            } into x
-                //            select new
-                //            {
-                //                Id = x.Key.Id,
-                //                Consecutivo = x.Key.Consecutivo,
-                //                NoPunto = x.Key.NoPunto,
-                //                NoPuntoDesc = x.Key.NoPuntoDesc,
-                //                PuntoControl = x.Key.PuntoControl,
-                //                PuntoControlDesc = x.Key.PuntoControlDesc,
-                //                Respondida = x.Key.Respondida == null ? null : x.Key.Respondida,
-                //            }).Distinct();
-
-                //return Ok(item.OrderBy(x => x.Consecutivo).ToList());
-                 
                 var item = _context.LogClass.FromSqlRaw($"sp_GetLogAuditoria " + idAuditoriaProd + "").ToList();
 
                 return Ok(item.ToList());

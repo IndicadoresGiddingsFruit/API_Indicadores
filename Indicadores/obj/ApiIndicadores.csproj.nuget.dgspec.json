@@ -72,6 +72,10 @@
               "target": "Package",
               "version": "[3.1.7, )"
             },
+            "Syncfusion.XlsIO.Net.Core": {
+              "target": "Package",
+              "version": "[19.3.0.55, )"
+            },
             "System.ComponentModel.Annotations": {
               "target": "Package",
               "version": "[5.0.0, )"
