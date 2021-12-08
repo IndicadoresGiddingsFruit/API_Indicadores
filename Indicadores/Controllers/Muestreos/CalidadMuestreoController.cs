@@ -189,7 +189,13 @@ namespace ApiIndicadores.Controllers
                         {
                             correo.To.Add(sesion.correo);
                             correo.CC.Add(correo_p);
-                            correo.CC.Add(correo_i);                             
+                            correo.CC.Add(correo_i);
+
+                            //jalisco y sinaloa
+                            if (sesion.IdAgen == 328 && sesion.IdAgen == 209)
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                            }
 
                             //jalisco
                             if (sesion.IdRegion == 5 && sesion.IdAgen == 250)

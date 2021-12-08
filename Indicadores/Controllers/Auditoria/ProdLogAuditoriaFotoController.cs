@@ -28,7 +28,7 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                var model = _context.ProdLogAuditoriaFoto.Where(x => x.IdProdAuditoria == IdProdAuditoria).Distinct();
+                var model = _context.ProdAuditoriaFoto.Where(x => x.IdProdAuditoria == IdProdAuditoria).Distinct();
                 return Ok(model.OrderBy(x=>x.Descripcion).ToList());
             }
             catch (Exception e)
@@ -43,8 +43,8 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                string ruta = "//192.168.0.21/recursos season/FotosAuditoriasInocuidad/"+ IdProdAuditoria+"/" + Id + ".jpg";
-                string Imagen = getFile(ruta);
+                var foto = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == IdProdAuditoria && x.Id==Id);
+                string Imagen = getFile(foto.Ruta);
                 return Ok(Imagen);
 
             }
@@ -68,6 +68,26 @@ namespace ApiIndicadores.Controllers.Auditoria
                             tipoContenido = "image/jpg";
                             break;
                         }
+                    case ".gif":
+                        {
+                            tipoContenido = "image/gif";
+                            break;
+                        }
+                    case ".jepg":
+                        {
+                            tipoContenido = "image/jepg";
+                            break;
+                        }
+                    case ".png":
+                        {
+                            tipoContenido = "image/png";
+                            break;
+                        }
+                    case ".jfif":
+                        {
+                            tipoContenido = "image/jfif";
+                            break;
+                        }
                     default:
                         {
                             return null;
@@ -84,15 +104,15 @@ namespace ApiIndicadores.Controllers.Auditoria
 
 
         [HttpPost]
-        public ActionResult Post([FromBody] ProdLogAuditoriaFoto model)
+        public ActionResult Post([FromBody] ProdAuditoriaFoto model)
         {
             try
             {
-                var item = _context.ProdLogAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == model.IdProdAuditoria && x.Descripcion.Equals(model.Descripcion));
+                var item = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == model.IdProdAuditoria && x.Descripcion.Equals(model.Descripcion));
 
                 if (item == null)
                 {
-                    _context.ProdLogAuditoriaFoto.Add(model);
+                    _context.ProdAuditoriaFoto.Add(model);
                     _context.SaveChanges();
                     return Ok(model);
                 }
@@ -121,13 +141,13 @@ namespace ApiIndicadores.Controllers.Auditoria
                     System.IO.Directory.CreateDirectory(pathString);
                 }
 
-                var model = _context.ProdLogAuditoriaFoto.Find(Id);
+                var model = _context.ProdAuditoriaFoto.Find(Id);
                 if (model.Id == Id)
                 {
                     if (file != null)
                     {
                         var extension = Path.GetExtension(file.FileName).Substring(1);
-                        var path = pathString + "/" + Id + ".jpg";
+                        var path = pathString + "/" + Id + "."+ extension;
 
                         using (var stream = System.IO.File.Create(path))
                         {
@@ -135,6 +155,7 @@ namespace ApiIndicadores.Controllers.Auditoria
                         }
 
                         model.Ruta = path;
+                        model.extension = extension;
                     }
                     _context.SaveChanges();
                     return Ok(model);

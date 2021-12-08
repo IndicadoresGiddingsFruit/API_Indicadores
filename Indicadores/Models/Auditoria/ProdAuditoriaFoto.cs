@@ -3,14 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApiIndicadores.Models.Auditoria
 {
-    [Table("ProdLogAuditoriaFoto")]
-    public class ProdLogAuditoriaFoto
+    [Table("ProdAuditoriaFoto")]
+    public class ProdAuditoriaFoto
     {
         [Key]
         public int Id { get; set; }
         public string Descripcion { get; set; }
         public string Ruta { get; set; }
         public int IdProdAuditoria { get; set; }
+        public int IdLogAC { get; set; }
+        public string extension { get; set; }
 
     }
 }

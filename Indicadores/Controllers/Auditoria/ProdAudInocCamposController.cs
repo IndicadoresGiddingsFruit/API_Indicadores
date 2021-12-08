@@ -18,12 +18,48 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             _context = context;
         }
+
+        //Lista de campos por auditoría 
+        [HttpGet("{IdProdAuditoria}")]
+        public ActionResult Get(int IdProdAuditoria)
+        {
+            try
+            {
+                var listCampos = (from a in _context.ProdAudInocCampos
+                            join c in _context.ProdCamposCat on new { a.Cod_Prod, a.Cod_Campo } equals new { c.Cod_Prod, c.Cod_Campo }
+                            where a.IdProdAuditoria == IdProdAuditoria
+                            group a by new
+                            {
+                                Id=a.Id,
+                                IdProdAuditoria = a.IdProdAuditoria,
+                                Cod_Prod=a.Cod_Prod,
+                                Cod_Campo=a.Cod_Campo,
+                                Campo=c.Descripcion
+                            } into x
+                            select new
+                            {
+                                Id = x.Key.Id,
+                                IdProdAuditoria = x.Key.IdProdAuditoria,
+                                Cod_Prod = x.Key.Cod_Prod,
+                                Cod_Campo = x.Key.Cod_Campo,
+                                Campo = x.Key.Campo
+                            }).Distinct();
+
+                return Ok(listCampos.ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        //Agregar campos por auditoria
         [HttpPost]
         public async Task<ActionResult<ProdAudInocCampos>> Post([FromBody] ProdAudInocCampos model)
         {
             try
             {
-                var auditoriaExiste = _context.ProdAudInoc.FirstOrDefault(x =>x.Id ==  model.IdProdAuditoria);
+                var auditoriaExiste = _context.ProdAudInoc.FirstOrDefault(x => x.Id == model.IdProdAuditoria);
                 if (auditoriaExiste != null)
                 {
                     var campos =
@@ -46,6 +82,29 @@ namespace ApiIndicadores.Controllers.Auditoria
                 else
                 {
                     return BadRequest("La auditoría no existe");
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ProdAudInocCampos>> Delete(int id)
+        {
+            try
+            {
+                var model = _context.ProdAudInocCampos.Find(id);
+                if (model != null)
+                {
+                    _context.ProdAudInocCampos.Remove(model);
+                    await _context.SaveChangesAsync();
+                    return Ok(id);
+                }
+                else
+                {
+                    return BadRequest();
                 }
             }
             catch (Exception e)

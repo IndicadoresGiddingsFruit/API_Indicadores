@@ -20,6 +20,52 @@ namespace ApiIndicadores.Controllers.Auditoria
             _context = context;
         }
 
+        //Puntos de control acciones correctivas
+        [HttpGet("{IdProdAuditoria}")]
+        public ActionResult Get(int IdProdAuditoria)
+        {
+            try
+            {
+                var item = (from l in _context.ProdLogAccionesCorrectivas
+                            join a in _context.ProdLogAuditoria on l.IdLogAuditoria equals a.Id
+                            join c in _context.ProdAudInocCat on a.IdCatAuditoria equals c.Id
+                            where a.IdProdAuditoria == IdProdAuditoria //&& a.Opcion.Equals("NO")
+                            group l by new
+                            {
+                                IdLogAC = l.Id,
+                                IdLog = a.Id,
+                                IdCatAuditoria = a.IdCatAuditoria,
+                                NoPunto = c.NoPunto,
+                                NoPuntoDesc = c.NoPuntoDesc,
+                                PuntoControl = c.PuntoControl,
+                                PuntoControlDesc = c.PuntoControlDesc,
+                                Justificacion = l.Justificacion,
+                                Opcion = a.Opcion
+
+                            } into x
+                            select new
+                            {
+                                IdLogAC = x.Key.IdLogAC,
+                                IdLog = x.Key.IdLog,
+                                IdCatAuditoria = x.Key.IdCatAuditoria,
+                                NoPunto = x.Key.NoPunto,
+                                NoPuntoDesc = x.Key.NoPuntoDesc,
+                                PuntoControl = x.Key.PuntoControl,
+                                PuntoControlDesc = x.Key.PuntoControlDesc,
+                                Justificacion = x.Key.Justificacion,
+                                Opcion = x.Key.Opcion
+
+                            }).Distinct();
+
+                return Ok(item.ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        //Todos los puntos de control
         [HttpGet("{IdCatAuditoria}/{IdProdAuditoria}")]
         public ActionResult Get(int IdCatAuditoria, int IdProdAuditoria)
         {
@@ -49,7 +95,34 @@ namespace ApiIndicadores.Controllers.Auditoria
                     model.Fecha = DateTime.Now;
                     _context.ProdLogAuditoria.Add(model);
                     await _context.SaveChangesAsync();
-                    return Ok(model);
+
+                    if (model.Opcion == "NO")
+                    {
+                        var accion_correctivaExiste = _context.ProdLogAccionesCorrectivas.FirstOrDefault(x =>
+                    x.IdLogAuditoria == model.Id);
+
+                        if (accion_correctivaExiste == null)
+                        {
+                            var prodLogAccionesCorrectivas = new ProdLogAccionesCorrectivas();
+
+                            prodLogAccionesCorrectivas.IdLogAuditoria = model.Id;
+                            prodLogAccionesCorrectivas.Justificacion = model.Justificacion;
+                            prodLogAccionesCorrectivas.Fecha = DateTime.Now;
+                            _context.ProdLogAccionesCorrectivas.Add(prodLogAccionesCorrectivas);
+                            await _context.SaveChangesAsync();
+
+                            return Ok(model);
+                        }
+                        else
+                        {
+                            return BadRequest("El registro ya existe");
+                        }
+                    }
+
+                    else
+                    {
+                        return Ok(model);
+                    }
                 }
                 else
                 {
@@ -62,21 +135,59 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult<ProdLogAuditoria>> Put([FromBody] ProdLogAuditoria model)
+        //Actualizar acciones correctivas
+        [HttpPut("{IdLog}")]
+        public async Task<ActionResult<ProdLogAuditoria>> Put(int IdLog, [FromBody] ProdLogAuditoria model)
         {
             try
             {
-                var auditoriaExiste = _context.ProdLogAuditoria.FirstOrDefault(x =>
-                x.IdCatAuditoria == model.IdCatAuditoria && x.IdProdAuditoria==model.IdProdAuditoria);
+                var auditoriaExiste = (dynamic)null;
+                if (IdLog == 0)
+                {
+                    auditoriaExiste = _context.ProdLogAuditoria.FirstOrDefault(x =>
+                    x.IdCatAuditoria == model.IdCatAuditoria && x.IdProdAuditoria == model.IdProdAuditoria);
+                }
+                else
+                {
+                    auditoriaExiste = _context.ProdLogAuditoria.FirstOrDefault(x => x.Id == IdLog);
+                }
 
                 if (auditoriaExiste != null)
                 {
                     auditoriaExiste.Fecha = DateTime.Now;
                     auditoriaExiste.Opcion = model.Opcion;
                     auditoriaExiste.Justificacion = model.Justificacion;
-                     await _context.SaveChangesAsync();
-                    return Ok(model);
+                    await _context.SaveChangesAsync(); 
+
+                    if (model.Opcion == "NO")
+                    {
+                        var accion_correctivaExiste = _context.ProdLogAccionesCorrectivas.FirstOrDefault(x =>
+                    x.IdLogAuditoria == IdLog);
+
+                        if (accion_correctivaExiste == null)
+                        {
+                            var prodLogAccionesCorrectivas = new ProdLogAccionesCorrectivas();
+
+                            prodLogAccionesCorrectivas.IdLogAuditoria = IdLog;
+                            prodLogAccionesCorrectivas.Justificacion = model.Justificacion;
+                            prodLogAccionesCorrectivas.Fecha = DateTime.Now;
+                            _context.ProdLogAccionesCorrectivas.Add(prodLogAccionesCorrectivas);
+                            await _context.SaveChangesAsync();
+
+                            return Ok(model);
+                        }
+                        else
+                        {
+                            return BadRequest("El registro ya existe");
+                        }
+                    }
+
+                    else
+                    {
+                        return Ok(model);
+                    }
+
+
                 }
                 else
                 {

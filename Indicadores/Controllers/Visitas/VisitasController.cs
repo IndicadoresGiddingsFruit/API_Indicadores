@@ -96,7 +96,7 @@ namespace ApiIndicadores.Controllers
                 if (idAgen == 1 || idAgen == 5 || idAgen == 50)
                 { 
                     var visitas = _context.VisitasTotal.FromSqlRaw($"sp_GetVisitas " + idAgen + "").ToList();
-                    var visitasMes = _context.VisitasMes.FromSqlRaw($"sp_GetVisitasMes").ToList();
+                    var visitasMes = _context.VisitasMes.FromSqlRaw($"sp_GetVisitasMes " + idAgen + "").ToList();
 
                     var res = Tuple.Create(visitas.ToList(), visitasMes.ToList());
                     return Ok(res); 

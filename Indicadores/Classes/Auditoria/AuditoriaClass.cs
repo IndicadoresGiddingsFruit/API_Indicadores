@@ -12,6 +12,7 @@ namespace ApiIndicadores.Classes.Auditoria
         public string Cod_Prod { get; set; }
         public string Productor { get; set; }
         public string Cod_Campo { get; set; }
+        public string Campo { get; set; }
         public int IdZona { get; set; }
         public string Zona { get; set; }
         public int IdNorma { get; set; }

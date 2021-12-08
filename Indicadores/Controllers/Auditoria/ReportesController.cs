@@ -151,6 +151,7 @@ namespace ApiIndicadores.Controllers.Auditoria
                         worksheet.Range["C4"].Text = x.Cod_Prod;
                         worksheet.Range["C5"].Text = x.Productor;
                         worksheet.Range["C6"].Text = x.Cod_Campo;
+                        worksheet.Range["C6"].Text = x.Campo;
                         worksheet.Range["C8"].Text = x.Zona;
                         worksheet.Range["D1"].Value = x.Fecha.ToString();
                     }

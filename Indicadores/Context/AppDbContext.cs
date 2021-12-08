@@ -11,10 +11,11 @@ using ApiIndicadores.Classes.Visitas;
 using ApiIndicadores.Models.Auditoria;
 using ApiIndicadores.Classes.Proyeccion;
 using ApiIndicadores.Classes.Auditoria;
+using ApiIndicadores.Classes.Expediente;
 
 namespace ApiIndicadores.Context
 {
-    public class AppDbContext: DbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -27,8 +28,10 @@ namespace ApiIndicadores.Context
         public DbSet<ProdAudInocCampos> ProdAudInocCampos { get; set; }
         public DbSet<ProdLogAuditoria> ProdLogAuditoria { get; set; }
         public DbSet<ProdAudInocCat> ProdAudInocCat { get; set; }
-        public DbSet<ProdLogAuditoriaFoto> ProdLogAuditoriaFoto { get; set; }
-        
+        public DbSet<ProdAuditoriaFoto> ProdAuditoriaFoto { get; set; }
+        public DbSet<ProdLogAccionesCorrectivas> ProdLogAccionesCorrectivas { get; set; }
+
+
         public DbSet<AuditoriaClass> AuditoriaClass { get; set; }
         public DbSet<LogClass> LogClass { get; set; }
 
@@ -48,7 +51,7 @@ namespace ApiIndicadores.Context
         public DbSet<CatTiposProd> CatTiposProd { get; set; }
         public DbSet<CatLocalidades> CatLocalidades { get; set; }
         public DbSet<ProdCamposCat> ProdCamposCat { get; set; }
-      
+
         public DbSet<ProdProductoresCat> ProdProductoresCat { get; set; }
         public DbSet<ProdAgenteCat> ProdAgenteCat { get; set; }
         public DbSet<InfoCampoClass> InfoCampoClass { get; set; }
@@ -77,7 +80,7 @@ namespace ApiIndicadores.Context
         public DbSet<SeguimientoClass> SeguimientoClass { get; set; }
         public DbSet<EstatusFinanciamiento> EstatusFinanciamiento { get; set; }
 
-        public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; } 
+        public DbSet<UV_ProdRecepcion> UV_ProdRecepcion { get; set; }
         public DbSet<EvaluacionClass> EvaluacionClass { get; set; }
         public DbSet<RecepcionClass> RecepcionClass { get; set; }
 
@@ -106,6 +109,11 @@ namespace ApiIndicadores.Context
         public DbSet<ProyeccionTotalClass> ProyeccionTotalClass { get; set; }
         public DbSet<ProyeccionMesSemanaClass> ProyeccionMesSemanaClass { get; set; }
 
+        //Expediente
+        public DbSet<VisitasExpedienteClass> VisitasExpedienteClass { get; set; }
+        public DbSet<ProyeccionExpedienteClass> ProyeccionExpedienteClass { get; set; }
+        public DbSet<RendimientoExpedienteClass> RendimientoExpedienteClass { get; set; }
+        public DbSet<FinanciamientoExpedienteClass> FinanciamientoExpedienteClass { get; set; }
 
         //Empleados
         //public DbSet<Empleado> Empleado { get; set; }
@@ -136,8 +144,13 @@ namespace ApiIndicadores.Context
             modelBuilder.Entity<ProyeccionTotalClass>().HasNoKey();
             modelBuilder.Entity<ProyeccionMesSemanaClass>().HasNoKey();
 
-            modelBuilder.Entity<VisitasMes>().HasNoKey();            
+            modelBuilder.Entity<VisitasMes>().HasNoKey();
 
+            //Expediente
+            modelBuilder.Entity<VisitasExpedienteClass>().HasNoKey();
+            modelBuilder.Entity<ProyeccionExpedienteClass>().HasNoKey();
+            modelBuilder.Entity<RendimientoExpedienteClass>().HasNoKey();
+            modelBuilder.Entity<FinanciamientoExpedienteClass>().HasNoKey();
         }
     }
 }

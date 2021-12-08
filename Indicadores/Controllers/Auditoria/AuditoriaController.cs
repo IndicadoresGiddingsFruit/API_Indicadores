@@ -21,6 +21,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             _context = context;
         }
 
+        //Datos de audiorias
         [HttpGet("{idAgen}/{IdProdAuditoria}")]
         public ActionResult Get(int idAgen, int IdProdAuditoria)
         {
@@ -36,6 +37,7 @@ namespace ApiIndicadores.Controllers.Auditoria
         }
 
 
+        //Nueva auditoria
         [HttpPost]
         public async Task<ActionResult<ProdAudInoc>> Post([FromBody] ProdAudInoc model)
         {
@@ -43,23 +45,23 @@ namespace ApiIndicadores.Controllers.Auditoria
             {
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now.Date >= m.Inicio && DateTime.Now.Date <= m.Fin);
 
-                var auditoriaExiste =
-                    _context.ProdAudInoc.FirstOrDefault(x =>
-                x.Cod_Prod == model.Cod_Prod && x.IdAgen == model.IdAgen &&
-                x.Temporada == catSemanas.Temporada);
+                //var auditoriaExiste =
+                //    _context.ProdAudInoc.FirstOrDefault(x =>
+                //x.Cod_Prod == model.Cod_Prod && x.IdAgen == model.IdAgen &&
+                //x.Temporada == catSemanas.Temporada);
 
-                if (auditoriaExiste == null)
-                {
+                //if (auditoriaExiste == null)
+                //{
                     model.Temporada = catSemanas.Temporada;
                     model.Fecha = DateTime.Now;
                     _context.ProdAudInoc.Add(model);
                     await _context.SaveChangesAsync();
                     return Ok(model);
-                }
-                else
-                {
-                    return BadRequest("El código ya fué agregado anteriormente");
-                }
+                //}
+                //else
+                //{
+                //    return BadRequest("El código ya fué agregado anteriormente");
+                //}
             }
             catch (Exception e)
             {

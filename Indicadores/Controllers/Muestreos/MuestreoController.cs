@@ -587,6 +587,12 @@ namespace ApiIndicadores.Controllers
                                 correo.CC.Add("josefina.cervantes@giddingsfruit.mx");
                             }
 
+                            //jalisco y sinaloa
+                            if (sesion.IdAgen == 328 && sesion.IdAgen == 209)
+                            {
+                                correo.CC.Add("judith.santiago@giddingsfruit.mx");
+                            }
+
                             correo.CC.Add("oscar.castillo@giddingsfruit.mx");
                         }
 
