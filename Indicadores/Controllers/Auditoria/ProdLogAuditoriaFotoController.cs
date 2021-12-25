@@ -28,8 +28,38 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                var model = _context.ProdAuditoriaFoto.Where(x => x.IdProdAuditoria == IdProdAuditoria).Distinct();
-                return Ok(model.OrderBy(x=>x.Descripcion).ToList());
+                var model = (from m in _context.ProdAuditoriaFoto
+                             join c in _context.ProdAudInocCampos on m.IdProdAuditoriaCampo equals c.Id into C
+                             from c in C.DefaultIfEmpty()
+                             where m.IdProdAuditoria == IdProdAuditoria
+                             group m by new
+                             {
+                                 Id = m.Id,
+                                 Descripcion = m.Descripcion,
+                                 Ruta = m.Ruta,
+                                 IdProdAuditoria = m.IdProdAuditoria,
+                                 IdProdAuditoriaCampo = m.IdProdAuditoriaCampo,
+                                 IdLogAc = m.IdLogAC,
+                                 Extension = m.extension,
+                                 isOpen = false,
+                                 Cod_Campo = c.Cod_Campo
+                             } into x
+                             select new
+                             {
+                                 Id = x.Key.Id,
+                                 Descripcion = x.Key.Descripcion,
+                                 Ruta = x.Key.Ruta,
+                                 IdProdAuditoria = x.Key.IdProdAuditoria,
+                                 IdProdAuditoriaCampo = x.Key.IdProdAuditoriaCampo,
+                                 IdLogAC = x.Key.IdLogAc,
+                                 Extension = x.Key.Extension,
+                                 isOpen = x.Key.isOpen,
+                                 Cod_Campo = x.Key.Cod_Campo,
+                             }).Distinct();
+ 
+
+                //var model = _context.ProdAuditoriaFoto.Where(x => x.IdProdAuditoria == IdProdAuditoria).Distinct();
+                return Ok(model.OrderBy(x => x.Descripcion).ToList());
             }
             catch (Exception e)
             {
@@ -43,10 +73,16 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                var foto = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == IdProdAuditoria && x.Id==Id);
-                string Imagen = getFile(foto.Ruta);
-                return Ok(Imagen);
-
+                var foto = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == IdProdAuditoria && (x.Id == Id || x.IdLogAC == Id));
+                if (foto == null)
+                {
+                    return Ok("No hay foto"); 
+                }
+                else
+                {
+                    string Imagen = getFile(foto.Ruta);
+                    return Ok(Imagen);
+                }               
             }
             catch (Exception e)
             {
@@ -63,6 +99,11 @@ namespace ApiIndicadores.Controllers.Auditoria
                 string tipoContenido;
                 switch (Path.GetExtension(ruta))
                 {
+                    case ".jpeg":
+                        {
+                            tipoContenido = "image/jpeg";
+                            break;
+                        }
                     case ".jpg":
                         {
                             tipoContenido = "image/jpg";
@@ -71,11 +112,6 @@ namespace ApiIndicadores.Controllers.Auditoria
                     case ".gif":
                         {
                             tipoContenido = "image/gif";
-                            break;
-                        }
-                    case ".jepg":
-                        {
-                            tipoContenido = "image/jepg";
                             break;
                         }
                     case ".png":
@@ -108,7 +144,7 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                var item = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == model.IdProdAuditoria && x.Descripcion.Equals(model.Descripcion));
+                var item = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoriaCampo == model.IdProdAuditoriaCampo && x.IdLogAC==model.IdLogAC && x.Descripcion.Equals(model.Descripcion));
 
                 if (item == null)
                 {
@@ -128,12 +164,12 @@ namespace ApiIndicadores.Controllers.Auditoria
         }
 
         [HttpPatch("{IdProdAuditoria}/{Id}")]
-        public ActionResult PatchT(int IdProdAuditoria, int Id, [FromForm] IFormFile file)
+        public async Task<ActionResult<ProdAudInoc>> PatchT(int IdProdAuditoria, int Id, [FromForm] IFormFile file)
         {
             try
             {
-               string main_path = "//192.168.0.21/recursos season/FotosAuditoriasInocuidad/";  
-               string pathString = System.IO.Path.Combine(main_path, IdProdAuditoria.ToString());
+                string main_path = "//192.168.0.21/recursos season/FotosAuditoriasInocuidad/";
+                string pathString = System.IO.Path.Combine(main_path, IdProdAuditoria.ToString());
                 //System.IO.Directory.CreateDirectory(pathString);
 
                 if (!System.IO.File.Exists(pathString))
@@ -147,17 +183,17 @@ namespace ApiIndicadores.Controllers.Auditoria
                     if (file != null)
                     {
                         var extension = Path.GetExtension(file.FileName).Substring(1);
-                        var path = pathString + "/" + Id + "."+ extension;
+                        var path = pathString + "/" + Id + "." + extension;
 
                         using (var stream = System.IO.File.Create(path))
                         {
-                            file.CopyToAsync(stream);
+                            file.CopyTo(stream);
                         }
 
                         model.Ruta = path;
                         model.extension = extension;
                     }
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return Ok(model);
                 }
                 else

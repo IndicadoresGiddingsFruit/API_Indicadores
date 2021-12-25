@@ -7,6 +7,7 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\Pu
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\ApiIndicadores.pdb
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\BouncyCastle.Crypto.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\CsvHelper.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\DocumentFormat.OpenXml.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\EPPlus.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\ImageProcessor.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\ImageProcessor.Plugins.WebP.dll
@@ -49,10 +50,15 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\Pu
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Microsoft.IdentityModel.Tokens.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Microsoft.IO.RecyclableMemoryStream.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Microsoft.Office.Interop.Excel.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Microsoft.Web.Infrastructure.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Microsoft.Win32.SystemEvents.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Newtonsoft.Json.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Newtonsoft.Json.Bson.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\SkiaSharp.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Spire.Doc.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Spire.License.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Spire.Pdf.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Syncfusion.Compression.Portable.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Syncfusion.Licensing.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\Syncfusion.XlsIO.Portable.dll
@@ -62,6 +68,7 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\Pu
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\System.Diagnostics.DiagnosticSource.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\System.Drawing.Common.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\System.IO.Packaging.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\System.Runtime.Caching.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\System.Security.Cryptography.ProtectedData.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\System.Text.Encoding.CodePages.dll
@@ -72,6 +79,11 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\Pu
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\win-arm64\native\sni.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\win-x64\native\sni.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\win-x86\native\sni.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\tizen-armel\native\libSkiaSharp.so
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\tizen-x86\native\libSkiaSharp.so
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\win-x86\native\libSkiaSharp.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\PubTmp\Out\runtimes\unix\lib\netcoreapp2.0\System.Runtime.Caching.dll

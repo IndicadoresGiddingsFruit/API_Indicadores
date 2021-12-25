@@ -9,9 +9,9 @@ namespace ApiIndicadores.Classes.Visitas
         public string Region { get; set; }
         public int IdZona { get; set; }
         public string Zona { get; set; }
-        public Int16 IdAgen { get; set; }
+        public int IdAgen { get; set; }
         public string Asesor { get; set; }
-        public int TotalCampos { get; set; }
+        public int? TotalCampos { get; set; }
         public int NoMes { get; set; }
         public string Mes { get; set; }
         public Double? TotalCamposVisit { get; set; }

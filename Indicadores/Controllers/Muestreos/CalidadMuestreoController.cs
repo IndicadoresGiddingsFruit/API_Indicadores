@@ -217,7 +217,8 @@ namespace ApiIndicadores.Controllers
                                 {
                                     correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
                                 }
-                            }                           
+                            }    
+                            
                         }
 
                         else {

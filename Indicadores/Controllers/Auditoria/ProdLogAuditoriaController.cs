@@ -29,7 +29,11 @@ namespace ApiIndicadores.Controllers.Auditoria
                 var item = (from l in _context.ProdLogAccionesCorrectivas
                             join a in _context.ProdLogAuditoria on l.IdLogAuditoria equals a.Id
                             join c in _context.ProdAudInocCat on a.IdCatAuditoria equals c.Id
-                            where a.IdProdAuditoria == IdProdAuditoria //&& a.Opcion.Equals("NO")
+                            join p in _context.ProdAudInoc on a.IdProdAuditoria equals p.Id
+                            join f in _context.ProdAuditoriaFoto on l.Id equals f.IdLogAC into F
+                            from f in F.DefaultIfEmpty()
+
+                            where a.IdProdAuditoria == IdProdAuditoria 
                             group l by new
                             {
                                 IdLogAC = l.Id,
@@ -40,8 +44,9 @@ namespace ApiIndicadores.Controllers.Auditoria
                                 PuntoControl = c.PuntoControl,
                                 PuntoControlDesc = c.PuntoControlDesc,
                                 Justificacion = l.Justificacion,
-                                Opcion = a.Opcion
-
+                                Opcion = a.Opcion,
+                                isOpen= false,
+                                FotoAC=f.IdLogAC
                             } into x
                             select new
                             {
@@ -53,8 +58,9 @@ namespace ApiIndicadores.Controllers.Auditoria
                                 PuntoControl = x.Key.PuntoControl,
                                 PuntoControlDesc = x.Key.PuntoControlDesc,
                                 Justificacion = x.Key.Justificacion,
-                                Opcion = x.Key.Opcion
-
+                                Opcion = x.Key.Opcion,
+                                isOpen = x.Key.isOpen,
+                                FotoAC = x.Key.FotoAC
                             }).Distinct();
 
                 return Ok(item.ToList());
@@ -163,11 +169,10 @@ namespace ApiIndicadores.Controllers.Auditoria
                     {
                         var accion_correctivaExiste = _context.ProdLogAccionesCorrectivas.FirstOrDefault(x =>
                     x.IdLogAuditoria == IdLog);
-
+                       
                         if (accion_correctivaExiste == null)
                         {
                             var prodLogAccionesCorrectivas = new ProdLogAccionesCorrectivas();
-
                             prodLogAccionesCorrectivas.IdLogAuditoria = IdLog;
                             prodLogAccionesCorrectivas.Justificacion = model.Justificacion;
                             prodLogAccionesCorrectivas.Fecha = DateTime.Now;
@@ -178,15 +183,33 @@ namespace ApiIndicadores.Controllers.Auditoria
                         }
                         else
                         {
-                            return BadRequest("El registro ya existe");
+                            accion_correctivaExiste.IdLogAuditoria = IdLog;
+                            accion_correctivaExiste.Justificacion = model.Justificacion;
+                            accion_correctivaExiste.Fecha = DateTime.Now;
+                            await _context.SaveChangesAsync();
+                            return Ok(model);
                         }
                     }
 
+                    else if(model.Opcion == "SI")
+                    {
+                        var accion_correctivaExiste = _context.ProdLogAccionesCorrectivas.FirstOrDefault(x =>
+                  x.IdLogAuditoria == IdLog); 
+                        if (accion_correctivaExiste != null)
+                        {
+                            _context.ProdLogAccionesCorrectivas.Remove(accion_correctivaExiste);
+                            await _context.SaveChangesAsync();
+                            return Ok(model);
+                        }
+                        else
+                        {
+                            return BadRequest();
+                        }
+                    }
                     else
                     {
                         return Ok(model);
                     }
-
 
                 }
                 else

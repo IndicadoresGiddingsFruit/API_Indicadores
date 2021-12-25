@@ -12,20 +12,19 @@ namespace ApiIndicadores.Classes
         public string Asesor { get; set; }
         public Int16? IdRegion { get; set; }
         public string Region { get; set; }
-        public int IdZona { get; set; }
+        public int? IdZona { get; set; }
         public string Zona { get; set; }
         public string Cod_Prod { get; set; }
         public string Productor { get; set; }
         public Decimal? SaldoFinal { get; set; }
-        public Decimal? Financiamiento_otorgado { get; set; }
-        public Decimal? Financiamiento_recuperado { get; set; }
+        public Decimal? Cargo { get; set; }
+        public Decimal? Abono { get; set; }
         public double? Pronostico { get; set; }
         public double? EntregadoTotal { get; set; }
         public double? Entregado { get; set; }
         public double? Diferencia { get; set; }
         public double? PronosticoAA { get; set; }
         public double? DiferenciaAA { get; set; }
-        public int? Semana { get; set; }
         public double? PronosticoSA { get; set; }
         public double? EntregadoSA { get; set; }
         public double? DiferenciaSA { get; set; }

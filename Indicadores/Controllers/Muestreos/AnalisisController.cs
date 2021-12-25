@@ -72,8 +72,8 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        [HttpGet("{idAnalisis}")]
-        //imagen
+        //PDF
+        [HttpGet("{idAnalisis}")]      
         public async Task<ActionResult<ProdAnalisis_Residuo>> Get(int idAnalisis)
         {
             try
@@ -109,7 +109,7 @@ namespace ApiIndicadores.Controllers
         }
 
         // POST api/<AnalisisController>
-        [HttpPost("{idMuestreo}/{liberacion_USA}/{liberacion_EU}")] //int idAnalisis, short sector
+        [HttpPost("{idMuestreo}/{liberacion_USA}/{liberacion_EU}")]  
         public ActionResult Post(int idMuestreo, int liberacion_USA, int liberacion_EU, [FromBody] ProdAnalisis_Residuo model)
         {
             try
@@ -398,7 +398,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-       // Liberar Fuera de Limite
+        //Liberar Fuera de Limite
         [HttpPatch("{id}/{idAgen}")]
         public async Task<ActionResult<ProdAnalisis_Residuo>> Patch(int id, short idAgen)
         {
@@ -426,8 +426,8 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        ////Delete  
-        [HttpDelete("{id}")]
+        //Delete  
+        [HttpDelete("{id}")]    
         public async Task<ActionResult<ProdAnalisis_Residuo>> Delete(int id)
         {
             try
@@ -572,6 +572,12 @@ namespace ApiIndicadores.Controllers
                         {
                             correo.CC.Add("mayra.ramirez@giddingsfruit.mx");
                         }
+                    }
+
+                    //irapuato
+                    if (email_p.IdAgen == 115 && sesion.IdAgen==216)
+                    {
+                        correo.CC.Add("luis.ochoa@giddingsfruit.mx");
                     }
                 }
 

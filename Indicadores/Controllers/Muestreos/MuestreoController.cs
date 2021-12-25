@@ -593,6 +593,12 @@ namespace ApiIndicadores.Controllers
                                 correo.CC.Add("judith.santiago@giddingsfruit.mx");
                             }
 
+                            //irapuato
+                            if (email_p.IdAgen == 115 && email_i.IdAgen ==216)
+                            {
+                                correo.CC.Add("luis.ochoa@giddingsfruit.mx");
+                            }
+
                             correo.CC.Add("oscar.castillo@giddingsfruit.mx");
                         }
 
@@ -653,6 +659,12 @@ namespace ApiIndicadores.Controllers
                             if (sesion.correo != correo_i)
                             {
                                 correo.CC.Add(correo_i);
+                            }
+
+                            //irapuato
+                            if (email_p.IdAgen == 115 && sesion.IdAgen == 216)
+                            {
+                                correo.CC.Add("luis.ochoa@giddingsfruit.mx");
                             }
                         }
 

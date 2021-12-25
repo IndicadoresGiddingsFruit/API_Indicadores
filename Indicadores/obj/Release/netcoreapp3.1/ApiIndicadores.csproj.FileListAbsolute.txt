@@ -269,3 +269,15 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Release\netcoreapp3.1\Ap
 C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Syncfusion.Compression.Portable.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Syncfusion.Licensing.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Syncfusion.XlsIO.Portable.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Microsoft.Office.Interop.Excel.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\DocumentFormat.OpenXml.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\SkiaSharp.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Spire.Doc.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Spire.License.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\Spire.Pdf.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\System.IO.Packaging.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\tizen-armel\native\libSkiaSharp.so
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\tizen-x86\native\libSkiaSharp.so
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win-x86\native\libSkiaSharp.dll

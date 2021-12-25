@@ -9,7 +9,7 @@ namespace ApiIndicadores.Classes.Visitas
     public class VisitasTotal
     {
         [Key]
-        public Int16 IdAgen { get; set; }
+        public int IdAgen { get; set; }
         public string Asesor { get; set; }
         public int? TotalCampos { get; set; }
         public Double? Promedio { get; set; }

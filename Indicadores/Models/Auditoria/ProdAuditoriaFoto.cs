@@ -10,8 +10,9 @@ namespace ApiIndicadores.Models.Auditoria
         public int Id { get; set; }
         public string Descripcion { get; set; }
         public string Ruta { get; set; }
-        public int IdProdAuditoria { get; set; }
-        public int IdLogAC { get; set; }
+        public int? IdProdAuditoria { get; set; }
+        public int? IdLogAC { get; set; }
+        public int? IdProdAuditoriaCampo { get; set; }
         public string extension { get; set; }
 
     }
