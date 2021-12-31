@@ -690,7 +690,6 @@ namespace ApiIndicadores.Controllers
                         }
                         else
                         {
-
                             if (sesion.Id == 352)
                             {
                                 correo.To.Add(correo_p);

@@ -69,5 +69,29 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
+        //Finalizar reporte
+        [HttpPut("{Id}")]
+        public async Task<ActionResult<ProdAudInoc>> Put(int Id)
+        {
+            try
+            {
+                var model = _context.ProdAudInoc.Find(Id);
+                if (model != null)
+                {
+                    model.Fecha_termino = DateTime.Now;
+                    await _context.SaveChangesAsync();
+                    return Ok(model);
+                }
+                else
+                {
+                    return BadRequest("Id inválido");
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
     }
 }

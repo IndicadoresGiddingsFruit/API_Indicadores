@@ -18,6 +18,8 @@ namespace ApiIndicadores.Classes.Auditoria
         public int IdNorma { get; set; }
         public string Norma { get; set; }
         public DateTime Fecha  { get; set; }
+        public int? Dias { get; set; }
+        public Int16? Finalizada { get; set; }
 
-}
+    }
 }

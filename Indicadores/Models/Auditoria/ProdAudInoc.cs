@@ -18,5 +18,7 @@ namespace ApiIndicadores.Models.Auditoria
         public int IdZona { get; set; }
         public string Temporada { get; set; }
         public int IdNorma { get; set; }
+        public DateTime? Fecha_termino { get; set; }
+        public Int16? Finalizada { get; set; }
     }
 }

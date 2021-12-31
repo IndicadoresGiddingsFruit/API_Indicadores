@@ -21,8 +21,8 @@ namespace ApiIndicadores.Controllers.Auditoria
             _context = context;
         }
 
-        [HttpGet("{idAuditoriaProd}")]
-        public ActionResult<ProdAudInocCat> Get(int idAuditoriaProd)
+        [HttpGet("{idAgen}/{idAuditoriaProd}")]
+        public ActionResult<ProdAudInocCat> Get(int idAgen, int idAuditoriaProd)
         {
             try
             {
@@ -36,12 +36,12 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-        [HttpGet("{IdNorma}/{idPunto}")]
-        public ActionResult<ProdAudInocCat> Get(int IdNorma, int idPunto)
+        [HttpGet("{idPunto}")]
+        public ActionResult<ProdAudInocCat> Get(int idPunto)
         {
             try
             {
-                var item = _context.ProdAudInocCat.Where(x => x.IdNorma == IdNorma && x.Id == idPunto).Distinct();
+                var item = _context.ProdAudInocCat.Find(idPunto);
                 return Ok(item);
             }
             catch (Exception e)

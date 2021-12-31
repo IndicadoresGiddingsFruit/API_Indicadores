@@ -2,10 +2,12 @@
 using ApiIndicadores.Models.Auditoria;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -56,7 +58,7 @@ namespace ApiIndicadores.Controllers.Auditoria
                                  isOpen = x.Key.isOpen,
                                  Cod_Campo = x.Key.Cod_Campo,
                              }).Distinct();
- 
+
 
                 //var model = _context.ProdAuditoriaFoto.Where(x => x.IdProdAuditoria == IdProdAuditoria).Distinct();
                 return Ok(model.OrderBy(x => x.Descripcion).ToList());
@@ -73,22 +75,31 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                var foto = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == IdProdAuditoria && (x.Id == Id || x.IdLogAC == Id));
-                if (foto == null)
+                var file = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoria == IdProdAuditoria && (x.Id == Id || x.IdLogAC == Id));
+                if (file == null)
                 {
-                    return Ok("No hay foto"); 
+                    return Ok("No hay archivo");
                 }
                 else
                 {
-                    string Imagen = getFile(foto.Ruta);
-                    return Ok(Imagen);
-                }               
+                    if (file.extension == "pdf  " || file.extension == "pdf")
+                    {
+                        var fileBytes = System.IO.File.ReadAllBytes(file.Ruta);
+                        new FileExtensionContentTypeProvider().TryGetContentType(Path.GetFileName(file.Ruta), out var contentType);
+                        return File(fileBytes, contentType ?? "application/octet-stream", file.Descripcion);                   
+                    }
+                    else
+                    {
+                        string Imagen = getFile(file.Ruta);
+                        return Ok(Imagen);
+                    }
+                }
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
-        }
+        }      
 
         public string getFile(string ruta)
         {
@@ -138,18 +149,55 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-
         [HttpPost]
         public ActionResult Post([FromBody] ProdAuditoriaFoto model)
         {
             try
             {
-                var item = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoriaCampo == model.IdProdAuditoriaCampo && x.IdLogAC==model.IdLogAC && x.Descripcion.Equals(model.Descripcion));
+                var item = _context.ProdAuditoriaFoto.FirstOrDefault(x => x.IdProdAuditoriaCampo == model.IdProdAuditoriaCampo && x.IdLogAC == model.IdLogAC && x.Descripcion.Equals(model.Descripcion));
 
                 if (item == null)
                 {
                     _context.ProdAuditoriaFoto.Add(model);
                     _context.SaveChanges();
+
+                    //Revisar cuantas AccionesCorrectivas faltan para dar por terminada la auditoria 
+                    var accionesCorrectivasFaltantes = (from a in _context.ProdLogAccionesCorrectivas
+                                                        join l in _context.ProdLogAuditoria on a.IdLogAuditoria equals l.Id
+                                                        where l.IdProdAuditoria == model.IdProdAuditoria && l.Opcion == "NO"
+                                                        group a by new
+                                                        {
+                                                            Faltantes = a.Id
+                                                        } into x
+                                                        select new
+                                                        {
+                                                            Faltantes = x.Key.Faltantes,
+                                                        }).Count();
+
+                    //Revisar cuantas fotos de las AccionesCorrectivas faltan para dar por terminada la auditoria 
+                    var accionesCorrectivasFotos = (from a in _context.ProdLogAccionesCorrectivas
+                                                    join l in _context.ProdLogAuditoria on a.IdLogAuditoria equals l.Id
+                                                    join f in _context.ProdAuditoriaFoto on a.Id equals f.IdLogAC
+                                                    where l.IdProdAuditoria == model.IdProdAuditoria && f.Ruta == null
+                                                    group a by new
+                                                    {
+                                                        Faltantes = f.Id
+                                                    } into x
+                                                    select new
+                                                    {
+                                                        Faltantes = x.Key.Faltantes,
+                                                    }).Count();
+
+                    if (accionesCorrectivasFaltantes == 0 && accionesCorrectivasFotos == 0)
+                    {
+                        var auditoria = _context.ProdAudInoc.Find(model.IdProdAuditoria);
+                        if (auditoria != null)
+                        {
+                            auditoria.Finalizada = 1;
+                            _context.SaveChangesAsync();
+                        }
+                    }
+
                     return Ok(model);
                 }
                 else
@@ -206,5 +254,6 @@ namespace ApiIndicadores.Controllers.Auditoria
                 return BadRequest(e.Message);
             }
         }
+
     }
 }
