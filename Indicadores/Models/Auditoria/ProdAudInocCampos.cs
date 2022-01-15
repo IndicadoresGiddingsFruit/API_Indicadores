@@ -12,5 +12,7 @@ namespace ApiIndicadores.Models.Auditoria
         public int IdProdAuditoria { get; set; }
         public string Cod_Prod { get; set; }
         public Int16 Cod_Campo { get; set; }
+        public int? Proyeccion { get; set; }
+        public string TipoCertificacion { get; set; }
     }
 }

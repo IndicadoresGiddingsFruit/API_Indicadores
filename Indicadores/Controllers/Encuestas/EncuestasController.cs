@@ -154,6 +154,7 @@ namespace ApiIndicadores.Controllers
                                  {
                                      IdEncuesta = e.Id,
                                      Encuesta = e.Nombre,
+                                     Descripcion=e.Descripcion,
                                      IdPregunta = p.Id,
                                      Pregunta = p.Pregunta
                                  } into x
@@ -161,6 +162,7 @@ namespace ApiIndicadores.Controllers
                                  {
                                      IdEncuesta = x.Key.IdEncuesta,
                                      Encuesta = x.Key.Encuesta,
+                                     Descripcion = x.Key.Descripcion,
                                      IdPregunta = x.Key.IdPregunta == null ? null : x.Key.IdPregunta,
                                      Pregunta = x.Key.Pregunta == null ? null : x.Key.Pregunta,
                                      ListaRes = listaRes == null ? null : listaRes.Where(r => r.IdPregunta == x.Key.IdPregunta).ToList()

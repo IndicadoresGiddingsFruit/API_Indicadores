@@ -3,10 +3,11 @@ using ApiIndicadores.Models.Auditoria;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ApiIndicadores.Controllers.Auditoria
 {
@@ -29,7 +30,8 @@ namespace ApiIndicadores.Controllers.Auditoria
                 var item = (from l in _context.ProdLogAccionesCorrectivas
                             join a in _context.ProdLogAuditoria on l.IdLogAuditoria equals a.Id
                             join c in _context.ProdAudInocCat on a.IdCatAuditoria equals c.Id
-                            join p in _context.ProdAudInoc on a.IdProdAuditoria equals p.Id
+                            join p in _context.ProdAudInoc on a.IdProdAuditoria equals p.Id into P
+                            from p in P.DefaultIfEmpty()
                             join f in _context.ProdAuditoriaFoto on l.Id equals f.IdLogAC into F
                             from f in F.DefaultIfEmpty()
                             where a.IdProdAuditoria == IdProdAuditoria
@@ -46,7 +48,10 @@ namespace ApiIndicadores.Controllers.Auditoria
                                 Justificacion = l.Justificacion,
                                 Opcion = a.Opcion,
                                 isOpen = false,
-                                FotoAC = f.IdLogAC
+                                FotoAC = f.IdLogAC,
+                                Dias = ((TimeSpan)(DateTime.Now - p.Fecha_termino)).Days
+                                //  Dias = DbFunctions.DiffDays(DateTime.Now, p.Fecha_termino).Value
+
                             } into x
                             select new
                             {
@@ -61,8 +66,9 @@ namespace ApiIndicadores.Controllers.Auditoria
                                 Justificacion = x.Key.Justificacion,
                                 Opcion = x.Key.Opcion,
                                 isOpen = x.Key.isOpen,
-                                FotoAC = x.Key.FotoAC
-                            }).Distinct();
+                                FotoAC = x.Key.FotoAC,
+                                Dias = x.Key.Dias,
+                            }).ToList();
 
                 return Ok(item.ToList());
             }

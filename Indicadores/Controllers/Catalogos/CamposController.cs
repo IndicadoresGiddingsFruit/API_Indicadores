@@ -44,6 +44,45 @@ namespace ApiIndicadores.Controllers
 
         }
 
+        // PUT api/<EncuestasDetController>/5
+        [HttpPut("{cod_Prod}/{cod_Campo}")]
+        public async Task<ActionResult<ProdCamposCat>> Put(string cod_Prod, short cod_Campo, [FromBody] ProdCamposCat model)
+        {
+            try
+            {
+                var item = _context.ProdCamposCat.Where(x=> x.Cod_Prod==cod_Prod && x.Cod_Campo==cod_Campo).FirstOrDefault();
+                if (item != null)
+                {
+                    if (model.CodLocalidad != "")
+                    {
+                        item.CodLocalidad = model.CodLocalidad;
+                    }
+                    if (model.Gps_Latitude != null)
+                    {
+                        item.Gps_Latitude = model.Gps_Latitude;
+                    }
+                    if (model.Gps_Longitude != null)
+                    {
+                        item.Gps_Longitude = model.Gps_Longitude;
+                    }
+                    if (model.Ubicacion != "")
+                    {
+                        item.Ubicacion = model.Ubicacion;
+                    }
+                    await _context.SaveChangesAsync();
+                    return Ok(model);
+                }
+                else
+                {
+                    return BadRequest("El campo no existe");
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         // PUT api/<CamposController>/5
         //Reasignar codigo
         [HttpPut("{idAgenOriginal}/{idAgen}/{tipo}")]

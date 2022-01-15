@@ -50,6 +50,8 @@ namespace ApiIndicadores.Context
         public DbSet<CatProductos> CatProductos { get; set; }
         public DbSet<CatTiposProd> CatTiposProd { get; set; }
         public DbSet<CatLocalidades> CatLocalidades { get; set; }
+        public DbSet<MunicipioSAT> MunicipioSAT { get; set; }
+        public DbSet<EstadoSAT> EstadoSAT { get; set; }
         public DbSet<ProdCamposCat> ProdCamposCat { get; set; }
 
         public DbSet<ProdProductoresCat> ProdProductoresCat { get; set; }

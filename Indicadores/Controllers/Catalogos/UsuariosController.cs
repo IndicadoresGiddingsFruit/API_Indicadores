@@ -1,4 +1,4 @@
-﻿using ApiIndicadores.Context; 
+﻿using ApiIndicadores.Context;
 using ApiIndicadores.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,22 +15,23 @@ namespace ApiIndicadores.Controllers
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        private readonly AppDbContext _context; 
+        private readonly AppDbContext _context;
 
-        public UsuariosController(AppDbContext context) {
-            _context = context; 
+        public UsuariosController(AppDbContext context)
+        {
+            _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SIPGUsuarios>>> GetUsuarios() 
+        public async Task<ActionResult<IEnumerable<SIPGUsuarios>>> GetUsuarios()
         {
-            return await _context.SIPGUsuarios.OrderBy(u=>u.Completo).ToListAsync();    
+            return await _context.SIPGUsuarios.OrderBy(u => u.Completo).ToListAsync();
         }
 
         //Cambiar contraseña
         [HttpPut]
-        public async Task<ActionResult<SIPGUsuarios>> Put(SIPGUsuarios usuarios) 
-        {           
+        public async Task<ActionResult<SIPGUsuarios>> Put(SIPGUsuarios usuarios)
+        {
 
             try
             {
@@ -47,9 +48,9 @@ namespace ApiIndicadores.Controllers
                     return BadRequest();
                 }
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-               return BadRequest(e.ToString());              
+                return BadRequest(e.ToString());
             }
         }
 
@@ -78,50 +79,61 @@ namespace ApiIndicadores.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<SIPGUsuarios>> Post(SIPGUsuarios usuarios) 
+        public async Task<ActionResult<SIPGUsuarios>> Post(SIPGUsuarios usuarios)
         {
             try
             {
                 var catUsuarios = _context.CatUsuariosA.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
                 if (catUsuarios != null)
                 {
-                    //var empleado = _contextRH.Empleado.ToList();//.Where(e => (e.nombre + " " + e.apellido_materno + " " + e.apellido_paterno).Contains(catUsuarios.Completo)).FirstOrDefault();
-                    
-                    //if (empleado != null)
-                    //{
-                        var sipgUsuarios = _context.SIPGUsuarios.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
-                        if (sipgUsuarios == null)
+
+                    short idagen = 0;
+
+                    if (usuarios.Depto != null)
+                    {
+                        var agentes = _context.ProdAgenteCat.Where(a => a.Nombre == catUsuarios.Completo && a.Depto==usuarios.Depto).FirstOrDefault();
+                        if (agentes != null)
                         {
-                            //usuarios.id_empleado = empleado.id_empleado;
-                            usuarios.Completo = catUsuarios.Completo;
-                            _context.SIPGUsuarios.Add(usuarios);
-                            await _context.SaveChangesAsync();
-                            return Ok();
+                            idagen = agentes.IdAgen;
                         }
                         else
                         {
-                            return BadRequest("El usuario ya existe");
+                            return BadRequest("El usuario no se ha registrado en ProdAgenteCat");
                         }
-                    //}
-                    //else
-                    //{
-                    //    return BadRequest("Usuario incorrecto");
-                    //}
+                    }
+
+                    
+                    var sipgUsuarios = _context.SIPGUsuarios.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
+                    if (sipgUsuarios == null)
+                    {
+                        usuarios.Completo = catUsuarios.Completo;
+                        usuarios.IdAgen = idagen;
+                        _context.SIPGUsuarios.Add(usuarios);
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest("El usuario ya existe");
+                    }                  
                 }
                 else
                 {
-                    return BadRequest("Usuario incorrecto");
+                    return BadRequest("Usuario incorrecto, primero debe crear su usuario de SEASON");
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 return BadRequest(e.ToString());
             }
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<SIPGUsuarios>> DeleteUsuarios(int id) {
+        public async Task<ActionResult<SIPGUsuarios>> DeleteUsuarios(int id)
+        {
             var usuarios = await _context.SIPGUsuarios.FindAsync(id);
-            if (usuarios == null) {
+            if (usuarios == null)
+            {
                 return NotFound();
             }
             _context.SIPGUsuarios.Remove(usuarios);
@@ -141,24 +153,26 @@ namespace ApiIndicadores.Controllers
                 }
                 return Ok(await usuarios.ToListAsync());
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 return BadRequest(e.ToString());
             }
         }
-        private bool UsuariosExist(int id) {
-            return _context.SIPGUsuarios.Any(e=>e.Id==id);
+        private bool UsuariosExist(int id)
+        {
+            return _context.SIPGUsuarios.Any(e => e.Id == id);
         }
 
         public void enviar(int idUser)
         {
             try
-            {  
-                var sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.Id == idUser); 
+            {
+                var sesion = _context.SIPGUsuarios.FirstOrDefault(m => m.Id == idUser);
                 try
                 {
                     MailMessage correo = new MailMessage();
                     correo.From = new MailAddress("indicadores.giddingsfruit@gmail.com", "Indicadores GiddingsFruit");
-                  
+
                     correo.To.Add(sesion.correo);
                     correo.Subject = "Cambio de contraseña";
                     correo.Body += "Su contraseña nueva es: " + sesion.Clave + " <br/>";

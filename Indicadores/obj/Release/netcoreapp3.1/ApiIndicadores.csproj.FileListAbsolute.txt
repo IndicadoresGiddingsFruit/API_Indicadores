@@ -281,3 +281,9 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\ru
 C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\tizen-x86\native\libSkiaSharp.so
 C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win-x64\native\libSkiaSharp.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win-x86\native\libSkiaSharp.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\EntityFramework.SqlServer.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\EntityFramework.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\System.CodeDom.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\System.Data.SqlClient.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\marholym\Documents\Indicadores\Indicadores\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll

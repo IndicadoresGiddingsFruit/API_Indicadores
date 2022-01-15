@@ -52,6 +52,10 @@
               "target": "Package",
               "version": "[5.8.4, )"
             },
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.4.4, )"
+            },
             "ImageProcessor": {
               "target": "Package",
               "version": "[2.9.1, )"
