@@ -7,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -59,8 +57,6 @@ namespace ApiIndicadores.Controllers.Auditoria
                                  Cod_Campo = x.Key.Cod_Campo,
                              }).Distinct();
 
-
-                //var model = _context.ProdAuditoriaFoto.Where(x => x.IdProdAuditoria == IdProdAuditoria).Distinct();
                 return Ok(model.OrderBy(x => x.Descripcion).ToList());
             }
             catch (Exception e)
@@ -149,6 +145,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
+        //POST: Subir datos de las fotos
         [HttpPost]
         public ActionResult Post([FromBody] ProdAuditoriaFoto model)
         {
@@ -211,6 +208,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
+        //PATCH: Subir fotos
         [HttpPatch("{IdProdAuditoria}/{Id}")]
         public async Task<ActionResult<ProdAudInoc>> PatchT(int IdProdAuditoria, int Id, [FromForm] IFormFile file)
         {

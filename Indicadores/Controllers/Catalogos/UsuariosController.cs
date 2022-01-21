@@ -28,6 +28,25 @@ namespace ApiIndicadores.Controllers
             return await _context.SIPGUsuarios.OrderBy(u => u.Completo).ToListAsync();
         }
 
+        //Devolver datos de usuario logueado
+        [HttpGet("{nombre}/{clave}")]
+        public async Task<ActionResult<SIPGUsuarios>> Get(string nombre, string clave)
+        {
+            try
+            {
+                var usuarios = _context.SIPGUsuarios.Where(u => u.Nombre.Equals(nombre) && u.Clave.Equals(clave)).Distinct();
+                if (usuarios == null)
+                {
+                    return NotFound();
+                }
+                return Ok(await usuarios.ToListAsync());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+        }
+
         //Cambiar contraseña
         [HttpPut]
         public async Task<ActionResult<SIPGUsuarios>> Put(SIPGUsuarios usuarios)
@@ -78,6 +97,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
+        //Crear usuario nuevo
         [HttpPost]
         public async Task<ActionResult<SIPGUsuarios>> Post(SIPGUsuarios usuarios)
         {
@@ -86,9 +106,9 @@ namespace ApiIndicadores.Controllers
                 var catUsuarios = _context.CatUsuariosA.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
                 if (catUsuarios != null)
                 {
-
                     short idagen = 0;
 
+                    //Si pertenece a Calidad, Inocuidad o Producción busca el IdAgen en la tabla ProdAgenteCat por nombre Completo y depto
                     if (usuarios.Depto != null)
                     {
                         var agentes = _context.ProdAgenteCat.Where(a => a.Nombre == catUsuarios.Completo && a.Depto==usuarios.Depto).FirstOrDefault();
@@ -101,7 +121,6 @@ namespace ApiIndicadores.Controllers
                             return BadRequest("El usuario no se ha registrado en ProdAgenteCat");
                         }
                     }
-
                     
                     var sipgUsuarios = _context.SIPGUsuarios.Where(u => u.Nombre == usuarios.Nombre).FirstOrDefault();
                     if (sipgUsuarios == null)
@@ -128,6 +147,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
+        //Eliminar usuario
         [HttpDelete("{id}")]
         public async Task<ActionResult<SIPGUsuarios>> DeleteUsuarios(int id)
         {
@@ -141,28 +161,8 @@ namespace ApiIndicadores.Controllers
             return usuarios;
         }
 
-        [HttpGet("{username}/{password}")]
-        public async Task<ActionResult<SIPGUsuarios>> Get(string username, string password)
-        {
-            try
-            {
-                var usuarios = _context.SIPGUsuarios.Where(u => u.Nombre.Equals(username) && u.Clave.Equals(password)).Distinct();
-                if (usuarios == null)
-                {
-                    return NotFound();
-                }
-                return Ok(await usuarios.ToListAsync());
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.ToString());
-            }
-        }
-        private bool UsuariosExist(int id)
-        {
-            return _context.SIPGUsuarios.Any(e => e.Id == id);
-        }
-
+       
+        //Enviar correo de cambio de contraseña
         public void enviar(int idUser)
         {
             try

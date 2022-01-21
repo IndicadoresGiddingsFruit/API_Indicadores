@@ -41,19 +41,19 @@ namespace ApiIndicadores.Controllers
         }
 
         // PUT api/<CalidadMuestreoController>/5
-        [HttpPut("{id}/{idAgen}")]
-        public ActionResult Put(int id, short idAgen, [FromBody] ProdCalidadMuestreo model)
+        [HttpPut("{idMuestreo}/{idAgen}")]
+        public ActionResult Put(int idMuestreo, short idAgen, [FromBody] ProdCalidadMuestreo model)
         {
             try
             {
-                var muestreo = _context.ProdMuestreo.Find(id);
+                var muestreo = _context.ProdMuestreo.Find(idMuestreo);
                 string estatus_calidad = "";
 
-                if (muestreo.Id == id)
+                if (muestreo.Id == idMuestreo)
                 {
                     if (model.Estatus != null)
                     {
-                        var item_calidad = _context.ProdCalidadMuestreo.Where(x => x.Id_Muestreo == id).FirstOrDefault();
+                        var item_calidad = _context.ProdCalidadMuestreo.Where(x => x.Id_Muestreo == idMuestreo).FirstOrDefault();
                         if (item_calidad == null)
                         {
                             ProdCalidadMuestreo prodCalidadMuestreo = new ProdCalidadMuestreo();
@@ -62,7 +62,7 @@ namespace ApiIndicadores.Controllers
                             prodCalidadMuestreo.Incidencia = model.Incidencia;
                             prodCalidadMuestreo.Propuesta = model.Propuesta;
                             prodCalidadMuestreo.IdAgen = idAgen;
-                            prodCalidadMuestreo.Id_Muestreo = id;
+                            prodCalidadMuestreo.Id_Muestreo = idMuestreo;
                             _context.ProdCalidadMuestreo.Add(prodCalidadMuestreo);
                         }
                         else

@@ -1,10 +1,6 @@
 ﻿using ApiIndicadores.Models;
 using ApiIndicadores.Classes;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ApiIndicadores.Models.Inventario;
 using ApiIndicadores.Models.Catalogos;
 using ApiIndicadores.Classes.Visitas;
@@ -31,18 +27,15 @@ namespace ApiIndicadores.Context
         public DbSet<ProdAuditoriaFoto> ProdAuditoriaFoto { get; set; }
         public DbSet<ProdLogAccionesCorrectivas> ProdLogAccionesCorrectivas { get; set; }
 
-
         public DbSet<AuditoriaClass> AuditoriaClass { get; set; }
         public DbSet<LogClass> LogClass { get; set; }
-
+        public DbSet<AccionesCorrectivasClass> AccionesCorrectivasClass { get; set; }
 
         //regiones
         public DbSet<tbZonasAgricolas> tbZonasAgricolas { get; set; }
 
         //zonas
         public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }
-
-
 
         public DbSet<SIPGUsuarios> SIPGUsuarios { get; set; }
         public DbSet<CatUsuariosA> CatUsuariosA { get; set; }
@@ -75,9 +68,7 @@ namespace ApiIndicadores.Context
         public DbSet<VisitasTotal> VisitasTotal { get; set; }
         public DbSet<VisitasMes> VisitasMes { get; set; }
 
-
         //Validación Cartera
-
         public DbSet<Seguimiento_financ> Seguimiento_financ { get; set; }
         public DbSet<SeguimientoClass> SeguimientoClass { get; set; }
         public DbSet<EstatusFinanciamiento> EstatusFinanciamiento { get; set; }
@@ -116,14 +107,6 @@ namespace ApiIndicadores.Context
         public DbSet<ProyeccionExpedienteClass> ProyeccionExpedienteClass { get; set; }
         public DbSet<RendimientoExpedienteClass> RendimientoExpedienteClass { get; set; }
         public DbSet<FinanciamientoExpedienteClass> FinanciamientoExpedienteClass { get; set; }
-
-        //Empleados
-        //public DbSet<Empleado> Empleado { get; set; }
-        //public DbSet<Puesto> Puesto { get; set; }
-        //public DbSet<Departamentos> Departamentos { get; set; }
-        //public DbSet<Subacopio> Subacopio { get; set; }
-        //public DbSet<Centro_Acopio> Centro_Acopio { get; set; }
-        //public DbSet<Zonas> Zonas { get; set; }
         public DbSet<RespuestasTotal> RespuestasTotal { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -153,6 +136,9 @@ namespace ApiIndicadores.Context
             modelBuilder.Entity<ProyeccionExpedienteClass>().HasNoKey();
             modelBuilder.Entity<RendimientoExpedienteClass>().HasNoKey();
             modelBuilder.Entity<FinanciamientoExpedienteClass>().HasNoKey();
+
+            //Auditoria
+            modelBuilder.Entity<AccionesCorrectivasClass>().HasNoKey();
         }
     }
 }

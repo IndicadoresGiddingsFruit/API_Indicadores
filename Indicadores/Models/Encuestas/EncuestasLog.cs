@@ -14,7 +14,6 @@ namespace ApiIndicadores.Models
         public int? Id { get; set; }
         public int? IdAsingUsuario { get; set; }
         public int? IdRelacion { get; set; }       
-        public string Respuesta { get; set; }
         public string RespuestaLibre { get; set; }
     }
 }

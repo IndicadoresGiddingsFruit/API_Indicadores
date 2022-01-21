@@ -11,7 +11,7 @@ namespace ApiIndicadores.Controllers
     [ApiController]
     public class ImagenVisitaController : ControllerBase
     {
-        // GET api/<ImagenVisitaController>/5
+        // GET Foto por visita
         [HttpGet("{IdVisita}")]
         //imagen
         public ActionResult obtenerImagen(int IdVisita = 0)

@@ -20,7 +20,7 @@ namespace ApiIndicadores.Controllers
             this._context = context;
         }
 
-        // GET: api/<EncuestasController>
+        //Get encuestas creadas
         [HttpGet(Name = "GetAllEncuestas")]
         public ActionResult Get()
         {
@@ -278,6 +278,7 @@ namespace ApiIndicadores.Controllers
         //}
 
         // POST api/<EncuestasController>
+
         [HttpPost]
         public async Task<ActionResult<EncuestasCat>> Post([FromBody] EncuestasCat model)
         {
@@ -427,6 +428,7 @@ namespace ApiIndicadores.Controllers
         //}
 
         // PUT api/<EncuestasResController>/5
+
         [HttpPut("{id}/{idpregunta}/{idrespuesta}/{respuesta}")]
         public async Task<ActionResult<EncuestasRes>> Put(int id, int idpregunta, int idrespuesta, string respuesta)
         {

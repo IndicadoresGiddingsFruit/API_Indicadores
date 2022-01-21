@@ -76,18 +76,6 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-
-        // PUT api/<EncuestasTipoController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<EncuestasTipoController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+ 
     }
 }

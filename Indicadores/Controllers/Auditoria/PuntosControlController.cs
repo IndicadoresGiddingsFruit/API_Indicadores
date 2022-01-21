@@ -21,6 +21,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             _context = context;
         }
 
+        //GET: Todos los puntos de control respondidos y sin responder
         [HttpGet("{idAgen}/{idAuditoriaProd}")]
         public ActionResult<ProdAudInocCat> Get(int idAgen, int idAuditoriaProd)
         {
@@ -36,6 +37,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
+        //GET: Punto de control por id
         [HttpGet("{idPunto}")]
         public ActionResult<ProdAudInocCat> Get(int idPunto)
         {

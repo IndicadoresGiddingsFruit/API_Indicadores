@@ -1,10 +1,9 @@
 ﻿using ApiIndicadores.Context;
 using ApiIndicadores.Models.Auditoria;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,54 +20,13 @@ namespace ApiIndicadores.Controllers.Auditoria
             _context = context;
         }
 
-        //Puntos de control acciones correctivas
+        //Puntos de control de acciones correctivas por id de auditoria
         [HttpGet("{IdProdAuditoria}")]
         public ActionResult Get(int IdProdAuditoria)
         {
             try
-            {
-                var item = (from l in _context.ProdLogAccionesCorrectivas
-                            join a in _context.ProdLogAuditoria on l.IdLogAuditoria equals a.Id
-                            join c in _context.ProdAudInocCat on a.IdCatAuditoria equals c.Id
-                            join p in _context.ProdAudInoc on a.IdProdAuditoria equals p.Id into P
-                            from p in P.DefaultIfEmpty()
-                            join f in _context.ProdAuditoriaFoto on l.Id equals f.IdLogAC into F
-                            from f in F.DefaultIfEmpty()
-                            where a.IdProdAuditoria == IdProdAuditoria
-                            group l by new
-                            {
-                                IdLogAC = l.Id,
-                                IdLog = a.Id,
-                                IdCatAuditoria = a.IdCatAuditoria,
-                                NoPunto = c.NoPunto,
-                                Nivel=c.Nivel,
-                                NoPuntoDesc = c.NoPuntoDesc,
-                                PuntoControl = c.PuntoControl,
-                                PuntoControlDesc = c.PuntoControlDesc,
-                                Justificacion = l.Justificacion,
-                                Opcion = a.Opcion,
-                                isOpen = false,
-                                FotoAC = f.IdLogAC,
-                                Dias = ((TimeSpan)(DateTime.Now - p.Fecha_termino)).Days
-                                //  Dias = DbFunctions.DiffDays(DateTime.Now, p.Fecha_termino).Value
-
-                            } into x
-                            select new
-                            {
-                                IdLogAC = x.Key.IdLogAC,
-                                IdLog = x.Key.IdLog,
-                                IdCatAuditoria = x.Key.IdCatAuditoria,
-                                NoPunto = x.Key.NoPunto,
-                                Nivel = x.Key.Nivel,
-                                NoPuntoDesc = x.Key.NoPuntoDesc,
-                                PuntoControl = x.Key.PuntoControl,
-                                PuntoControlDesc = x.Key.PuntoControlDesc,
-                                Justificacion = x.Key.Justificacion,
-                                Opcion = x.Key.Opcion,
-                                isOpen = x.Key.isOpen,
-                                FotoAC = x.Key.FotoAC,
-                                Dias = x.Key.Dias,
-                            }).ToList();
+            {             
+                var item = _context.AccionesCorrectivasClass.FromSqlRaw($"GetLogAccionesCorrectivas " + IdProdAuditoria + "").ToList();
 
                 return Ok(item.ToList());
             }
@@ -78,7 +36,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-        //Todos los puntos de control
+        //Puntos de control por id y id de auditoria
         [HttpGet("{IdCatAuditoria}/{IdProdAuditoria}")]
         public ActionResult Get(int IdCatAuditoria, int IdProdAuditoria)
         {
@@ -93,6 +51,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
+        //Agregar respuesta por punto de control
         [HttpPost]
         public async Task<ActionResult<ProdLogAuditoria>> Post([FromBody] ProdLogAuditoria model)
         {
@@ -147,7 +106,8 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-        //Gardar varios
+        //Gardar respuesta por varios punto de control.
+        //Opcion es SI o NA 
         [HttpPost("{opcion}")]
         public async Task<ActionResult<ProdLogAuditoria>> Post(string opcion, [FromBody] List<ProdLogAuditoria> model)
         {
@@ -207,7 +167,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-        //Actualizar acciones correctivas y puntos de control
+        //Actualizar acciones correctivas a SI y editar puntos de control
         [HttpPut("{IdLog}")]
         public async Task<ActionResult<ProdLogAuditoria>> Put(int IdLog, [FromBody] ProdLogAuditoria model)
         {
@@ -250,7 +210,7 @@ namespace ApiIndicadores.Controllers.Auditoria
                             accion_correctivaExiste.IdLogAuditoria = IdLog;
                             accion_correctivaExiste.Justificacion = model.Justificacion;
                             accion_correctivaExiste.Fecha = DateTime.Now;
-                            await _context.SaveChangesAsync();                           
+                            await _context.SaveChangesAsync();
                         }
                     }
 
@@ -281,17 +241,17 @@ namespace ApiIndicadores.Controllers.Auditoria
                             var accionesCorrectivasFotos = (from a in _context.ProdLogAccionesCorrectivas
                                                             join l in _context.ProdLogAuditoria on a.IdLogAuditoria equals l.Id
                                                             join f in _context.ProdAuditoriaFoto on a.Id equals f.IdLogAC
-                                                            where l.IdProdAuditoria == model.IdProdAuditoria && f.Ruta==null
-                                                                group a by new
-                                                                {
-                                                                    Faltantes = f.Id
-                                                                } into x
-                                                                select new
-                                                                {
-                                                                    Faltantes = x.Key.Faltantes,
-                                                                }).Count();
+                                                            where l.IdProdAuditoria == model.IdProdAuditoria && f.Ruta == null
+                                                            group a by new
+                                                            {
+                                                                Faltantes = f.Id
+                                                            } into x
+                                                            select new
+                                                            {
+                                                                Faltantes = x.Key.Faltantes,
+                                                            }).Count();
 
-                            if (accionesCorrectivasFaltantes == 0 && accionesCorrectivasFotos==0)
+                            if (accionesCorrectivasFaltantes == 0 && accionesCorrectivasFotos == 0)
                             {
                                 var auditoria = _context.ProdAudInoc.Find(model.IdProdAuditoria);
                                 if (auditoria != null)

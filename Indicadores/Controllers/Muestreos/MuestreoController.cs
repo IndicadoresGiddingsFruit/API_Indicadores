@@ -174,7 +174,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // Editar muestreo  y añadir fecha de ejecución
+        // Editar muestreo y añadir fecha de ejecución
         [HttpPut("{id}/{idAgen}/{sector}")]
         public ActionResult Put(int id, short idAgen, short sector, [FromBody] ProdMuestreo model)
         {
@@ -273,7 +273,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        //Liberar solicitud - Autorizar tarjeta - Bloqueo Tarjeta
+        //Liberar solicitud - Autorizar tarjeta 
         [HttpPatch("{id}/{idAgen}/{opcion}")]
         public ActionResult Patch(int id, short idAgen, string opcion, [FromBody] ProdMuestreo model)
         {
@@ -326,6 +326,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
+        //Guardar imagen de evidencia de autorización de tarjeta
         [HttpPatch("{id}")]
         public ActionResult PatchT(int id, [FromForm] IFormFile file)
         {
@@ -435,6 +436,13 @@ namespace ApiIndicadores.Controllers
                             item.IdAgenC = 167;
                             correo_c = "mayra.ramirez@giddingsfruit.mx";
                         }
+
+                        //sinaloa 
+                        if (email_p.IdRegion == 6)
+                        {
+                            item.IdAgenC = 328;
+                            correo_c = "maria.cervantes@giddingsfruit.mx";
+                        }
                         _context.SaveChanges();
                     }
                     else
@@ -445,11 +453,11 @@ namespace ApiIndicadores.Controllers
                     //si agente de inocuidad es null
                     if (email_i == null)
                     {
+                        var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == muestreo.Cod_Prod && x.Cod_Campo == muestreo.Cod_Campo && x.Cod_Empresa == 2);
+
                         //Los Reyes
                         if (sesion.IdRegion == 1 && email_p.IdAgen != 197)
-                        {
-                            var item = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == muestreo.Cod_Prod && x.Cod_Campo == muestreo.Cod_Campo && x.Cod_Empresa == 2);
-
+                        {                           
                             if (sesion.IdAgen == 216)
                             {
                                 item.IdAgenI = 216;
@@ -463,6 +471,15 @@ namespace ApiIndicadores.Controllers
                             }
                             _context.SaveChanges();
                         }
+
+
+                        //sinaloa 
+                        if (email_p.IdRegion == 6)
+                        {
+                            item.IdAgenI = 328;
+                            correo_i = "maria.cervantes@giddingsfruit.mx";
+                        }
+
                         else
                         {
                             correo_i = "hector.torres@giddingsfruit.mx";

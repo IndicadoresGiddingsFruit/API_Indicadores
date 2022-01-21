@@ -22,6 +22,7 @@ namespace ApiIndicadores.Controllers
         {
             this._context = context;
         }
+
         // GET: api/<EncuestasUsuariosController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EncuestasUsuarios>>> Get()
@@ -36,15 +37,14 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-
-        [HttpGet("{id}", Name = "GetIdEncuestasUsuarios")]
-        public async Task<ActionResult<EncuestasUsuarios>> Get(int id)
+        [HttpGet("{idEncuesta}")]
+        public async Task<ActionResult<EncuestasUsuarios>> Get(int idEncuesta)
         {
             try
             {
                 var item = (from u in _context.EncuestasUsuarios
                             join c in _context.SIPGUsuarios on u.IdUsuario equals c.Id
-                            where u.IdEncuesta == id
+                            where u.IdEncuesta == idEncuesta
                             group u by new
                             {
                                 IdEncuesta = u.IdEncuesta,
@@ -71,16 +71,15 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // POST api/<EncuestasUsuariosController>
-        [HttpPost("{id}/{idUsuario}")]
-        public async Task<IActionResult> Post(int id, int idUsuario, [FromBody] List<EncuestasLog> model)
+        // POST Agregar Respuestas por Usuario
+        [HttpPost("{idEncuesta}/{idUsuario}")]
+        public async Task<IActionResult> Post(int idEncuesta, int idUsuario, [FromBody] List<EncuestasLog> model)
         {
             try
-            {
-                
+            {                
                 foreach (var item in model)
                 {
-                    var EncuestasUsuarios = _context.EncuestasUsuarios.FirstOrDefault(m => m.IdEncuesta == id && m.IdUsuario == idUsuario);
+                    var EncuestasUsuarios = _context.EncuestasUsuarios.FirstOrDefault(m => m.IdEncuesta == idEncuesta && m.IdUsuario == idUsuario);
 
                     EncuestasUsuarios.Fecha_respuesta = DateTime.Now;
                     await _context.SaveChangesAsync();
@@ -111,7 +110,7 @@ namespace ApiIndicadores.Controllers
                 if (model != null)
                 {
                     await _context.SaveChangesAsync();
-                    return CreatedAtRoute("GetIdEncuesta", new { id = id, IdUsuario = 0 }, model);
+                    return Ok(model);
                 }
                 else
                 {
@@ -147,7 +146,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // DELETE api/<EncuestasUsuariosController>/5
+        // DELETE eliminar usuario de encuesta
         [HttpDelete("{id}/{IdUsuario}")]
         public ActionResult Delete(int id, int IdUsuario)
         {

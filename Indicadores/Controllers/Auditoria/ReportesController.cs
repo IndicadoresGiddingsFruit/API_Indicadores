@@ -27,6 +27,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             this._context = context;
         }
 
+        //
         [HttpGet("{IdProdAuditoria}")]
         public ActionResult Get(int IdProdAuditoria)
         {
@@ -41,6 +42,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
+        //
         [HttpGet("{idAgen}/{IdProdAuditoria}/{reporte}")]
         public ActionResult Get(int idAgen, int IdProdAuditoria, string reporte)
         {

@@ -90,12 +90,12 @@ namespace ApiIndicadores.Controllers.Muestreos
             }
         }
 
-        [HttpDelete("{idMuestreo}")]
-        public async Task<ActionResult<ProdMuestreoSector>> Delete(int idMuestreo)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ProdMuestreoSector>> Delete(int id)
         {
             try
             {
-                var model = _context.ProdMuestreoSector.Find(idMuestreo);
+                var model = _context.ProdMuestreoSector.Find(id);
                 if (model != null)
                 {
                     _context.ProdMuestreoSector.Remove(model);

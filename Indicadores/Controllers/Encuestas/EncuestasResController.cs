@@ -76,7 +76,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // POST api/<EncuestasResController>
+        // POST lista de respuestas
         [HttpPost("{idpregunta}")]
         public async Task<ActionResult<EncuestasRes>> Post(int idpregunta,[FromBody] List<EncuestasRes> model)
         {
@@ -116,13 +116,8 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
-        // PUT api/<EncuestasResController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<EncuestasResController>/5
+ 
+        // DELETE respuesta
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {

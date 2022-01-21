@@ -36,7 +36,6 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-
         //Nueva auditoria
         [HttpPost]
         public async Task<ActionResult<ProdAudInoc>> Post([FromBody] ProdAudInoc model)
@@ -69,7 +68,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
-        //Finalizar reporte
+        //Finalizar auditoría
         [HttpPut("{Id}")]
         public async Task<ActionResult<ProdAudInoc>> Put(int Id)
         {

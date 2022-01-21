@@ -34,12 +34,7 @@ namespace ApiIndicadores.Controllers.Muestreos
             var sectores = _context.ProdBloqueoTarjeta.Distinct();
             return Ok(await sectores.ToListAsync());
         }
-        // GET api/<BloqueoTarjetaController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        
 
         // POST api/<BloqueoTarjetaController>
         [HttpPost]
@@ -73,18 +68,6 @@ namespace ApiIndicadores.Controllers.Muestreos
             {
                 return BadRequest(e.Message);
             }
-        }
-
-        // PUT api/<BloqueoTarjetaController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<BloqueoTarjetaController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
 
         //correo

@@ -159,6 +159,7 @@ namespace ApiIndicadores.Controllers.Auditoria
             }
         }
 
+        //DELETE Eliminar campo de auditoria
         [HttpDelete("{id}")]
         public async Task<ActionResult<ProdAudInocCampos>> Delete(int id)
         {

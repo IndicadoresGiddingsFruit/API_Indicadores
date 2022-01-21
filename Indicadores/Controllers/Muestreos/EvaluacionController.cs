@@ -18,13 +18,7 @@ namespace ApiIndicadores.Controllers.Muestreos
         public EvaluacionController(AppDbContext context)
         {
             this._context = context;
-        }
-
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        }      
 
         // GET api/<EvaluacionController>/5
         [HttpGet("{idAgen}")]
