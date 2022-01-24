@@ -22,7 +22,7 @@ namespace ApiIndicadores.Controllers.Catalogos
             _context = context;
         }
 
-        // GET: api/<CatSemanasController>
+        // GET: Semanas por temporada actual
         [HttpGet]
         public ActionResult Get()
         {

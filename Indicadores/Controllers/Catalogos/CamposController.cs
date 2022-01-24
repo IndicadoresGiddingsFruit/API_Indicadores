@@ -28,9 +28,9 @@ namespace ApiIndicadores.Controllers
         Notificaciones notificaciones = new Notificaciones();
         string title = "", body = "";
 
-        //Campos
+        //Campos por código de productor
         [HttpGet("{Cod_Prod}/{Cod_Campo}")]
-        public ActionResult GetData(string Cod_Prod, short Cod_Campo=0)
+        public ActionResult Get(string Cod_Prod, short Cod_Campo=0)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace ApiIndicadores.Controllers
 
         }
 
-        // PUT api/<EncuestasDetController>/5
+        // PUT Editar coordenadas y ubicacion
         [HttpPut("{cod_Prod}/{cod_Campo}")]
         public async Task<ActionResult<ProdCamposCat>> Put(string cod_Prod, short cod_Campo, [FromBody] ProdCamposCat model)
         {
@@ -83,25 +83,25 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // PUT api/<CamposController>/5
-        //Reasignar codigo
-        [HttpPut("{idAgenOriginal}/{idAgen}/{tipo}")]
-        public async Task<ActionResult<ProdCamposCat>> Put(short idAgenOriginal, short idAgen, string tipo, [FromBody] ProdMuestreo model)
+        
+        //PUT Reasignar codigo
+        [HttpPut("{idAgenOriginal}/{idAgen}/{depto}")]
+        public async Task<ActionResult<ProdCamposCat>> Put(short idAgenOriginal, short idAgen, string depto, [FromBody] ProdMuestreo model)
         {
             try
             {
                 var model_campo = _context.ProdCamposCat.FirstOrDefault(x => x.Cod_Prod == model.Cod_Prod && x.Cod_Campo == model.Cod_Campo && x.Cod_Empresa == 2);
                 if (model_campo != null)
                 {
-                    if (tipo == "P")
+                    if (depto == "P")
                     {
                         model_campo.IdAgen = idAgen;
                     }
-                    else if (tipo == "C" || idAgen == 304)
+                    else if (depto == "C" || idAgen == 304)
                     {
                         model_campo.IdAgenC = idAgen;
                     }
-                    else if (tipo == "I")
+                    else if (depto == "I")
                     {
                         model_campo.IdAgenI = idAgen;
                     }
@@ -112,7 +112,7 @@ namespace ApiIndicadores.Controllers
                     body = "Código reasignado";
                     notificaciones.SendNotificationJSON(title, body);
 
-                    enviar(idAgenOriginal, model.Cod_Prod, model.Cod_Campo, tipo);
+                    enviar(idAgenOriginal, model.Cod_Prod, model.Cod_Campo, depto);
 
                     return Ok(model);
                 }

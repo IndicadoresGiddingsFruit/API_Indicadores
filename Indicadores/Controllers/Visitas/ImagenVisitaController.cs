@@ -48,7 +48,5 @@ namespace ApiIndicadores.Controllers
                 return null;
             }
         }
-
-
     }
 }

@@ -5,16 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
-using System.IO;
-using System.Net;
-using System.Net.Mail;
 using ApiIndicadores.Models;
 using ApiIndicadores.Classes;
 using ApiIndicadores.Context;
-using Microsoft.Data.SqlClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -234,7 +228,7 @@ namespace ApiIndicadores.Controllers
             }
         }
         // DELETE api/<SeguimientoController>/5  
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<Seguimiento_financ>> Delete(int id)
         {
             try

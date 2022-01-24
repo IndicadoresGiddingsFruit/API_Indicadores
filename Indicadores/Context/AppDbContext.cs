@@ -37,6 +37,7 @@ namespace ApiIndicadores.Context
         //zonas
         public DbSet<ProdZonasRastreoCat> ProdZonasRastreoCat { get; set; }
 
+        //Catalogos
         public DbSet<SIPGUsuarios> SIPGUsuarios { get; set; }
         public DbSet<CatUsuariosA> CatUsuariosA { get; set; }
         public DbSet<CatSemanas> CatSemanas { get; set; }
@@ -46,17 +47,18 @@ namespace ApiIndicadores.Context
         public DbSet<MunicipioSAT> MunicipioSAT { get; set; }
         public DbSet<EstadoSAT> EstadoSAT { get; set; }
         public DbSet<ProdCamposCat> ProdCamposCat { get; set; }
-
         public DbSet<ProdProductoresCat> ProdProductoresCat { get; set; }
         public DbSet<ProdAgenteCat> ProdAgenteCat { get; set; }
-        public DbSet<InfoCampoClass> InfoCampoClass { get; set; }
-
+        public DbSet<InfoCampoClass> InfoCampoClass { get; set; } 
+        
+        //Muestreos
         public DbSet<MuestreosClass> MuestreosClass { get; set; }
         public DbSet<ProdMuestreo> ProdMuestreo { get; set; }
         public DbSet<ProdCalidadMuestreo> ProdCalidadMuestreo { get; set; }
         public DbSet<ProdMuestreoSector> ProdMuestreoSector { get; set; }
         public DbSet<ProdBloqueoTarjeta> ProdBloqueoTarjeta { get; set; }
 
+        //Analisis
         public DbSet<ProdAnalisis_Residuo> ProdAnalisis_Residuo { get; set; }
         public DbSet<AnalisisClass> AnalisisClass { get; set; }
 
@@ -86,6 +88,7 @@ namespace ApiIndicadores.Context
         public DbSet<EncuestasUsuarios> EncuestasUsuarios { get; set; }
         public DbSet<EncuestasLog> EncuestasLog { get; set; }
         public DbSet<EncuestasClass> EncuestasClass { get; set; }
+        public DbSet<RespuestasTotal> RespuestasTotal { get; set; }
 
         //Inventario
         public DbSet<MovimientosInventarioClass> MovimientosInventarioClass { get; set; }
@@ -96,7 +99,7 @@ namespace ApiIndicadores.Context
         public DbSet<EntradasAlm> EntradasAlm { get; set; }
         public DbSet<SalidasAlm> SalidasAlm { get; set; }
 
-        //Proyeccion ProyeccionClass
+        //Proyeccion  
         public DbSet<ProyeccionClass> ProyeccionClass { get; set; }
         public DbSet<ProyeccionMesClass> ProyeccionMesClass { get; set; }
         public DbSet<ProyeccionTotalClass> ProyeccionTotalClass { get; set; }
@@ -107,7 +110,7 @@ namespace ApiIndicadores.Context
         public DbSet<ProyeccionExpedienteClass> ProyeccionExpedienteClass { get; set; }
         public DbSet<RendimientoExpedienteClass> RendimientoExpedienteClass { get; set; }
         public DbSet<FinanciamientoExpedienteClass> FinanciamientoExpedienteClass { get; set; }
-        public DbSet<RespuestasTotal> RespuestasTotal { get; set; }
+  
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RespuestasTotal>().HasNoKey();

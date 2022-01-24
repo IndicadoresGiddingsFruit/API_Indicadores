@@ -228,9 +228,7 @@ namespace ApiIndicadores.Controllers
                                   }).Where(e => e.IdEncuesta == id && e.IdUsuario == IdUsuario).
                                   OrderBy(x => x.IdPregunta).Distinct();
 
-                var res = Tuple.Create(encuestas.ToList(), usuarios.ToList(), respuestas.ToList());
-
-                //var data = _context.EncuestasClass.FromSqlRaw($"sp_GetEncuestas " + id + "," + IdUsuario + "").ToList();
+                var res = Tuple.Create(encuestas.ToList(), usuarios.ToList(), respuestas.ToList()); 
                 return Ok(res);                 
             }
             catch (Exception e)

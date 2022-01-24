@@ -16,8 +16,8 @@ namespace ApiIndicadores.Controllers
             this._context = context;
         }
 
-        // GET api/<AgentesController>/5
-        [HttpGet("{Cod_Prod}", Name = "GetAsesores")]
+        // GET Asesores por código de productor
+        [HttpGet("{Cod_Prod}")]
         public ActionResult GetAsesores(string Cod_Prod)
         {
             try

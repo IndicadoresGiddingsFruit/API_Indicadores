@@ -1,12 +1,8 @@
-﻿using CsvHelper.Configuration.Attributes;
-using ApiIndicadores.Context;
-using ApiIndicadores.Classes;
+﻿using ApiIndicadores.Context;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ApiIndicadores.Models
 {
@@ -19,21 +15,8 @@ namespace ApiIndicadores.Models
         {
             this._context = context;
         }
-
-        //zonas
-        public async Task<ActionResult<IEnumerable<ProdZonasRastreoCat>>> GetZonas()
-        {
-            try
-            {
-                return await _context.ProdZonasRastreoCat.OrderBy(x => x.DescZona).ToListAsync();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        } 
-
-        //Asesores
+                
+        //Asesores por departamento
         [HttpGet("{depto}")]
         public ActionResult GetAsesor(string depto)
         {
@@ -45,7 +28,7 @@ namespace ApiIndicadores.Models
                     if (depto == "C")
                     {
                         item = (from a in _context.ProdAgenteCat
-                                where a.Depto == depto && a.Activo == true && a.Codigo != null || a.IdAgen == 304
+                                where a.Depto == depto && a.Activo == true && a.Codigo != null || a.IdAgen == 304 || a.IdAgen == 328
                                 select new
                                 {
                                     IdAgen = a.IdAgen,
@@ -72,9 +55,6 @@ namespace ApiIndicadores.Models
             {
                 return BadRequest(e.Message);
             }
-
         }
-
-
     }
 }

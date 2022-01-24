@@ -1,13 +1,11 @@
-﻿using CsvHelper.Configuration.Attributes;
-using ApiIndicadores.Context;
-using ApiIndicadores.Classes;
+﻿using ApiIndicadores.Context;
+using ApiIndicadores.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using ApiIndicadores.Models.Catalogos;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,29 +13,28 @@ namespace ApiIndicadores.Controllers.Catalogos
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegionesController : ControllerBase
+    public class ProdZonasRastreoController : ControllerBase
     {
         private readonly AppDbContext _context;
-
-        public RegionesController(AppDbContext context)
+        public ProdZonasRastreoController(AppDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
-        // GET: ZonasAgricolas
+        //zonas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<tbZonasAgricolas>>> GetZonas()
+        public ActionResult Get()
         {
             try
             {
-                return await _context.tbZonasAgricolas.OrderBy(x => x.Descripcion).ToListAsync();
+                var model = _context.ProdZonasRastreoCat.OrderBy(x => x.DescZona).ToList();
+                return Ok(model);
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
         }
-
 
     }
 }

@@ -9,29 +9,15 @@ namespace ApiIndicadores.Controllers.Catalogos
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LocalidadesController : ControllerBase
+    public class CatLocalidadesController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public LocalidadesController(AppDbContext context)
+        public CatLocalidadesController(AppDbContext context)
         {
             this._context = context;
         }
 
-        // GET: api/<CatProductosController>
-        //[HttpGet]
-        //public ActionResult Get()
-        //{
-        //    try
-        //    {
-        //       var item=_context.CatLocalidades.ToList();
-        //        return Ok(item);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e.Message);
-        //    }
-        //}
-
+        //GET: Localidaddes de  "GUA", "JAL", "MIC", "SIN" 
         [HttpGet]
         public ActionResult Get()
         {

@@ -299,10 +299,8 @@ namespace ApiIndicadores.Controllers
                     else if (opcion == "tarjeta")
                     {
                         muestreo.Tarjeta = "S";
-                        if (idAgen == 281 || idAgen == 204 || idAgen == 352 || idAgen == 1)
-                        {
-                            muestreo.IdAgen_Tarjeta = idAgen;
-                        }
+                        muestreo.IdAgen_Tarjeta = idAgen;
+                        
                         muestreo.Liberar_Tarjeta = model.Liberar_Tarjeta;
                         _context.SaveChanges();
 

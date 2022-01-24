@@ -200,4 +200,3 @@ C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiI
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.dll
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.pdb
 C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.genruntimeconfig.cache
-C:\Users\marholym\Documents\Indicadores\Indicadores\obj\Debug\netcoreapp3.1\ApiIndicadores.csproj.AssemblyReference.cache
