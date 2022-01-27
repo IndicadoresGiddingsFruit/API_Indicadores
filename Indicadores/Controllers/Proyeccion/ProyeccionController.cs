@@ -17,7 +17,8 @@ namespace ApiIndicadores.Controllers.Proyeccion
         {
             this._context = context;
         }
-        // GET: api/<ProyeccionController>
+
+        // GET: Actualizaciones de la curva
         [HttpGet("{idAgen}")]
         public ActionResult Get(int idAgen)
         {

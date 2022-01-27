@@ -1466,7 +1466,7 @@ namespace ApiIndicadores.Controllers.Auditoria
                                                Criterio = c.Criterio,
                                                Nivel = c.Nivel,
                                                Opcion = l.Opcion,
-                                               Justificacion = l.Justificacion //c.Justificacion + ' ' + l.Justificacion
+                                               Justificacion = l.Justificacion 
                                            } into x
                                            select new
                                            {

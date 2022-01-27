@@ -29,7 +29,7 @@ namespace ApiIndicadores.Controllers
         Email email = new Email();
         string title = "", body = "";
 
-        // GET: api/<SeguimientoController>
+        // GET: Estatus de fiananciamiento
         [HttpGet]
         public async Task<ActionResult<EstatusFinanciamiento>> Get()
         {
@@ -90,7 +90,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // POST api/<SeguimientoController>
+        // POST Agregar nuevo código
         [HttpPost]
         public async Task<ActionResult<Seguimiento_financ>> Post([FromBody] Seguimiento_financ model)
         {
@@ -111,7 +111,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
-        // PUT api/<SeguimientoController>/5
+        // PUT Agregar Estatus y Comentarios
         [HttpPut("{id}")]
         public async Task<ActionResult<Seguimiento_financ>> Put(int id, [FromBody] Seguimiento_financ model)
         {
@@ -138,6 +138,7 @@ namespace ApiIndicadores.Controllers
             }
         }
 
+        //Patch: Enviar correos
         [HttpPatch("{recipient}")]
         public async Task<ActionResult<Seguimiento_financ>> Patch([FromBody] List<SeguimientoClass> model, string recipient = "")
         {
@@ -151,6 +152,7 @@ namespace ApiIndicadores.Controllers
                     await _context.SaveChangesAsync();
                 }
 
+                //Atencion a productores
                 if (recipient == "AP")
                 {
                     foreach (var x in model)
@@ -227,7 +229,8 @@ namespace ApiIndicadores.Controllers
                 return BadRequest(e.Message);
             }
         }
-        // DELETE api/<SeguimientoController>/5  
+
+        // DELETE: Eliminar registro
         [HttpDelete("{id}")]
         public async Task<ActionResult<Seguimiento_financ>> Delete(int id)
         {

@@ -17,6 +17,7 @@ namespace ApiIndicadores.Controllers.Recepcion
             this._context = context;
         }
 
+        //Get semana actual
         [HttpGet]
         public ActionResult Get()
         {
@@ -31,6 +32,7 @@ namespace ApiIndicadores.Controllers.Recepcion
             }
         }
 
+        //COMPARATIVA DE RENDIMIENTO PROYECTADO VS ENTREGADO temporada actual
         [HttpGet("{idAgen}")]
         public ActionResult Get(int idAgen)
         {
