@@ -251,10 +251,12 @@ namespace ApiIndicadores.Controllers.Auditoria
                                                                 Faltantes = x.Key.Faltantes,
                                                             }).Count();
 
+                            //Revisar que no haya acciones correctivas pendientes
                             if (accionesCorrectivasFaltantes == 0 && accionesCorrectivasFotos == 0)
                             {
                                 var auditoria = _context.ProdAudInoc.Find(model.IdProdAuditoria);
-                                if (auditoria != null)
+                                //Revisar que se haya finalizado la auditoria
+                                if (auditoria.Fecha_termino != null)
                                 {
                                     auditoria.Finalizada = 1;
                                     await _context.SaveChangesAsync();

@@ -27,7 +27,7 @@ namespace ApiIndicadores.Controllers.Auditoria
         {
             try
             {
-                var item = _context.AuditoriaClass.FromSqlRaw($"sp_GetAuditoria " + idAgen + ","+ IdProdAuditoria +"").ToList();
+                var item = _context.AuditoriaClass.FromSqlRaw($"sp_GetAuditoria " + idAgen + "," + IdProdAuditoria + "").ToList();
                 return Ok(item.ToList());
             }
             catch (Exception e)
@@ -43,24 +43,11 @@ namespace ApiIndicadores.Controllers.Auditoria
             try
             {
                 var catSemanas = _context.CatSemanas.FirstOrDefault(m => DateTime.Now.Date >= m.Inicio && DateTime.Now.Date <= m.Fin);
-
-                //var auditoriaExiste =
-                //    _context.ProdAudInoc.FirstOrDefault(x =>
-                //x.Cod_Prod == model.Cod_Prod && x.IdAgen == model.IdAgen &&
-                //x.Temporada == catSemanas.Temporada);
-
-                //if (auditoriaExiste == null)
-                //{
-                    model.Temporada = catSemanas.Temporada;
-                    model.Fecha = DateTime.Now;
-                    _context.ProdAudInoc.Add(model);
-                    await _context.SaveChangesAsync();
-                    return Ok(model);
-                //}
-                //else
-                //{
-                //    return BadRequest("El código ya fué agregado anteriormente");
-                //}
+                model.Temporada = catSemanas.Temporada;
+                model.Fecha = DateTime.Now;
+                _context.ProdAudInoc.Add(model);
+                await _context.SaveChangesAsync();
+                return Ok(model);
             }
             catch (Exception e)
             {

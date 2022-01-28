@@ -50,9 +50,7 @@ namespace ApiIndicadores.Controllers
             try
             {
                 var muestreos = _context.MuestreosClass.FromSqlRaw($"sp_GetMuestreos " + id + "," + tipo + "," + depto + "").ToListAsync();
-                //var muestreos = _context.MuestreosClass.FromSqlRaw($"MuestreosPruebas").ToListAsync();
                 return Ok(await muestreos);
-
             }
             catch (Exception e)
             {
@@ -107,6 +105,7 @@ namespace ApiIndicadores.Controllers
                 var agente = _context.SIPGUsuarios.FirstOrDefault(s => s.IdAgen == model.IdAgen);
                 var campos = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo);
                 
+                //Revisar si la solicitud ya existe
                 if (param == "revisar") 
                 {
                     var modeloExistente = _context.ProdMuestreo.FirstOrDefault(m => m.Cod_Prod == model.Cod_Prod && m.Cod_Campo == model.Cod_Campo && m.Temporada == catSemanas.Temporada);
@@ -141,10 +140,13 @@ namespace ApiIndicadores.Controllers
                         return Ok(model);
                     }
                 }
+
+                //guardar sin revisar
                 else
                 {
                     var usuario = _context.SIPGUsuarios.Where(x => x.IdAgen == model.IdAgen).First();
 
+                    //Liberado=S si la solicitud la hace producción o IdAgen 216
                     if (usuario.Depto == "P" || model.IdAgen == 216)
                     {
                         model.Liberacion = "S";
@@ -158,15 +160,16 @@ namespace ApiIndicadores.Controllers
                     _context.ProdMuestreo.Add(model);
                     _context.SaveChanges();
 
+                    //Enviar notificacion
                     title = "Código: " + model.Cod_Prod + " campo: " + model.Cod_Campo;
                     body = "Nuevo muestreo";
                     notificaciones.SendNotificationJSON(title, body);
 
+                    //Enviar correo
                     enviar(model.IdAgen, model.Id, "nuevo");
 
                     return Ok(model);
-                }
-                
+                }                
             }
             catch (Exception e)
             {
@@ -215,10 +218,12 @@ namespace ApiIndicadores.Controllers
 
                                     var Fecha_ejecucion = String.Format("{0:d}", model.Fecha_ejecucion);
 
+                                    //Enviar notificacion
                                     title = "Código: " + item.Cod_Prod + " campo: " + item.Cod_Campo;
                                     body = "Fecha de ejecución: " + Fecha_ejecucion;
                                     notificaciones.SendNotificationJSON(title, body);
 
+                                    //Enviar correo
                                     enviar(idAgen, item.Id, "fecha_ejecucion");
                                 }
                                 _context.SaveChanges();
@@ -242,10 +247,12 @@ namespace ApiIndicadores.Controllers
 
                                 var Fecha_ejecucion = String.Format("{0:d}", model.Fecha_ejecucion);
 
+                                //Enviar notificacion
                                 title = "Código: " + item.Cod_Prod + " campo: " + item.Cod_Campo;
                                 body = "Fecha de ejecución: " + Fecha_ejecucion;
                                 notificaciones.SendNotificationJSON(title, body);
 
+                                //Enviar correo
                                 enviar(idAgen, item.Id, "fecha_ejecucion");
                             }
                             _context.SaveChanges();
@@ -290,9 +297,11 @@ namespace ApiIndicadores.Controllers
                         title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
                         body = "Solicitud de muestreo liberada";
 
+                        //Enviar notificacion
                         notificaciones.SendNotificationJSON(title, body);
                         _context.SaveChanges();
 
+                        //Enviar correo
                         enviar(idAgen, muestreo.Id, "Muestreo Liberado");
                     }
 
@@ -304,10 +313,12 @@ namespace ApiIndicadores.Controllers
                         muestreo.Liberar_Tarjeta = model.Liberar_Tarjeta;
                         _context.SaveChanges();
 
+                        //Enviar notificacion
                         title = "Código: " + muestreo.Cod_Prod + " campo: " + muestreo.Cod_Campo;
                         body = "Entrega de tarjeta autorizada";
                         notificaciones.SendNotificationJSON(title, body);
 
+                        //Enviar correo
                         enviar(idAgen, muestreo.Id, "Tarjeta");
                     }
 
@@ -392,8 +403,7 @@ namespace ApiIndicadores.Controllers
                 {
                     var muestreo = _context.ProdMuestreo.Where(m => m.Id == idMuestreo).FirstOrDefault();
                     var campo = _context.ProdCamposCat.FirstOrDefault(m => m.Cod_Prod == muestreo.Cod_Prod && m.Cod_Campo == muestreo.Cod_Campo);
-                    var localidad = _context.CatLocalidades.FirstOrDefault(m => m.CodLocalidad == campo.CodLocalidad);
-                    //var sectores = _context.ProdMuestreoSector.Where(m => m.Cod_Prod == cod_Prod && m.Cod_Campo == cod_Campo).ToList();
+                    var localidad = _context.CatLocalidades.FirstOrDefault(m => m.CodLocalidad == campo.CodLocalidad); 
                     var email_p = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgen && m.Depto!=null);
                     var email_c = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenC && m.Depto != null);
                     var email_i = _context.SIPGUsuarios.FirstOrDefault(m => m.IdAgen == campo.IdAgenI && m.Depto != null);
@@ -568,7 +578,6 @@ namespace ApiIndicadores.Controllers
                                 correo.CC.Add(correo_p);
                             }
 
-                            //------------------------------------------------------------------------------------------------------------------------------
                             //zona Los Reyes copia a Mayra
                             if (email_p.IdRegion == 1 && email_p.IdAgen != 197)
                             {
